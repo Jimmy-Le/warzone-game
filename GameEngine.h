@@ -32,3 +32,6 @@ OR
 Displays an error message
 */
 void switchTo(int);
+
+class Start: protected Status{
+};

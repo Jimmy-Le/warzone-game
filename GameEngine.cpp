@@ -37,3 +37,20 @@ void listen(){
 
 //     }
 // }
+
+
+
+//Statt class
+class Start{
+    protected:
+    string name = "start";
+
+    void transition(string input){
+        if (input == loadmap){
+            switchStatus(2);
+        }
+        else{
+            cout << "Invalid command, please try again.";
+        }
+    }
+};
