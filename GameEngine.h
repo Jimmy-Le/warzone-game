@@ -1,4 +1,7 @@
 //Header to the GameEngine.cpp file
+#include <iostream>
+using namespace std;
+
 #include <string>
 
 
@@ -9,6 +12,8 @@ This is an abstract class/ interface.
 */
 class Status {
     protected: //Accessible only in inherited classes
+    string name;
+    void transition(string input);
     Status(); //default constructor
     //friend bool operator ==();
     //friend istream& operator >>(istream& ins, something);
