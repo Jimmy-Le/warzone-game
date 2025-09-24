@@ -1,13 +1,11 @@
 // Contains a free function called testGameStates()
 #include "GameEngine.h"
 
+// switch to testGameStates()
 int main()
 {
-
-    int i = 0;
-    while (i < 5)
+    while (true)
     {
         listen();
-        i++;
     }
 }

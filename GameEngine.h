@@ -15,7 +15,7 @@ This is an abstract class/ interface.
 class Status
 {
 public:
-    virtual void transition(string input, Status *currentStatus);
+    virtual Status *transition(string input, Status *currentStatus);
     Status(); // default constructor
     // friend bool operator ==();
     // friend istream& operator >>(istream& ins, something);
@@ -24,14 +24,14 @@ public:
 class Start : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     Start();
 };
 class MapLoaded : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     MapLoaded();
 };
@@ -39,14 +39,14 @@ public:
 class MapValidated : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     MapValidated();
 };
 class PlayersAdded : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     PlayersAdded();
 };
@@ -54,7 +54,7 @@ public:
 class AssignReinforcement : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     AssignReinforcement();
 };
@@ -62,7 +62,7 @@ public:
 class IssueOrders : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     IssueOrders();
 };
@@ -70,7 +70,7 @@ public:
 class ExecuteOrders : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     ExecuteOrders();
 };
@@ -78,7 +78,7 @@ public:
 class Win : public Status
 {
 public:
-    void transition(string input, Status *currentStatus);
+    Status *transition(string input, Status *currentStatus);
 
     Win();
 };

@@ -7,42 +7,44 @@ using namespace std;
 
 // Status class methods
 Status::Status() {}
-void Status::transition(string input, Status *currentStatus)
+Status *Status::transition(string input, Status *currentStatus)
 {
-    cout << "testing";
+    return currentStatus;
 }
 
 // Start class methods
 Start::Start() {}
 
-void Start::transition(string input, Status *currentStatus)
+Status *Start::transition(string input, Status *currentStatus)
 {
     if (input == "loadmap")
     {
-        currentStatus = switchStatus(2, static_cast<Start *>(currentStatus));
+        return switchStatus(2, static_cast<Start *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 };
 
 // map loaded methods
 
 MapLoaded::MapLoaded() {}
-void MapLoaded::transition(string input, Status *currentStatus)
+Status *MapLoaded::transition(string input, Status *currentStatus)
 {
     if (input == "loadmap")
     {
-        currentStatus = switchStatus(2, static_cast<MapLoaded *>(currentStatus));
+        return switchStatus(2, static_cast<MapLoaded *>(currentStatus));
     }
     else if (input == "validatemap")
     {
-        currentStatus = switchStatus(3, static_cast<MapLoaded *>(currentStatus));
+        return switchStatus(3, static_cast<MapLoaded *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 }
 
@@ -53,15 +55,16 @@ void MapLoaded::transition(string input, Status *currentStatus)
 MapValidated::MapValidated() {
 
 };
-void MapValidated::transition(string input, Status *currentStatus)
+Status *MapValidated::transition(string input, Status *currentStatus)
 {
     if (input == "addplayer")
     {
-        currentStatus = switchStatus(4, static_cast<MapValidated *>(currentStatus));
+        return switchStatus(4, static_cast<MapValidated *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 }
 
@@ -72,19 +75,20 @@ void MapValidated::transition(string input, Status *currentStatus)
 PlayersAdded::PlayersAdded()
 {
 }
-void PlayersAdded::transition(string input, Status *currentStatus)
+Status *PlayersAdded::transition(string input, Status *currentStatus)
 {
     if (input == "addplayer")
     {
-        currentStatus = switchStatus(4, static_cast<PlayersAdded *>(currentStatus));
+        return switchStatus(4, static_cast<PlayersAdded *>(currentStatus));
     }
     else if (input == "assigncountries")
     {
-        currentStatus = switchStatus(5, static_cast<PlayersAdded *>(currentStatus));
+        return switchStatus(5, static_cast<PlayersAdded *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 }
 
@@ -94,15 +98,16 @@ void PlayersAdded::transition(string input, Status *currentStatus)
 AssignReinforcement::AssignReinforcement()
 {
 }
-void AssignReinforcement::transition(string input, Status *currentStatus)
+Status *AssignReinforcement::transition(string input, Status *currentStatus)
 {
     if (input == "issueorder")
     {
-        currentStatus = switchStatus(6, static_cast<AssignReinforcement *>(currentStatus));
+        return switchStatus(6, static_cast<AssignReinforcement *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 };
 
@@ -111,19 +116,20 @@ void AssignReinforcement::transition(string input, Status *currentStatus)
 IssueOrders::IssueOrders()
 {
 }
-void IssueOrders::transition(string input, Status *currentStatus)
+Status *IssueOrders::transition(string input, Status *currentStatus)
 {
     if (input == "issueorder")
     {
-        currentStatus = switchStatus(6, static_cast<IssueOrders *>(currentStatus));
+        return switchStatus(6, static_cast<IssueOrders *>(currentStatus));
     }
     else if (input == "endissueorders")
     {
-        currentStatus = switchStatus(7, static_cast<IssueOrders *>(currentStatus));
+        return switchStatus(7, static_cast<IssueOrders *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 };
 
@@ -133,42 +139,44 @@ ExecuteOrders::ExecuteOrders()
 {
 }
 
-void ExecuteOrders::transition(string input, Status *currentStatus)
+Status *ExecuteOrders::transition(string input, Status *currentStatus)
 {
     if (input == "execorder")
     {
-        currentStatus = switchStatus(7, static_cast<ExecuteOrders *>(currentStatus));
+        return switchStatus(7, static_cast<ExecuteOrders *>(currentStatus));
     }
     else if (input == "endexecorders")
     {
-        currentStatus = switchStatus(5, static_cast<ExecuteOrders *>(currentStatus));
+        return switchStatus(5, static_cast<ExecuteOrders *>(currentStatus));
     }
     else if (input == "win")
     {
-        currentStatus = switchStatus(8, static_cast<ExecuteOrders *>(currentStatus));
+        return switchStatus(8, static_cast<ExecuteOrders *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 };
 
 // win class methods
 
 Win::Win() {}
-void Win::transition(string input, Status *currentStatus)
+Status *Win::transition(string input, Status *currentStatus)
 {
     if (input == "play")
     {
-        currentStatus = switchStatus(1, static_cast<Win *>(currentStatus));
+        return switchStatus(1, static_cast<Win *>(currentStatus));
     }
     else if (input == "end")
     {
-        currentStatus = switchStatus(9, static_cast<Win *>(currentStatus));
+        return switchStatus(9, static_cast<Win *>(currentStatus));
     }
     else
     {
         cout << "Invalid command, please try again.";
+        return currentStatus;
     }
 };
 
@@ -182,11 +190,13 @@ void listen()
     string input;
     cin >> input;
 
-    // for testing purposes
-    cout << input << endl;
-    cout << &currentStatus << endl;
-
-    currentStatus->transition(input, currentStatus);
+    Status *oldStatus = currentStatus;
+    Status *nextStatus = currentStatus->transition(input, currentStatus);
+    if (nextStatus != currentStatus)
+    {
+        delete oldStatus;
+        currentStatus = nextStatus;
+    }
 };
 
 // takes an integer corresponding to the status to switch to and then makes the status pointer point to an object
@@ -202,92 +212,69 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to Start
         // create new Start object
         newStatus = new Start();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new start object
-        currentStatus = newStatus;
-        // return the modified pointer
-        return currentStatus;
+        // return a pointer to the new state
+        cout << "Change state to Start" << endl;
+        return newStatus;
         break;
     case 2:
         // switch to MapLoaded
         // create new MapLoaded object
         newStatus = new MapLoaded();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new MapLoaded object
-        currentStatus = newStatus;
+        cout << "Change State to Map Loaded" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 3:
         // switch to MapValidated
         // create new MapValidated object
         newStatus = new MapValidated();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new MapValidated object
-        currentStatus = newStatus;
+        cout << "Change State to Map Validated" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 4:
         // switch to PlayersAdded
         // create new PlayersAdded object
         newStatus = new PlayersAdded();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new PlayersAdded object
-        currentStatus = newStatus;
+        cout << "Change State to Players Added" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 5:
         // switch to AssignReinforcement
         // create new AssignReinforcement object
         newStatus = new AssignReinforcement();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new AssignReinforcement object
-        currentStatus = newStatus;
+        cout << "Change State to Assign Reinforcement" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 6:
         // switch to IssueOrders
         // create new IssueOrders object
         newStatus = new IssueOrders();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new IssueOrders object
-        currentStatus = newStatus;
+        cout << "Change State to Issue Orders" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 7:
         // switch to ExecuteOrders
         // create new ExecuteOrders object
         newStatus = new ExecuteOrders();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new ExecuteOrders object
-        currentStatus = newStatus;
+        cout << "Change State to Execute Orders" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 8:
         // switch to win
         // create new Win object
         newStatus = new Win();
-        // delete old status object
-        delete currentStatus;
-        // reassign pointer to the new Win object
-        currentStatus = newStatus;
+        cout << "Change State to Win" << endl;
         // return the modified pointer
-        return currentStatus;
+        return newStatus;
         break;
     case 9:
         // end the program
+        cout << "Goodbye!" << endl;
         exit(0);
         break;
     }
