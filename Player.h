@@ -2,7 +2,28 @@
 #define PLAYER_H
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
+
+
+
+
+class FakeOrder {
+    public:
+        FakeOrder();
+        void printOrder();
+        string name;
+};
+
+class FakeOrderList {
+    public:
+        FakeOrderList();
+        void add(FakeOrder* order);
+        void printOrderList();
+        vector<FakeOrder*> orders;
+
+};
+
 
 /***
  * Player Class
@@ -15,6 +36,7 @@ class Player{
         vector<string> toDefend();                                      // Returns a list of territories to be defended
         vector<string> toAttack();                                      // Returns a list of territories to be attacked
         void issueOrder();                                              // Create a Order object and add it to the OrderList (orderCollection)
+        void printPlayer();                                             // Print the player's details (for debugging)
 
     private:
         // TODO change int to pointer of territories and Cards
@@ -23,9 +45,12 @@ class Player{
         vector<string> cardCollection;                                  // A List of Cards in a Player's hand
 
         // TODO Change this to be an OrderList object
-        vector<string> orderCollection;                                 // A List of Orders a player executes?
+        FakeOrderList orderCollection;                                 // A List of Orders a player executes?
 
 };
+
+
+
 
 
 
