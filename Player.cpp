@@ -9,10 +9,10 @@ using namespace std;
  * TODO Update this to be the proper type
  */
 Player::Player(){
-    defendCollection = {"France", "Canada", "USA"};
-    attackCollection = {"France", "Canada", "USA"};
-    cardCollection = {"1", "2", "3"};
-    orderCollection = FakeOrderList();
+    defendCollection = new vector<string>({"France", "Canada", "USA"});
+    attackCollection = new vector<string>({"France", "Canada", "USA"});
+    cardCollection = new vector<string>({"1", "2", "3"});
+    orderCollection = new FakeOrderList();
 }
 
 /***
@@ -20,7 +20,7 @@ Player::Player(){
  * Returns a list of territories that are to be defended
  * TODO Arbitrarily choose which territory to be defended
  */
-vector<string> Player::toDefend(){
+vector<string>* Player::toDefend(){
     cout << "printing Territory to defend" << endl;
     return defendCollection;
 }
@@ -30,7 +30,7 @@ vector<string> Player::toDefend(){
  * Returns a list of territories that are to be attacked
  * TODO Arbitrarily choose which territory to be attacked
  */
-vector<string> Player::toAttack(){
+vector<string>* Player::toAttack(){
     cout << "printing Territory to attack" << endl;
     return attackCollection;
 }
@@ -43,7 +43,7 @@ vector<string> Player::toAttack(){
 void Player::issueOrder(){
 
     FakeOrder* newOrder = new FakeOrder();
-    orderCollection.add(newOrder);
+    orderCollection->add(newOrder);
 
 }
 
@@ -53,25 +53,25 @@ void Player::issueOrder(){
  */
 void Player::printPlayer(){
     cout << "Player's Territories to Defend: " << endl;
-    for (string territory : defendCollection) {
+    for (string& territory : *defendCollection) {
         cout << territory << " ";
     }
     cout << endl;
 
     cout << "Player's Territories to Attack: " << endl;
-    for (string territory : attackCollection) {
+    for (string& territory : *attackCollection) {
         cout << territory << " ";
     }
     cout << endl;
 
     cout << "Player's Cards: " << endl;
-    for (string card : cardCollection) {
+    for (string& card : *cardCollection) {
         cout << card << " ";
     }
     cout << endl;   
 
     cout << "Player's Orders: " << endl;
-    for (FakeOrder* order : orderCollection.orders) {
+    for (FakeOrder* order : orderCollection->orders) {
         order->printOrder();
     }
     cout << endl;
