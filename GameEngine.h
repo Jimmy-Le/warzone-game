@@ -30,7 +30,7 @@ public:
     Start();                   // default constructor
     Start(Start &otherStatus); // copy constructor
                                // assignment operator
-    Start &operator=(const Start &otherObject) {};
+    Start &operator=(const Start &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const Start &startObject);
 };
@@ -43,7 +43,7 @@ public:
     // copy constructor
     MapLoaded(MapLoaded &otherStatus);
     // assignment operator
-    MapLoaded &operator=(const MapLoaded &otherObject) {};
+    MapLoaded &operator=(const MapLoaded &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const MapLoaded &mapLoadedObject);
 };
@@ -57,7 +57,7 @@ public:
     // copy constructor
     MapValidated(MapValidated &otherStatus);
     // assignment operator
-    MapValidated &operator=(const MapValidated &otherObject) {};
+    MapValidated &operator=(const MapValidated &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const MapValidated &mapValidatedObject);
 };
@@ -70,7 +70,7 @@ public:
     // copy constructor
     PlayersAdded(PlayersAdded &otherStatus);
     // assignment operator
-    PlayersAdded &operator=(const PlayersAdded &otherObject) {};
+    PlayersAdded &operator=(const PlayersAdded &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const PlayersAdded &playersAddedObject);
 };
@@ -84,7 +84,7 @@ public:
     // copy constructor
     AssignReinforcement(AssignReinforcement &otherStatus);
     // assignment operator
-    AssignReinforcement &operator=(const AssignReinforcement &otherObject) {};
+    AssignReinforcement &operator=(const AssignReinforcement &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const AssignReinforcement &assignReinforcementObject);
 };
@@ -98,7 +98,7 @@ public:
     // copy constructor
     IssueOrders(IssueOrders &otherStatus);
     // assignment operator
-    IssueOrders &operator=(const IssueOrders &otherObject) {};
+    IssueOrders &operator=(const IssueOrders &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const IssueOrders &issueOrdersObject);
 };
@@ -112,7 +112,7 @@ public:
     // copy constructor
     ExecuteOrders(ExecuteOrders &otherStatus);
     // assignment operator
-    ExecuteOrders &operator=(const ExecuteOrders &otherObject) {};
+    ExecuteOrders &operator=(const ExecuteOrders &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const ExecuteOrders &executeOrdersObject);
 };
@@ -126,7 +126,7 @@ public:
     // copy constructor
     Win(Win &otherStatus);
     // assignment operator
-    Win &operator=(const Win &otherObject) {};
+    Win &operator=(const Win &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const Win &winObject);
 };

@@ -23,7 +23,7 @@ Status *Start::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -49,7 +49,7 @@ Status *MapLoaded::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 }
@@ -75,7 +75,7 @@ Status *MapValidated::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 }
@@ -105,7 +105,7 @@ Status *PlayersAdded::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -128,7 +128,7 @@ Status *AssignReinforcement::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -157,7 +157,7 @@ Status *IssueOrders::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -191,7 +191,7 @@ Status *ExecuteOrders::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -217,7 +217,7 @@ Status *Win::transition(string input, Status *currentStatus)
     }
     else
     {
-        cout << "Invalid command, please try again.";
+        cout << "Invalid command, please try again." << endl;
         return currentStatus;
     }
 };
@@ -252,7 +252,6 @@ void listen()
 // of that status
 Status *switchStatus(int nextStatus, Status *currentStatus)
 {
-    cout << "Entered switchStatus" << endl;
     Status *newStatus = nullptr;
 
     switch (nextStatus)
