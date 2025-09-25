@@ -1,8 +1,9 @@
 // Contains a free function called testGameStates()
 #include "GameEngine.h"
+#include "GameEngineDriver.h"
 
 // switch to testGameStates()
-int main()
+void testGameStates()
 {
     while (true)
     {

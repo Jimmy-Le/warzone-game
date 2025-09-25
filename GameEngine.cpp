@@ -321,7 +321,6 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         return newStatus;
         break;
     case 9:
-        // end the program
         cout << "Goodbye!" << endl;
         delete currentStatus;
         exit(0);
