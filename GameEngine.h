@@ -29,67 +29,106 @@ public:
 
     Start();                   // default constructor
     Start(Start &otherStatus); // copy constructor
+                               // assignment operator
+    Start &operator=(const Start &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const Start &startObject);
 };
 class MapLoaded : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     MapLoaded();
+    // copy constructor
     MapLoaded(MapLoaded &otherStatus);
+    // assignment operator
+    MapLoaded &operator=(const MapLoaded &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const MapLoaded &mapLoadedObject);
 };
 
 class MapValidated : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     MapValidated();
+    // copy constructor
     MapValidated(MapValidated &otherStatus);
+    // assignment operator
+    MapValidated &operator=(const MapValidated &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const MapValidated &mapValidatedObject);
 };
 class PlayersAdded : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     PlayersAdded();
+    // copy constructor
     PlayersAdded(PlayersAdded &otherStatus);
+    // assignment operator
+    PlayersAdded &operator=(const PlayersAdded &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const PlayersAdded &playersAddedObject);
 };
 
 class AssignReinforcement : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     AssignReinforcement();
+    // copy constructor
     AssignReinforcement(AssignReinforcement &otherStatus);
+    // assignment operator
+    AssignReinforcement &operator=(const AssignReinforcement &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const AssignReinforcement &assignReinforcementObject);
 };
 
 class IssueOrders : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     IssueOrders();
+    // copy constructor
     IssueOrders(IssueOrders &otherStatus);
+    // assignment operator
+    IssueOrders &operator=(const IssueOrders &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const IssueOrders &issueOrdersObject);
 };
 
 class ExecuteOrders : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     ExecuteOrders();
+    // copy constructor
     ExecuteOrders(ExecuteOrders &otherStatus);
+    // assignment operator
+    ExecuteOrders &operator=(const ExecuteOrders &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const ExecuteOrders &executeOrdersObject);
 };
 
 class Win : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
-
+    // default constructor
     Win();
+    // copy constructor
     Win(Win &otherStatus);
+    // assignment operator
+    Win &operator=(const Win &otherObject) {};
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const Win &winObject);
 };
 
 /*

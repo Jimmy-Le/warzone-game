@@ -27,6 +27,12 @@ Status *Start::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const Start &startObject)
+{
+    out << "State: Start" << endl;
+    return out;
+}
 
 // map loaded methods
 
@@ -49,6 +55,12 @@ Status *MapLoaded::transition(string input, Status *currentStatus)
 }
 
 ;
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const MapLoaded &mapLoadedObject)
+{
+    out << "State: Map Loaded" << endl;
+    return out;
+}
 
 // map validated methods
 
@@ -69,6 +81,12 @@ Status *MapValidated::transition(string input, Status *currentStatus)
 }
 
 ;
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const MapValidated &mapValidatedObject)
+{
+    out << "State: Map Validated" << endl;
+    return out;
+}
 
 // players added methods
 
@@ -90,9 +108,13 @@ Status *PlayersAdded::transition(string input, Status *currentStatus)
         cout << "Invalid command, please try again.";
         return currentStatus;
     }
+};
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const PlayersAdded &playersAddedObject)
+{
+    out << "State: Players Added" << endl;
+    return out;
 }
-
-;
 
 // assign reinforcement class methods
 AssignReinforcement::AssignReinforcement()
@@ -110,6 +132,13 @@ Status *AssignReinforcement::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const AssignReinforcement &assignReinforcementObject)
+{
+    out << "State: Assign Reinforcement " << endl;
+    return out;
+}
 
 // issue orders class methods
 
@@ -132,6 +161,13 @@ Status *IssueOrders::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const IssueOrders &issueOrdersObject)
+{
+    out << "State: Issue Orders" << endl;
+    return out;
+}
 
 // execute orders class methods
 
@@ -159,6 +195,12 @@ Status *ExecuteOrders::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const ExecuteOrders &ExecuteOrdersObject)
+{
+    out << "State: Execute Orders" << endl;
+    return out;
+}
 
 // win class methods
 
@@ -179,6 +221,13 @@ Status *Win::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+
+// stream insertion operator
+std::ostream &operator<<(ostream &out, const Win &winObject)
+{
+    out << "State: Win" << endl;
+    return out;
+}
 
 // global variable to keep track of the status
 Status *currentStatus = new Start();
