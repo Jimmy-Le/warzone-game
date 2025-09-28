@@ -1,6 +1,7 @@
 // Main driving force of our program!!!
 #include "GameEngineDriver.h"
 #include <iostream>
+#include "PlayerDriver.h"
 using namespace std;
 
 int main()
@@ -23,6 +24,7 @@ int main()
 
             break;
         case 2:
+            testPlayers();
             break;
         case 3:
             break;
