@@ -1,8 +1,9 @@
 #include "Orders.h"
 #include "Player.h"
 #include <string>
+#include "testOrderLists.h"
 
-int main() {
+int testOrderList() {
     //Orders b = Orders(10 ,"Australia" , "Kuwait");
     Advance a = Advance(50 , "Qatar" , "Poland");
     Orderlist arr;

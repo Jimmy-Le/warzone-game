@@ -2,6 +2,7 @@
 #include "GameEngineDriver.h"
 #include <iostream>
 #include "PlayerDriver.h"
+#include "testOrderLists.h"
 using namespace std;
 
 int main()
@@ -27,6 +28,7 @@ int main()
             testPlayers();
             break;
         case 3:
+            testOrderList();
             break;
         case 4:
             break;
