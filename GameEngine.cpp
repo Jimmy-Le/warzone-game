@@ -1,7 +1,11 @@
 // Controls the flow of the game.
 
 #include <iostream>
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::ostream;
+using std::string;
 #include <string>
 #include "GameEngine.h"
 
