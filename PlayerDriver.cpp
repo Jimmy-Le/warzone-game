@@ -1,4 +1,11 @@
 #include "PlayerDriver.h"
+#include "Orders.h"
+#include <iostream>
+#include <memory>
+#include <string>
+
+using namespace std;
+
 
 
 Player player("Player 1");
@@ -46,7 +53,7 @@ void playerMenu(){
                 break;
             case 4:                                                 // Test Orders
                 cout << "\n========== Testing Orders ===========\n" << endl;
-                player.issueOrder();
+               // player.issueOrder(make_unique<DeployOrder>(3 , "Base" , "Frontline"));
                 cout << player.getName() << "'s Order added " << endl;
                 cout << "Print Player's Information to view all orders" << endl;
                 break;
