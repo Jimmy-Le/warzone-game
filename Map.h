@@ -95,7 +95,7 @@ class Continent {
 
         // Continent operations
         void addTerritory(Territory* territory);
-        bool isConnected() const;
+        bool isContinentConnected() const;
     
 };
 
@@ -107,6 +107,8 @@ class Map{
     private:
         vector<Territory*>* territories;
         vector<Continent*>* continents;
+        // Check if each territory is same name as continent (Prevent each territory is more than one continent)
+        bool isTerritoryIsContinent = true;
 
     public:
         // Constructors and destructor
@@ -123,6 +125,10 @@ class Map{
         // Getters
         vector<Territory*>* getTerritories() const;
         vector<Continent*>* getContinents() const;
+        bool getisTerritoryIsContinent() const;
+
+        //Setters
+        void setisTerritoryIsContinent(bool val);
 
         // Map operations
         void addTerritory(Territory* territory);
@@ -151,7 +157,6 @@ class MapLoader{
         // Helper methods for parsing
         vector<string> split(const string& str, char delimiter) const;
         string trim(const string& str) const;
-        bool isValidMapSection(const string& line) const;
 
     public:
         // Constructors and destructor

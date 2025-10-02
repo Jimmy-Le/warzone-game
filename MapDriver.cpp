@@ -11,7 +11,6 @@ using namespace std;
 
 int main(){
     testLoadMaps();
-        cout << "Trying to load: " << "Earth.map" << endl;
     return 0;
 }
 
@@ -51,9 +50,9 @@ void testLoadMaps() {
             bool isValid = loadedMap->validate();
 
             cout << "\nValidation Results:" << endl;
-            cout << "  1. Map is fully connected: " << (isConnected ? "✔ PASS" : "✖ FAIL") << endl;
-            cout << "  2. Continents are connected subgraphs: " << (continentsConnected ? "✔ PASS" : "✖ FAIL") << endl;
-            cout << "  3. Each territory is in one continent: " << (eachInOneContinent ? "✔ PASS" : "✖ FAIL") << endl;
+            cout << "  1. Map is fully connected: " << (isConnected ? "PASS" : "FAIL") << endl;
+            cout << "  2. Continents are connected subgraphs: " << (continentsConnected ? "PASS" : "FAIL") << endl;
+            cout << "  3. Each territory is in one continent: " << (eachInOneContinent ? "PASS" : "FAIL") << endl;
             cout << "  => Overall Map Validation: " << (isValid ? "VALID MAP" : "INVALID MAP") << endl;
 
             if (isValid) {

@@ -5,7 +5,7 @@
 #include <cctype>
 #include <algorithm>
 #include <queue>
-#include <map>
+
 
 using namespace std;
 
@@ -207,7 +207,7 @@ void Continent::addTerritory(Territory* territory){
 }
 
 // Check if the continent is a connected subgraph (for areContinentsConnected)
-bool Continent::isConnected() const{
+bool Continent::isContinentConnected() const{
     if (territories->empty()) return true; // An empty continent is considered connected
     if (territories->size() == 1) return true; // A single territory is considered connected
 
@@ -226,14 +226,16 @@ bool Continent::isConnected() const{
         for (Territory* adjacent : *current->getAdjacentTerritories()) {
             // Check if adjacent is part of the continent
             bool isInContinent = false;
-            for (Territory* t : *territories) {
-                if (t == adjacent) {
+            // Range-based for loop to check if adjacent territory is in the continent's territories
+            for (Territory* adjacentTerritory : *territories) {
+                if (adjacentTerritory == adjacent) {
                     isInContinent = true;
                     break;
                 }
             }
 
             // If adjacent is in continent and not visited yet
+            // isInContinent is false (means the territory is not in the continent), then not add the adjacent territory to the set (visited).
             if (isInContinent && visited.count(adjacent) == 0) {
                 visited.insert(adjacent);
                 IsConnectedQueue.push(adjacent);
@@ -330,6 +332,15 @@ vector<Continent*>* Map::getContinents() const{
     return continents;
 }
 
+bool Map::getisTerritoryIsContinent() const{
+    return isTerritoryIsContinent;
+}
+
+// Setters
+void Map::setisTerritoryIsContinent(bool value){
+    isTerritoryIsContinent = value;
+}
+
 // Map operations
 void Map::addTerritory(Territory* territory){
     if (territory != nullptr) {
@@ -390,10 +401,9 @@ bool Map::isConnectedGraph() const{
     while (!IsConnectedGraphQueue.empty()) {
         // Get the next territory to explore, which is at the front of the queue
         Territory* current = IsConnectedGraphQueue.front();
-        // Mark it as visited
         IsConnectedGraphQueue.pop();
 
-        // Loop through the adjacent territories of the current territory
+        // Range-based for loop to iterate through each adjacent territory
         for (Territory* adjacent : *current->getAdjacentTerritories()) {
             // If adjacent territory has not been visited yet
             // 0 means the territory is not in the set (it has not been visited).
@@ -405,7 +415,6 @@ bool Map::isConnectedGraph() const{
             }
         }
     }
-    cout<<"Visited " << visited.size() << " out of " << territories->size() << " territories." << endl;
     // If the number of visited territories is equal to the total number of territories, the map is connected
     return visited.size() == territories->size();
 }
@@ -413,7 +422,8 @@ bool Map::isConnectedGraph() const{
 // 2) Check if each continent is a connected subgraph
 bool Map::areContinentsConnected() const{
     for (Continent* continent : *continents) {
-        if (!continent->isConnected()) {
+        // Use the isContinentConnected function of Continent to check if it's a connected subgraph
+        if (!continent->isContinentConnected()) {
             return false;
         }
     }
@@ -434,8 +444,10 @@ bool Map::isEachTerritoryInOneContinent() const{
         }
     }
     
-    // Check that all territories belong to a continent
-    return territorySet.size() == territories->size();
+    // Check that all territories belong to a continent 
+    // and see whether territory is same name as a continent (Ensure that each territory belongs to exactly one continent)
+    // getisTerritoryIsContinent() returns false if a territory has the same name as a continent (Mean territory belongs to more than one continent)
+    return territorySet.size() == territories->size() && getisTerritoryIsContinent();
 }
 
 // ==================== MapLoader Implementation ====================
@@ -457,6 +469,7 @@ string MapLoader::trim(const string& str) const {
     size_t last = str.find_last_not_of(" \t\r\n");
     return str.substr(first, (last - first + 1));
 }
+
 
 // Constructors (mapLoader)
 MapLoader::MapLoader() {
@@ -516,6 +529,8 @@ Map* MapLoader::loadMap(const string& file) const{
     Map* map = new Map();
     string line;
     string currentSection = "";
+    // For two-pass adjacency setup
+    std::map<std::string, std::vector<std::string>> adjacencyMap;
     
     try {
         while (getline(inputFile, line)) {
@@ -525,7 +540,7 @@ Map* MapLoader::loadMap(const string& file) const{
             
             // Check for section headers
             // E.g. [Map] , [Continents], [Territories]
-            if (line[0] == '[' && line[line.length()-1] == ']') {
+            else if (line[0] == '[' && line[line.length()-1] == ']') {
                 currentSection = line;
                 continue;
             }
@@ -543,7 +558,6 @@ Map* MapLoader::loadMap(const string& file) const{
                     if (line.empty()) {
                         break;
                     }
-
                     // Print the line to the console (or log it as needed)
                     cout << line << endl;
                 }
@@ -578,17 +592,21 @@ Map* MapLoader::loadMap(const string& file) const{
 
                     map->addTerritory(territory);  // Add territory to the map
 
+                    // Store adjacency info for second pass
+                    vector<string> adjacents;
+
                     for (size_t i = 4; i < tokens.size(); i++) {
-                        string adjacentTerritoryName = tokens[i];  // Adjacent territories
-                        // Get the pointer to the adjacent territory from the map
-                        Territory* adjacentTerritory = map->getTerritory(adjacentTerritoryName);
-                        
-                        if (adjacentTerritory != nullptr) {
-                            if (adjacentTerritory != territory) {  // Avoid self-adjacency
-                                territory->addAdjacentTerritory(adjacentTerritory);  // Add to adjacency list
+                        for(Continent* continentMarked : *map->getContinents()){
+                            if (tokens[i] == continentMarked->getName()){
+                                map->setisTerritoryIsContinent(false);
                             }
                         }
+                        // Add adjacent territory names to the list
+                        adjacents.push_back(tokens[i]);
                     }
+                    // Map territory name to its list of adjacent territory names
+                    adjacencyMap[territoryName] = adjacents;
+                    
                 }
             
             } 
@@ -596,10 +614,20 @@ Map* MapLoader::loadMap(const string& file) const{
         
         inputFile.close();
         
-        // Validate the loaded map
-        if (!map->validate()) {
-            cout << "Warning: Loaded map failed validation checks." << endl;
+        // Second pass: set up adjacencies
+        for (const auto& pair : adjacencyMap) {
+            // Get the territory object by name
+            Territory* territory = map->getTerritory(pair.first);
+
+            // Range-based for loop to iterate through each adjacent territory name
+            for (const string& adjName : pair.second) {
+                Territory* adjacent = map->getTerritory(adjName);
+                if (adjacent && adjacent != territory) {
+                    territory->addAdjacentTerritory(adjacent);
+                }
+            }
         }
+
         
         return map;
         
