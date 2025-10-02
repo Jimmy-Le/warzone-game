@@ -1,7 +1,7 @@
 #include "Orders.h"
 
 
-int main() {
+int testOrderLists() {
     //Orders b = Orders(10 ,"Australia" , "Kuwait");
     Advance a = Advance(50 , "Qatar" , "Poland");
     Orderlist arr;

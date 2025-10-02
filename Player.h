@@ -3,26 +3,27 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Orders.h"
 using namespace std;
 
 
 
 
-class FakeOrder {
-    public:
-        FakeOrder();
-        void printOrder();
-        string name;
-};
+// class FakeOrder {
+//     public:
+//         FakeOrder();
+//         void printOrder();
+//         string name;
+// };
 
-class FakeOrderList {
-    public:
-        FakeOrderList();
-        void add(FakeOrder* order);
-        void printOrderList();
-        vector<FakeOrder*> orders;
+// class FakeOrderList {
+//     public:
+//         FakeOrderList();
+//         void add(FakeOrder* order);
+//         void printOrderList();
+//         vector<FakeOrder*> orders;
 
-};
+// };
 
 
 /***
@@ -52,8 +53,7 @@ class Player{
         vector<string>* attackCollection;                                // A List of Territories the Player should Attack
         vector<string>* cardCollection;                                  // A List of Cards in a Player's hand
 
-        // TODO Change this to be an OrderList object
-        FakeOrderList* orderCollection;                                 // A List of Orders a player executes?
+        Orderlist* orderCollection;                                 // A List of Orders a player executes?
 
 };
 

@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Orders.h"
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -13,7 +14,7 @@ Player::Player(){
     this->defendCollection = new vector<string>({"France", "Canada", "USA"});
     this->attackCollection = new vector<string>({"Russia", "Ukraine", "China"});
     this->cardCollection = new vector<string>({"1", "2", "3"});
-    this->orderCollection = new FakeOrderList();
+    this->orderCollection = new Orderlist();
 }
 /***
  * Parameterized Player Constructor,
@@ -26,7 +27,7 @@ Player::Player(string name) {
     this->defendCollection = new vector<string>({"France", "Canada", "USA"});
     this->attackCollection = new vector<string>({"Russia", "Ukraine", "China"});
     this->cardCollection = new vector<string>({"1", "2", "3"});
-    this->orderCollection = new FakeOrderList();
+    this->orderCollection = new Orderlist();
 }
 
 /***
@@ -56,10 +57,10 @@ Player::Player(const Player& other){
     
     // Deep copy of orderCollection
     // TODO Replace with actual OrderList class
-    orderCollection = new FakeOrderList();
-    for (FakeOrder* order : other.orderCollection->orders) {
-        FakeOrder* newOrder = new FakeOrder(*order); // Assuming FakeOrder has a copy constructor
-        orderCollection->add(newOrder);
+    orderCollection = new Orderlist();
+    for ( const auto& order : other.orderCollection->orderList) {
+        Orders* newOrder = new Orders(*order); // Assuming FakeOrder has a copy constructor
+        orderCollection->move(*newOrder, 0);
     }
 }
 
@@ -88,8 +89,8 @@ ostream& operator<<(ostream& out, const Player& player) {
     }
 
     out << "\n-Orders: " << endl;
-    for (FakeOrder* order : player.orderCollection->orders) {               // Orders in player's order list
-        order->printOrder();                                              
+    for (const auto& order : player.orderCollection->orderList) {               // Orders in player's order list
+        out << *order << " " << endl;
     }
 
     return out;
@@ -119,38 +120,43 @@ vector<string>* Player::toAttack(){
  * issueOrder()
  * Creates an Order object and puts it in the player’s list of orders
  * TODO replace order object with actual Order class
+ * TODO maybe replace move with an insert function
  */
 void Player::issueOrder(){
 
-    FakeOrder* newOrder = new FakeOrder();
-    orderCollection->add(newOrder);
+    cout << "Issuing Order..." << endl;
+    Orders* newOrder = new Orders();
+    cout << "New Order Created" << endl;
+
+    orderCollection->move(*newOrder, 1);
+    cout << "Order issued" << endl;
 
 }
 
 
 
 // ------------------------------- Fake Stuff (Delete After) --------------------------------
-FakeOrder::FakeOrder(){
-    FakeOrder::name = "Default Order";
-}
-void FakeOrder::printOrder(){
-    cout << "Order Name: " << name << endl;
-}
+// FakeOrder::FakeOrder(){
+//     FakeOrder::name = "Default Order";
+// }
+// void FakeOrder::printOrder(){
+//     cout << "Order Name: " << name << endl;
+// }
 
-FakeOrderList::FakeOrderList(){
-    orders = vector<FakeOrder*>();
-}
+// FakeOrderList::FakeOrderList(){
+//     orders = vector<FakeOrder*>();
+// }
 
-void FakeOrderList::add(FakeOrder* order){
-    orders.push_back(order);
-}
+// void FakeOrderList::add(FakeOrder* order){
+//     orders.push_back(order);
+// }
 
-void FakeOrderList::printOrderList(){
-    cout << "Order List: " << endl;
-    for (FakeOrder* order : orders) {
-        order->printOrder();
-    }
-}
+// void FakeOrderList::printOrderList(){
+//     cout << "Order List: " << endl;
+//     for (FakeOrder* order : orders) {
+//         order->printOrder();
+//     }
+// }
 
 
 
