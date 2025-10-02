@@ -2,7 +2,7 @@
 #include "GameEngine.h"
 #include "GameEngineDriver.h"
 
-// switch to testGameStates()
+// continuously calls the listen() function
 void testGameStates()
 {
     while (true)
