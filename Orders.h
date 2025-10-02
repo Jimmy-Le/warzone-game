@@ -47,7 +47,7 @@ class DeployOrder : public Orders{
 
 
 class Negotiate : public Orders{
-  Negotiate(int numberOfArmuUnits , string sourceTerritory , string targetTerritory);
+  Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
   Negotiate(const Negotiate& otherNegotiate);
   Negotiate& operator=(const Negotiate& otherNegotiate);
 
@@ -87,7 +87,7 @@ class Advance : public Orders{
 class Orderlist {
 public:
     Orderlist() = default;
-    std::vector<std::unique_ptr<Orders>> orderList;
+    std::vector<std::unique_ptr<Orders>> orderList;//the data member of orderlist 
     void remove(Orders& order);
     void move(Orders& order , int index);
 };
