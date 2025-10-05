@@ -7,9 +7,9 @@
  */
 Player::Player(){
     this->name = new string("John Doe");
-    this->defendCollection = new vector<string>({"France", "Canada", "USA"});
-    this->attackCollection = new vector<string>({"Russia", "Ukraine", "China"});
-    this->cardCollection = new vector<string>({"1", "2", "3"});
+    this->defendCollection = new vector<Territory*>();
+    this->attackCollection = new vector<Territory*>();
+    this->cardCollection = new Hand();
     this->orderCollection = new Orderlist(); //the default constructor of orderlist used i didnt define any for orderlist class
 }
 /***
@@ -20,9 +20,9 @@ Player::Player(){
  */
 Player::Player(string name) {
     this->name = new string(name);
-    this->defendCollection = new vector<string>({"France", "Canada", "USA"});
-    this->attackCollection = new vector<string>({"Russia", "Ukraine", "China"});
-    this->cardCollection = new vector<string>({"1", "2", "3"});
+    this->defendCollection = new vector<Territory*>();
+    this->attackCollection = new vector<Territory*>();
+    this->cardCollection = new Hand();
     this->orderCollection = new Orderlist();//same as above
 }
 
@@ -32,6 +32,18 @@ Player::Player(string name) {
  */
 Player::~Player(){
     delete name;
+
+
+    // Free each Territory pointer in the territories to defend collection
+    for (Territory* territory : *defendCollection) {
+        delete territory;
+    }
+
+    // Free each Territory pointer in the territories to attack collection
+    for (Territory* territory : *attackCollection) {
+        delete territory;
+    }
+
     delete defendCollection;
     delete attackCollection;
     delete cardCollection;
@@ -43,13 +55,13 @@ Player::~Player(){
  */
 Player::Player(const Player& other){
     // Deep copy of defendCollection
-    defendCollection = new vector<string>(*other.defendCollection);
+    defendCollection = new vector<Territory*>(*other.defendCollection);
     
     // Deep copy of attackCollection
-    attackCollection = new vector<string>(*other.attackCollection);
+    attackCollection = new vector<Territory*>(*other.attackCollection);
     
     // Deep copy of cardCollection
-    cardCollection = new vector<string>(*other.cardCollection);
+    cardCollection = new Hand(*other.cardCollection);
     
     // Deep copy of orderCollection
     // TODO Replace with actual OrderList class
@@ -73,22 +85,23 @@ ostream& operator<<(ostream& out, const Player& player) {
     out << "Name: " << *player.name << endl;                                // Player's name
 
     out << "\n-Territories to Defend: " << endl;                                      // Territories to be defended
-    for (const string& territory : *player.defendCollection) {
-        out << territory << " " <<endl;
+    for (const Territory* territory : *player.defendCollection) {
+        out << territory->getName() << " " <<endl;
     }
 
     out << "\n-Territories to Attack: " << endl;                                       // Territories to be attacked
-    for (const string& territory : *player.attackCollection) {
-        out << territory << " " << endl;
+    for (const Territory* territory : *player.attackCollection) {
+        out << territory->getName() << " " << endl;
     }
 
     out << "\n-Cards: " << endl;
-    for (const string& card : *player.cardCollection) {                     // Cards in player's hand
-        out << card << " " << endl;
+    for (const auto& card : *player.cardCollection->hand) {                     // Cards in player's hand
+        out << card.cardType << " " << endl;
     }
 
     out << "\n-Orders: " << endl;
-    out << "\n-Orders: " << endl;
+
+    // Use dynamic_cast to identify the actual type and call the appropriate function
     for (const auto& order : player.orderCollection->orderList) {
         out << *order <<endl;
     };//there is a more compact way like use another method and then making it virtual that i currently do not understand
@@ -112,8 +125,7 @@ ostream& operator<<(ostream& out, const Player& player) {
  * Returns a list of territories that are to be defended
  * TODO Arbitrarily choose which territory to be defended
  */
-vector<string>* Player::toDefend(){
-    // cout << "printing Territory to defend" << endl;
+vector<Territory*>* Player::toDefend(){
     return defendCollection;
 }
 
@@ -122,8 +134,7 @@ vector<string>* Player::toDefend(){
  * Returns a list of territories that are to be attacked
  * TODO Arbitrarily choose which territory to be attacked
  */
-vector<string>* Player::toAttack(){
-    // cout << "printing Territory to attack" << endl;
+vector<Territory*>* Player::toAttack(){
     return attackCollection;
 }
 
@@ -133,77 +144,37 @@ vector<string>* Player::toAttack(){
  * TODO replace order object with actual Order class
  * TODO maybe replace move with an insert function
  */
-void Player::issueOrder(int numberOfArmyUnits, 
-                        string sourceTerritory, 
-                        string targetTerritory, 
-                        string orderType) 
+void Player::issueOrder(std::unique_ptr<Orders> order) 
 {
+
+    string orderType = typeid(*order).name();                    // Get the type name of the order object
     cout << "Issuing Order of type: " << orderType << endl;
 
-    if (orderType == "deploy") {
-        DeployOrder d = DeployOrder(numberOfArmyUnits, sourceTerritory, targetTerritory);
-        orderCollection->orderList.push_back(
-            unique_ptr<Orders>(new DeployOrder(d))  // copy-construct from d
-        );
-    } 
-    else if (orderType == "advance") {
-        Advance a = Advance(numberOfArmyUnits, sourceTerritory, targetTerritory);
-        orderCollection->orderList.push_back(
-            unique_ptr<Orders>(new Advance(a))
-        );
-    } 
-    else if (orderType == "bomb") {
-        Bomb b= Bomb(numberOfArmyUnits, sourceTerritory, targetTerritory);
-        orderCollection->orderList.push_back(
-            unique_ptr<Orders>(new Bomb(b))
-        );
-    } 
-    else if (orderType == "airlift") {
-        Airlift al= Airlift(numberOfArmyUnits, sourceTerritory, targetTerritory);
-        orderCollection->orderList.push_back(
-            unique_ptr<Orders>(new Airlift(al))
-        );
-    } 
-    // else if (orderType == "negotiate") {
-    //     Negotiate n(numberOfArmyUnits, sourceTerritory, targetTerritory);
-    //     orderCollection->orderList.push_back(
-    //         unique_ptr<Orders>(new Negotiate(n))
-    //     );
-    //} 
-    else {
-        cout << "Invalid order type: " << orderType << endl;
-        return;
-    }
+    orderCollection->orderList.push_back(std::move(order));
 
     cout << "Order successfully created and added to list." << endl;
 }
 
 
+/***
+ * addToDefend()
+ * Adds a territory to the list of territories to be defended
+ */
+void Player::addToDefend(Territory* territory) {
+    if (territory != nullptr) {
+        defendCollection->push_back(territory);
+    }
+}
 
-
-
-// ------------------------------- Fake Stuff (Delete After) --------------------------------
-// FakeOrder::FakeOrder(){
-//     FakeOrder::name = "Default Order";
-// }
-// void FakeOrder::printOrder(){
-//     cout << "Order Name: " << name << endl;
-// }
-
-// FakeOrderList::FakeOrderList(){
-//     orders = vector<FakeOrder*>();
-// }
-
-// void FakeOrderList::add(FakeOrder* order){
-//     orders.push_back(order);
-// }
-
-// void FakeOrderList::printOrderList(){
-//     cout << "Order List: " << endl;
-//     for (FakeOrder* order : orders) {
-//         order->printOrder();
-//     }
-// }
+/***
+ * addToAttack()
+ * Adds a territory to the list of territories to be attacked
+ */
+void Player::addToAttack(Territory* territory) {
+    if (territory != nullptr) {
+        attackCollection->push_back(territory);
+    }
+}
 
 
 
