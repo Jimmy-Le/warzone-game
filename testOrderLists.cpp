@@ -4,49 +4,76 @@
 #include "testOrderLists.h"
 
 int testOrderList() {
-    //Orders b = Orders(10 ,"Australia" , "Kuwait");
-    Advance a = Advance(50 , "Qatar" , "Poland");
-    Orderlist arr;
-    Bomb bomb{100,"Japan","USA"};
-    Bomb bomb2(200 , "Kenya" , "Nigeria");
-    cout<< a;
-    cout<< bomb ;
-    cout<< bomb2;
-    arr.orderList.push_back(make_unique<Advance>(a));
-    arr.orderList.push_back(make_unique<Bomb>(bomb));
-    arr.orderList.push_back(make_unique<Bomb>(bomb2));
-    cout<<"BEFORE REMOVE" <<endl;
-    cout<<*arr.orderList[0] <<endl;
-    cout<<*arr.orderList[1] <<endl;
-    cout<<*arr.orderList[2] <<endl;
+      // 1️⃣ Base Order creation
+    Orders baseOrder(5, "Canada", "USA");
+    cout << "\nBase Order:\n" << baseOrder << endl;
 
-    arr.move(bomb2 , 0);
-    //arr.remove(a);
-    cout<<"AFTER REMOVE" <<endl;
-    cout<<*arr.orderList[0]<<endl;
-    cout<<*arr.orderList[1] <<endl;
-    cout<<*arr.orderList[2] <<endl;
+    // 2️⃣ Subclass creation
+    DeployOrder deploy(10, "Toronto", "Montreal");
+    Bomb bomb(3, "Berlin", "Paris");
+    Advance advance(7, "Quebec", "Ottawa");
+    Airlift airlift(12, "Rome", "Milan");
+    Blockade blockade(2, "Tokyo", "Osaka");
+    Negotiate negotiate(90, "Delhi", "Beijing");
 
+    cout << "\n===== Individual subclass prints =====" << endl;
+    cout << deploy << endl;
+    cout << bomb << endl;
+    cout << advance << endl;
+    cout << airlift << endl;
+    cout << blockade << endl;
+    cout << negotiate << endl;
 
+    // 3️⃣ Polymorphism test
+    cout << "\n===== Polymorphism test =====" << endl;
+    vector<unique_ptr<Orders>> polymorphicOrders;
+    polymorphicOrders.push_back(make_unique<DeployOrder>(deploy));
+    polymorphicOrders.push_back(make_unique<Bomb>(bomb));
+    polymorphicOrders.push_back(make_unique<Airlift>(airlift));
+    polymorphicOrders.push_back(make_unique<Advance>(advance));
+    polymorphicOrders.push_back(make_unique<Blockade>(blockade));
 
-    // Create a player
-    Player p1("Umer");
+    for (auto &o : polymorphicOrders) {
+        cout << *o << endl;
+        o->validate();
+        cout << endl;
+        o->execute();
+        cout << "\n--------------------------------------\n";
+    }
 
-    // Issue a few different orders
-    p1.issueOrder(std::make_unique<DeployOrder>(3, "USA", "Russia"));
-    p1.issueOrder(std::make_unique<Advance>(10, "USA", "Canada"));
-    p1.issueOrder(std::make_unique<Bomb>(3, "Germany", "Poland"));
-    p1.issueOrder(std::make_unique<Airlift>(5, "France", "Italy"));
-    //p1.issueOrder(0, "Pakistan", "Bangladesh", "negotiate");
+    // 4️⃣ Deep copy / assignment test
+    cout << "\n===== Copy & Assignment test =====" << endl;
+    Orders copyOrder = baseOrder; // copy constructor
+    Orders assignedOrder;
+    assignedOrder = baseOrder;    // assignment operator
+    cout << "Copied:\n" << copyOrder << endl;
+    cout << "Assigned:\n" << assignedOrder << endl;
 
-    // Print out player details (<< operator)
-    cout << p1 << endl;
+    // 5️⃣ Orderlist functionality
+    cout << "\n===== Testing Orderlist =====" << endl;
+    Orderlist list;
+    list.orderList.push_back(make_unique<DeployOrder>(deploy));
+    list.orderList.push_back(make_unique<Bomb>(bomb));
+    list.orderList.push_back(make_unique<Airlift>(airlift));
+
+    cout << "\nInitial Orderlist:\n";
+    for (auto &o : list.orderList) cout << *o << endl;
+
+    // Remove a specific order
+    cout << "\nRemoving Bomb order...\n";
+    list.remove(bomb);
+    cout << "After removal:\n";
+    for (auto &o : list.orderList) cout << *o << endl;
+
+    // Move an order
+    cout << "\nMoving Airlift to index 0...\n";
+    list.move(airlift, 0);
+    cout << "After moving:\n";
+    for (auto &o : list.orderList) cout << *o << endl;
+
+    cout << "\n===== END OF DRIVER TEST =====" << endl;
     return 0;
-}
 
-int main(){
-    testOrderList();
-    return 0;
 }
 
 
