@@ -33,10 +33,10 @@ int testOrderList() {
     Player p1("Umer");
 
     // Issue a few different orders
-    p1.issueOrder(5, "India", "China", "deploy");
-    p1.issueOrder(10, "USA", "Canada", "advance");
-    p1.issueOrder(3, "Germany", "Poland", "bomb");
-    p1.issueOrder(8, "France", "Italy", "airlift");
+    p1.issueOrder(std::make_unique<DeployOrder>(3, "USA", "Russia"));
+    p1.issueOrder(std::make_unique<Advance>(10, "USA", "Canada"));
+    p1.issueOrder(std::make_unique<Bomb>(3, "Germany", "Poland"));
+    p1.issueOrder(std::make_unique<Airlift>(5, "France", "Italy"));
     //p1.issueOrder(0, "Pakistan", "Bangladesh", "negotiate");
 
     // Print out player details (<< operator)

@@ -10,9 +10,25 @@ using namespace std;
 
 Player player("Player 1");
 
+/***
+ * testPlayers()
+ * Creates a Player object and tests the Player class functionalities through a menu
+ */
 void testPlayers(){
     cout << "========== Testing Players ==========" << endl;
     cout << player.getName() << " created"<< endl;
+
+    player.addToDefend(new Territory("USA"));
+    player.addToDefend(new Territory("Canada"));
+    player.addToDefend(new Territory("France"));
+
+    player.addToAttack(new Territory("Russia"));
+    player.addToAttack(new Territory("Germany"));
+    player.addToAttack(new Territory("Japan"));
+
+
+
+
     playerMenu();
 }
 
@@ -40,20 +56,20 @@ void playerMenu(){
             case 2:                                                 // Test Attacking
                 cout << "\n========== Testing Attacking ===========\n" << endl;
                 cout << player.getName() << "'s Territories to Attack: " << endl;
-                for (string& territory : *player.toAttack()) {
-                    cout << territory << " " << endl;
+                for (Territory* territory : *player.toAttack()) {
+                    cout << territory->getName() << " " << endl;
                 }
                 break;
             case 3:                                                 // Test Defending
                 cout << "\n========== Testing Defending ===========\n" << endl;
                 cout << player.getName() << "'s Territories to Defend: " << endl;
-                for (string& territory : *player.toDefend()) {
-                    cout << territory << " " << endl;
+                for (Territory* territory : *player.toDefend()) {
+                    cout << territory->getName() << " " << endl;
                 }
                 break;
             case 4:                                                 // Test Orders
                 cout << "\n========== Testing Orders ===========\n" << endl;
-               // player.issueOrder(make_unique<DeployOrder>(3 , "Base" , "Frontline"));
+               player.issueOrder(std::make_unique<DeployOrder>(3, "USA", "Russia"));
                 cout << player.getName() << "'s Order added " << endl;
                 cout << "Print Player's Information to view all orders" << endl;
                 break;
