@@ -90,19 +90,8 @@ ostream& operator<<(ostream& out, const Player& player) {
     out << "\n-Orders: " << endl;
     out << "\n-Orders: " << endl;
     for (const auto& order : player.orderCollection->orderList) {
-        if (auto d = dynamic_cast<DeployOrder*>(order.get()))
-            out << *d << endl;
-        else if (auto a = dynamic_cast<Advance*>(order.get()))
-            out << *a << endl;
-        else if (auto b = dynamic_cast<Bomb*>(order.get()))
-            out << *b << endl;
-        else if (auto al = dynamic_cast<Airlift*>(order.get()))
-            out << *al << endl;
-        else if (auto n = dynamic_cast<Negotiate*>(order.get()))
-            out << *n << endl;
-        else
-            out << *order << endl; // fallback: base class print
-    } //there is a more compact way like use another method and then making it virtual that i currently do not understand
+        out << *order <<endl;
+    };//there is a more compact way like use another method and then making it virtual that i currently do not understand
     //but the dynamic_cast's ability to verify tpyes at run time does make this a bit better and easy to understand , but definitely huge chunk of code
     //order.get() gives you the raw Orders* from the unique_ptr.
 
