@@ -3,6 +3,7 @@
 #include <iostream>
 #include "PlayerDriver.h"
 #include "testOrderLists.h"
+#include "CardsDriver.h"
 using namespace std;
 
 int main()
@@ -31,6 +32,7 @@ int main()
             testOrderList();
             break;
         case 4:
+            testCards();
             break;
         case 5:
             testGameStates();

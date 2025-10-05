@@ -53,7 +53,7 @@ void playerMenu(){
                 break;
             case 4:                                                 // Test Orders
                 cout << "\n========== Testing Orders ===========\n" << endl;
-               // player.issueOrder(make_unique<DeployOrder>(3 , "Base" , "Frontline"));
+               player.issueOrder(3, "India", "China", "deploy");
                 cout << player.getName() << "'s Order added " << endl;
                 cout << "Print Player's Information to view all orders" << endl;
                 break;
