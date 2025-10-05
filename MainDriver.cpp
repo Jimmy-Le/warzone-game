@@ -4,6 +4,7 @@
 #include "PlayerDriver.h"
 #include "testOrderLists.h"
 #include "CardsDriver.h"
+#include "MapDriver.h"
 using namespace std;
 
 int main()
@@ -23,7 +24,7 @@ int main()
         switch (input)
         {
         case 1:
-
+            testLoadMaps();
             break;
         case 2:
             testPlayers();
