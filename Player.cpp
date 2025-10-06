@@ -204,6 +204,22 @@ void Player::addToAttack(Territory* territory) {
 }
 
 /***
+ * getOrderList()
+ * Returns the player's order list
+ */
+Orderlist* Player::getOrderList(){
+    return orderCollection;
+}
+
+/***
+ *  getHand()
+ *  Returns the player's hand of cards
+ */
+Hand* Player::getHand(){
+    return cardCollection;
+}
+
+/***
  * This function will generate an order based on user input
  * Currently it serves as the main functionality of issueOrder()
  * It allows players to generate an invalid order
@@ -271,7 +287,7 @@ bool Player::generateOrder() {
             break;
         }
         case 5: {
-            // order = std::make_unique<Negotiate>(numUnits, source, target);
+            order = std::make_unique<Negotiate>(numUnits, source, target);
             orderCollection->orderList.push_back(std::move(order));
             cout << "New Negotiate Order created.\n" << endl;
             break;                                                              // If the player enters an invalid type , cancel the order issueing

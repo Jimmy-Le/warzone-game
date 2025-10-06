@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "Orders.h"
-// #include "Player.h"
+#include "Player.h"
 using namespace std;
 
 /**
@@ -18,6 +18,7 @@ using namespace std;
  */
 class Hand;
 class Deck;
+class Player;
 
 /**
  * This is the Card class
@@ -34,7 +35,7 @@ class Card {
     Card& operator=(const Card& other);                             // This is the overloaded assignment operator for Cards    
     friend std::ostream& operator<<(ostream& os, const Card& c);    // This is the stream operator for a Card
 
-    void play(Hand * specificHand,Deck * specificDeck);             // This function allows a playrt yo play a specific Card from their Hand
+    void play(Hand * specificHand,Deck * specificDeck, Player* player);  // This function allows a player to play a specific Card from their Hand
 };
 
 /**
