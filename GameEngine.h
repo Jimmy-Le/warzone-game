@@ -3,8 +3,8 @@
 
 // Header to the GameEngine.cpp file
 #include <iostream>
-using namespace std;
-
+using std::cout;
+using std::string;
 #include <string>
 
 // Forward declarations
