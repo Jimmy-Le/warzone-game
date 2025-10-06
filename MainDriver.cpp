@@ -1,6 +1,10 @@
 // Main driving force of our program!!!
 #include "GameEngineDriver.h"
 #include <iostream>
+#include "PlayerDriver.h"
+#include "testOrderLists.h"
+#include "CardsDriver.h"
+#include "MapDriver.h"
 using namespace std;
 
 int main()
@@ -20,13 +24,16 @@ int main()
         switch (input)
         {
         case 1:
-
+            testLoadMaps();
             break;
         case 2:
+            testPlayers();
             break;
         case 3:
+            testOrderList();
             break;
         case 4:
+            testCards();
             break;
         case 5:
             testGameStates();
