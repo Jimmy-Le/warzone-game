@@ -64,46 +64,45 @@ Player::Player(const Player& other){
     cardCollection = new Hand(*other.cardCollection);
     
     // Deep copy of orderCollection
-    // TODO Replace with actual OrderList class
     orderCollection = new Orderlist();
     for ( const auto& order : other.orderCollection->orderList) {
-        Orders* newOrder = new Orders(*order); // Assuming FakeOrder has a copy constructor
-        //move was not tend to add / insert order objects to vector . since the orderlist is a vector use the built in functions to add 
-        //below i have changed 
-        //again maybe polymorphism /many forms
+        Orders* newOrder = new Orders(*order); 
         orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
     }
 }
 
 /***
  * Overloading the << operator for easy printing of Player details
- * TODO Update this to be the proper type
  */
 ostream& operator<<(ostream& out, const Player& player) {
     out << "Player Details:" << endl;
 
-    out << "Name: " << *player.name << endl;                                // Player's name
+    out << "Name: " << *player.name << endl;                                            // Player's name
 
-    out << "\n-Territories to Defend: " << endl;                                      // Territories to be defended
+    out << "\n-Territories to Defend: " << endl;                                        // Territories to be defended
     for (const Territory* territory : *player.defendCollection) {
         out << territory->getName() << " " <<endl;
     }
 
-    out << "\n-Territories to Attack: " << endl;                                       // Territories to be attacked
+    out << "\n-Territories to Attack: " << endl;                                        // Territories to be attacked
     for (const Territory* territory : *player.attackCollection) {
         out << territory->getName() << " " << endl;
     }
 
     out << "\n-Cards: " << endl;
-    for (const auto& card : *player.cardCollection->hand) {                     // Cards in player's hand
+    for (const auto& card : *player.cardCollection->hand) {                             // Cards in player's hand
         out << card.cardType << " " << endl;
     }
 
     out << "\n-Orders: " << endl;
 
     // Use dynamic_cast to identify the actual type and call the appropriate function
+    // dynamic_cast<DeployOrder*> checks at runtime if it’s actually a DeployOrder.
+    // If yes, it returns a non-null pointer and you print with the subclass’s operator<<.
+    // If not, it tries the next branch.
+    // If none match, it falls back to the base Orders print.
     for (const auto& order : player.orderCollection->orderList) {
-        if (auto d = dynamic_cast<DeployOrder*>(order.get()))
+        if (auto d = dynamic_cast<DeployOrder*>(order.get()))                   
             out << *d << endl;
         else if (auto a = dynamic_cast<Advance*>(order.get()))
             out << *a << endl;
@@ -116,17 +115,49 @@ ostream& operator<<(ostream& out, const Player& player) {
         else
             out << *order << endl; // fallback: base class print
     } 
-
-//dynamic_cast<DeployOrder*> checks at runtime if it’s actually a DeployOrder.
-
-//If yes, it returns a non-null pointer and you print with the subclass’s operator<<.
-
-//If not, it tries the next branch.
-
-//If none match, it falls back to the base Orders print.
-
-
     return out;
+}
+
+/***
+ * Player Assignment Operator
+ * Creates a deep copy of the Player object
+ */
+Player& Player::operator=(const Player& other) {
+    if (this == &other) return * this; // self-assignment check
+
+    // Clean up existing resources
+    delete name;
+    for (Territory* territory : *defendCollection) {
+        delete territory;
+    }
+    for (Territory* territory : *attackCollection) {
+        delete territory;
+    }
+    delete defendCollection;
+    delete attackCollection;
+    delete cardCollection;
+    delete orderCollection;
+
+    // Deep copy of name
+    name = new string(*other.name);
+
+    // Deep copy of defendCollection
+    defendCollection = new vector<Territory*>(*other.defendCollection);
+    
+    // Deep copy of attackCollection
+    attackCollection = new vector<Territory*>(*other.attackCollection);
+    
+    // Deep copy of cardCollection
+    cardCollection = new Hand(*other.cardCollection);
+    
+    // Deep copy of orderCollection
+    orderCollection = new Orderlist();
+    for ( const auto& order : other.orderCollection->orderList) {
+        Orders* newOrder = new Orders(*order); 
+        orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
+    }
+
+    return * this;
 }
 
 /***
@@ -150,18 +181,15 @@ vector<Territory*>* Player::toAttack(){
 /***
  * issueOrder()
  * Creates an Order object and puts it in the player’s list of orders
- * TODO replace order object with actual Order class
  * TODO maybe replace move with an insert function
  */
-void Player::issueOrder(std::unique_ptr<Orders> order) 
-{
-
-    string orderType = typeid(*order).name();                    // Get the type name of the order object
-    cout << "Issuing Order of type: " << orderType << endl;
-
-    orderCollection->orderList.push_back(std::move(order));
-
-    cout << "Order successfully created and added to list." << endl;
+void Player::issueOrder() {
+    bool finished = false;
+    while (!finished) {
+        finished =  generateOrder();
+    }
+        
+   
 }
 
 
@@ -183,6 +211,86 @@ void Player::addToAttack(Territory* territory) {
     if (territory != nullptr) {
         attackCollection->push_back(territory);
     }
+}
+
+/***
+ * This function will generate an order based on user input
+ * Currently it serves as the main functionality of issueOrder()
+ * It allows players to generate an invalid order
+ */
+bool Player::generateOrder() {
+    int orderChoice;
+    string source, target;
+    int numUnits;
+    std::unique_ptr<Orders> order;
+
+
+    cout << "========== Generating Order ==========" << endl;       // Allows the player to choose which type of order to issue
+    cout << "Please choose which order to issue:" << endl;
+    cout << "1. Deploy" << endl;
+    cout << "2. Advance" << endl;
+    cout << "3. Bomb (Requires Bomb Card)" << endl;
+    cout << "4. Airlift (Requires Airlift Card)" << endl;
+    cout << "5. Negotiate (Requires Negotiate Card)" << endl;
+    cout << "6. Finish issuing orders\n" << endl;
+    cout << *cardCollection << endl; // Display the player's cards
+    cin >> orderChoice;                                                         // Get the player's choice
+
+    if (orderChoice == 6){
+        return true;                                                            // Exit if the player is finished issuing orders
+    }
+
+    cout << "\nEnter source territory: " << endl;                                 // Get the source territory
+    for (const Territory* territory : *defendCollection) {                      // Display territories to defend
+        cout << territory->getName() << " " <<endl;
+    }
+    cin >> source;
+
+    cout << "\nEnter target territory: " << endl;                                 // Get the target territory
+    for (const Territory* territory : *attackCollection) {                      // Display territories to attack
+        cout << territory->getName() << " " << endl;
+    }
+    cin >> target;
+
+    cout << "\nEnter number of army units: " << endl;                             // Get the number of armies
+    cin >> numUnits;
+
+    switch(orderChoice) { // Based on the Player's choice, create an Order and send it to the OrderList                                               
+        case 1: {
+            order = std::make_unique<DeployOrder>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Deploy Order created.\n" << endl;
+            break;
+        }
+        case 2: {
+            order = std::make_unique<Advance>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Advance Order created.\n" << endl;
+            break;
+        }
+        case 3: {
+            order = std::make_unique<Bomb>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Bomb Order created.\n" << endl;
+            break;
+        }
+        case 4: {
+            order = std::make_unique<Airlift>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Airlift Order created.\n" << endl;
+            break;
+        }
+        case 5: {
+            // order = std::make_unique<Negotiate>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Negotiate Order created.\n" << endl;
+            break;                                                              // If the player enters an invalid type , cancel the order issueing
+        default:
+            cout << "Invalid choice. Order not created.\n" << endl;
+            break;
+        }  
+    }
+    return false;
 }
 
 
