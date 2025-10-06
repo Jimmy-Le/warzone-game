@@ -49,6 +49,7 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const Start &startObject);
 };
+
 class MapLoaded : public Status
 {
 public:
@@ -80,6 +81,7 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const MapValidated &mapValidatedObject);
 };
+
 class PlayersAdded : public Status
 {
 public:
