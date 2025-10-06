@@ -4,25 +4,23 @@
 
 #include "CardsDriver.h"
 
-// int main() {
-//     testCards();
-//     return 0;
-// }
-
+/**
+ * The free function to test out all the code in Cards.cpp
+ */
 void testCards() {
-    cout <<
+    cout << //For presentation purposes
         "-----------------------------------------------------------------------\n"
         "---- Here is the test driver for the cards section of the project! ----\n"
         "-----------------------------------------------------------------------\n"
     << endl;
-    Deck gameDeck;
-    Hand playerHand;
-    for (int o = 0; o < 10; o++) {gameDeck.draw(&playerHand);}
-    cout << "The player now has " << playerHand.hand->size() << " cards in their hand.\n" << endl;
-    cout << "The deck now contains " << (* gameDeck.deckSize) << " cards.\n" << endl;
+    Deck gameDeck;                                                          // Creating a Deck for the game
+    Hand playerHand;                                                        // Creating a singular player Hand 
+    for (int o = 0; o < 10; o++) {gameDeck.draw(&playerHand);}              // Draws a specified number of random Cards into the Hand
+    cout << playerHand << endl;                                             // Displays the contents of the Hand
+    cout << gameDeck << endl;                                               // Displays the contents of the Deck                
     for (int o = 0; o < playerHand.hand->size();) {
-        playerHand.hand->at(o).play(&playerHand,&gameDeck);
+        playerHand.hand->at(o).play(&playerHand,&gameDeck);                 // Plays all Cards within the Hand and returns them all to the Deck
     }
-    cout << "The player now has " << playerHand.hand->size() << " cards in their hand.\n" << endl;
-    cout << "The deck now contains " << (* gameDeck.deckSize) << " cards.\n" << endl;
+    cout << gameDeck << endl;                                               // Displays the contents of the Deck
+    cout << playerHand << endl;                                             // Displays the contents of the Hand
 }
