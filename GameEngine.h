@@ -7,6 +7,18 @@ using namespace std;
 
 #include <string>
 
+// Forward declarations
+class Status;
+class Start;
+class MapLoaded;
+class MapValidated;
+class PlayersAdded;
+class AssignReinforcement;
+class IssueOrders;
+class ExecuteOrders;
+class Win;
+class GameEngine;
+
 /*
 --> Base class for status
 All other status classes will inherit from this one.
@@ -16,16 +28,19 @@ class Status
 {
 public:
     virtual Status *transition(string input, Status *currentStatus);
+    virtual Status *clone() = 0; // clone method!
     Status();                    // default constructor
     Status(Status &otherStatus); // copy constructor
-    // friend bool operator ==();
-    // friend istream& operator >>(istream& ins, something);
+    friend std::ostream &operator<<(std::ostream &out, const Status &status);
+    virtual void print(std::ostream &out) const = 0; // print method for the << overloading
 };
 
 class Start : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
 
     Start();                   // default constructor
     Start(Start &otherStatus); // copy constructor
@@ -38,6 +53,8 @@ class MapLoaded : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     MapLoaded();
     // copy constructor
@@ -52,6 +69,8 @@ class MapValidated : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     MapValidated();
     // copy constructor
@@ -65,6 +84,8 @@ class PlayersAdded : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     PlayersAdded();
     // copy constructor
@@ -79,6 +100,8 @@ class AssignReinforcement : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     AssignReinforcement();
     // copy constructor
@@ -93,6 +116,8 @@ class IssueOrders : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     IssueOrders();
     // copy constructor
@@ -107,6 +132,8 @@ class ExecuteOrders : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     ExecuteOrders();
     // copy constructor
@@ -121,6 +148,8 @@ class Win : public Status
 {
 public:
     Status *transition(string input, Status *currentStatus);
+    Status *clone();
+    void print(std::ostream &out) const;
     // default constructor
     Win();
     // copy constructor
@@ -129,6 +158,28 @@ public:
     Win &operator=(const Win &otherObject);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const Win &winObject);
+};
+
+/*
+GAME ENGINE CLASS
+*/
+class GameEngine
+{
+private:
+    Status *state;
+
+public:
+    GameEngine();                            // default constructor
+    GameEngine(Status *state);               // parameterized
+    GameEngine(GameEngine &otherGameEngine); // copy constructor
+                                             // assignment operator
+    GameEngine &operator=(const GameEngine &otherGameEngine);
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const GameEngine &gameEngineObject);
+    // getter
+    Status *getState() const;
+    // setter
+    void setState(Status *otherStatus);
 };
 
 /*

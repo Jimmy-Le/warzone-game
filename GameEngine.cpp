@@ -12,6 +12,12 @@ Status *Status::transition(string input, Status *currentStatus)
     return currentStatus;
 }
 
+std::ostream &operator<<(std::ostream &out, const Status &status)
+{
+    status.print(out);
+    return out;
+}
+
 // Start class methods
 Start::Start() {}
 
@@ -27,12 +33,22 @@ Status *Start::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+// clone method
+Status *Start::clone()
+{
+    return new Start();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const Start &startObject)
 {
     out << "State: Start" << endl;
     return out;
 }
+// print method
+void Start::print(std::ostream &out) const
+{
+    out << "Game State: Start";
+};
 
 // map loaded methods
 
@@ -55,12 +71,22 @@ Status *MapLoaded::transition(string input, Status *currentStatus)
 }
 
 ;
+// clone method
+Status *MapLoaded::clone()
+{
+    return new MapLoaded();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const MapLoaded &mapLoadedObject)
 {
     out << "State: Map Loaded" << endl;
     return out;
 }
+// print method
+void MapLoaded::print(std::ostream &out) const
+{
+    out << "Game State: MapLoaded";
+};
 
 // map validated methods
 
@@ -81,13 +107,22 @@ Status *MapValidated::transition(string input, Status *currentStatus)
 }
 
 ;
+// clone method
+Status *MapValidated::clone()
+{
+    return new MapValidated();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const MapValidated &mapValidatedObject)
 {
     out << "State: Map Validated" << endl;
     return out;
 }
-
+// print method
+void MapValidated::print(std::ostream &out) const
+{
+    out << "Game State: MapValidated";
+};
 // players added methods
 
 PlayersAdded::PlayersAdded()
@@ -109,12 +144,22 @@ Status *PlayersAdded::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+// clone method
+Status *PlayersAdded::clone()
+{
+    return new PlayersAdded();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const PlayersAdded &playersAddedObject)
 {
     out << "State: Players Added" << endl;
     return out;
-}
+};
+// print method
+void PlayersAdded::print(std::ostream &out) const
+{
+    out << "Game State: PlayersAdded";
+};
 
 // assign reinforcement class methods
 AssignReinforcement::AssignReinforcement()
@@ -132,13 +177,22 @@ Status *AssignReinforcement::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
-
+// clone method
+Status *AssignReinforcement::clone()
+{
+    return new AssignReinforcement();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const AssignReinforcement &assignReinforcementObject)
 {
     out << "State: Assign Reinforcement " << endl;
     return out;
 }
+// print method
+void AssignReinforcement::print(std::ostream &out) const
+{
+    out << "Game State: AssignReinforcement";
+};
 
 // issue orders class methods
 
@@ -161,13 +215,22 @@ Status *IssueOrders::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
-
+// clone method
+Status *IssueOrders::clone()
+{
+    return new IssueOrders();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const IssueOrders &issueOrdersObject)
 {
     out << "State: Issue Orders" << endl;
     return out;
 }
+// print method
+void IssueOrders::print(std::ostream &out) const
+{
+    out << "Game State: IssueOrders";
+};
 
 // execute orders class methods
 
@@ -195,12 +258,22 @@ Status *ExecuteOrders::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
+// clone method
+Status *ExecuteOrders::clone()
+{
+    return new ExecuteOrders();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const ExecuteOrders &ExecuteOrdersObject)
 {
     out << "State: Execute Orders" << endl;
     return out;
 }
+// print method
+void ExecuteOrders::print(std::ostream &out) const
+{
+    out << "Game State: ExecuteOrders";
+};
 
 // win class methods
 
@@ -221,30 +294,89 @@ Status *Win::transition(string input, Status *currentStatus)
         return currentStatus;
     }
 };
-
+// clone method
+Status *Win::clone()
+{
+    return new Win();
+};
 // stream insertion operator
 std::ostream &operator<<(ostream &out, const Win &winObject)
 {
     out << "State: Win" << endl;
     return out;
 }
+// print method
+void Win::print(std::ostream &out) const
+{
+    out << "Game State: Win";
+};
+
+//------------GAME ENGINE CLASS--------------------------------
+// copy constructor
+GameEngine::GameEngine(GameEngine &otherGameEngine)
+{
+    state = otherGameEngine.state->clone();
+}
+// parameterized constructor
+GameEngine::GameEngine(Status *state)
+{
+    this->state = state;
+}
+// assignment operator
+GameEngine &GameEngine::operator=(const GameEngine &otherGameEngine)
+{
+    // avoids self assignment
+    if (this != &otherGameEngine)
+    {
+        // gets rid of old state
+        delete this->state;
+        this->state = otherGameEngine.state->clone();
+    }
+
+    return *this;
+}
+
+// stream insertion operator
+std::ostream &operator<<(std::ostream &out, const GameEngine &gameEngineObject)
+{
+    // checks to make sure the state isn't null
+    if (gameEngineObject.getState())
+        out << *(gameEngineObject.getState()) << endl;
+    else
+        out << "Game state: (null)" << endl;
+    return out;
+}
+// getter
+Status *GameEngine::getState() const
+{
+    return this->state;
+};
+// setter
+void GameEngine::setState(Status *otherStatus)
+{
+    // deletes old state
+    if (this->state != nullptr)
+        delete this->state;
+    this->state = otherStatus;
+};
 
 // global variable to keep track of the status
-Status *currentStatus = new Start();
+GameEngine *theGameEngine = new GameEngine(new Start());
+// Status *currentStatus = new Start();
 
 void listen()
 {
+
     // Prompts user for command
     cout << "Enter a command: ";
     string input;
     cin >> input;
 
-    Status *oldStatus = currentStatus;
-    Status *nextStatus = currentStatus->transition(input, currentStatus);
-    if (nextStatus != currentStatus)
+    Status *oldStatus = theGameEngine->getState();
+    Status *nextStatus = theGameEngine->getState()->transition(input, theGameEngine->getState());
+    if (nextStatus != oldStatus)
     {
-        delete oldStatus;
-        currentStatus = nextStatus;
+        theGameEngine->setState(nextStatus);
     }
 };
 
