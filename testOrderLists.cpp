@@ -76,4 +76,9 @@ int testOrderList() {
 
 }
 
+int main(){
+    testOrderList();
+    return 0;
+}
+
 

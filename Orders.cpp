@@ -45,7 +45,7 @@ Orders::Orders(int numberOfArmyUnits , string sourceTerritory , string targetTer
 
 Orders::Orders(const Orders& otherOrder){
   this->numberOfArmyUnits = make_unique<int>(*otherOrder.numberOfArmyUnits);
-  //why do we use new  , so that each orders mebers have a separate location in the memory
+  //why do we use new  , so that each orders mebers have a separate location in the heap memory
   //as the memebers are pointers we do not want multiple pointers pointing to the same location in memory
   //that would be a shallow copy and could cause problems suppose we deleted on pointer the other would become a dangling pointer
 
@@ -113,6 +113,7 @@ void Orders::validate(){
 DeployOrder::DeployOrder( int numberOfArmyUnits , string sourceTerritory  , string targetTerritory)
     : Orders(numberOfArmyUnits , sourceTerritory , targetTerritory) {};
 
+DeployOrder::DeployOrder() : Orders(){};
 
 DeployOrder::DeployOrder(const DeployOrder& deploy) : Orders::Orders(static_cast<const Orders&>(deploy)) {};
 
@@ -148,6 +149,7 @@ void DeployOrder::validate(){
 Negotiate::Negotiate(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
+Negotiate::Negotiate() : Orders(){};
 
 Negotiate::Negotiate(const Negotiate& otherNegotiate): Orders(static_cast<const Orders&>(otherNegotiate))
   {};
@@ -188,7 +190,8 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate){
 Bomb::Bomb(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
-
+Bomb::Bomb() : Orders(){};
+    
 Bomb::Bomb(const Bomb& otherBomb) : Orders(static_cast<const Orders&>(otherBomb)){};
 
 Bomb& Bomb::operator=(const Bomb& otherBomb){
@@ -222,6 +225,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
 
 Advance::Advance(int numberOfArmyUnits , string sourceTerritory , string targetTerritory) : Orders(numberOfArmyUnits , sourceTerritory , targetTerritory) {};
 
+Advance::Advance() : Orders(){};
 
 Advance::Advance(const Advance& otherAdvance) : Orders(static_cast<const Orders&>(otherAdvance)){
  
@@ -257,6 +261,7 @@ Advance& Advance::operator=(const Advance& advance){
 Airlift::Airlift(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
+Airlift::Airlift() : Orders(){};    
 
 Airlift::Airlift(const Airlift& otherAirlift) : Orders(static_cast<const Orders&>(otherAirlift)){
 
@@ -293,6 +298,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
 Blockade::Blockade(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
+Blockade::Blockade() : Orders(){};
 
 Blockade::Blockade(const Blockade& otherBlockade) : Orders(static_cast<const Orders&>(otherBlockade)){};
 
@@ -331,12 +337,6 @@ void Orderlist::remove(Orders& order){
     
 
     for(int i =0 ; i< this->orderList.size() ; i++){ //this->orderlist represents the vector which is simply an object holding pointers to orders
-        //f(this->orderList[i].getType() == order)
-        cout<<"=================================================" <<endl;
-            cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
-            //what can solve this problem have an id with BOmb that generates unique id for each order ;
-            cout<<typeid(order).name() <<endl;
-            cout<<"=================================================" <<endl <<"\n";
         if(typeid(*this->orderList[i]).name()  == (typeid(order)).name()){
             //check for the equality of the rest of paramters
            if((*this->orderList[i]).getNumberOfArmyUnits() == order.getNumberOfArmyUnits() &&
@@ -368,12 +368,11 @@ void Orderlist::remove(Orders& order){
 void Orderlist::move(Orders& order , int index){
     int from;
   for(int i =0 ; i< this->orderList.size() ; i++){ //this->orderlist represents the vector which is simply an object holding pointers to orders
-        //f(this->orderList[i].getType() == order)
-        cout<<"=================================================" <<endl;
-            cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
-            //what can solve this problem have an id with BOmb that generates unique id for each order ;
-            cout<<typeid(order).name() <<endl;
-            cout<<"=================================================" <<endl <<"\n";
+        // cout<<"=================================================" <<endl;
+        //     cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
+        //     //what can solve this problem have an id with BOmb that generates unique id for each order ;
+        //     cout<<typeid(order).name() <<endl;
+        //     cout<<"=================================================" <<endl <<"\n";
         if(typeid(*this->orderList[i]).name()  == (typeid(order)).name()){
             //check for the equality of the rest of paramters
            if((*this->orderList[i]).getNumberOfArmyUnits() == order.getNumberOfArmyUnits() &&

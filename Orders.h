@@ -38,6 +38,7 @@ class Orders{
 
 class DeployOrder : public Orders{
     public:
+      DeployOrder();
       DeployOrder(int numberOfArmyUnits , string sourceTerritory , string targetTerritory) ;
       DeployOrder(const DeployOrder& deploy);
       friend ostream& operator<<(ostream& os , const DeployOrder& deploy);
@@ -53,6 +54,7 @@ class DeployOrder : public Orders{
 
 class Negotiate : public Orders{
   public:
+    Negotiate();
     Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
     Negotiate(const Negotiate& otherNegotiate);
     Negotiate& operator=(const Negotiate& otherNegotiate);
@@ -67,32 +69,35 @@ class Negotiate : public Orders{
 
 class Bomb : public Orders{
   public:
-  Bomb(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
-  Bomb(const Bomb& otherBomb);
-  Bomb& operator=(const Bomb& otherBomb);
-  friend ostream& operator<<(ostream& os , const Bomb& bomb);
-  void execute();
-  void validate();
-  void print(ostream& os) const;
+    Bomb();
+    Bomb(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
+    Bomb(const Bomb& otherBomb);
+    Bomb& operator=(const Bomb& otherBomb);
+    friend ostream& operator<<(ostream& os , const Bomb& bomb);
+    void execute();
+    void validate();
+    void print(ostream& os) const;
 
 };
 
 
 class Airlift : public Orders{
   public:
-  Airlift(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
-  Airlift(const Airlift& otherAirlift);
-  Airlift& operator=(const Airlift& otherAirlift );
-  friend ostream& operator<<(ostream& os , const Airlift& airlift);
-  void execute();
-  void validate();
-  void print(ostream& os) const;
+    Airlift();
+    Airlift(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
+    Airlift(const Airlift& otherAirlift);
+    Airlift& operator=(const Airlift& otherAirlift );
+    friend ostream& operator<<(ostream& os , const Airlift& airlift);
+    void execute();
+    void validate();
+    void print(ostream& os) const;
 
 };
 
 
 class Advance : public Orders{
   public:
+    Advance();
     Advance(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
     Advance(const Advance& otherAdvance);
     Advance& operator=(const Advance& otherAdvance);
@@ -105,6 +110,7 @@ class Advance : public Orders{
 
 class Blockade : public Orders{
   public:
+    Blockade();
     Blockade(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
     Blockade(const Blockade& otherBlockade);
     Blockade& operator=(const Blockade& otherBlockade);
