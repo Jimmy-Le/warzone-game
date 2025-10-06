@@ -56,9 +56,9 @@ Orders::Orders(const Orders& otherOrder){
 
 Orders& Orders::operator=(const Orders& otherOrder){
   if(this != &otherOrder){
-    this->numberOfArmyUnits =  make_unique<int>(*otherOrder.numberOfArmyUnits);
-    this->sourceTerritory =  make_unique<string>(*otherOrder.sourceTerritory);
-    this->targetTerritory = make_unique<string>(*otherOrder.targetTerritory);
+    *numberOfArmyUnits =  *otherOrder.numberOfArmyUnits;
+    *sourceTerritory = *otherOrder.sourceTerritory;
+    *targetTerritory = *otherOrder.targetTerritory;
   }
   return *this;
 
@@ -118,7 +118,7 @@ DeployOrder::DeployOrder() : Orders(){};
 DeployOrder::DeployOrder(const DeployOrder& deploy) : Orders::Orders(static_cast<const Orders&>(deploy)) {};
 
 DeployOrder& DeployOrder::operator=(const DeployOrder& otherDeployOrder){
-  Orders::operator=(static_cast<const Orders>(otherDeployOrder));
+  Orders::operator=(static_cast<const Orders&>(otherDeployOrder));
   return *this;
 };
 
