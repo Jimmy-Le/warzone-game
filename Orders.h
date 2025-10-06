@@ -27,11 +27,11 @@ class Orders{
       void setNumberOfArmyUnits(int numberOfArmyUnits);
       void setSourceTerritory(string sourceTerritory);
       void setTargetTerritory(string targetTerritory);
-      void validate( ); 
-      virtual ~Orders()  = default; //virtual destructor/
-
+      virtual void validate( ); //only in case we have base pointer ti an object of child class 
+      virtual void execute();
+      virtual ~Orders()  = default; //virtual destructor// do i need this maybe not i will remove 
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
-
+      virtual void print(ostream& os) const;
 
   
 };
@@ -39,19 +39,29 @@ class Orders{
 class DeployOrder : public Orders{
     public:
       DeployOrder(int numberOfArmyUnits , string sourceTerritory , string targetTerritory) ;
-
+      DeployOrder(const DeployOrder& deploy);
       friend ostream& operator<<(ostream& os , const DeployOrder& deploy);
+      DeployOrder& operator=(const DeployOrder& otherDeployOrder);
+      void execute();
+      void validate();
+      void print(ostream& os) const;
+
    
  };
 
 
 
 class Negotiate : public Orders{
-  Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
-  Negotiate(const Negotiate& otherNegotiate);
-  Negotiate& operator=(const Negotiate& otherNegotiate);
+  public:
+    Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
+    Negotiate(const Negotiate& otherNegotiate);
+    Negotiate& operator=(const Negotiate& otherNegotiate);
+    void print(ostream& os) const;
+    void execute();
+    void validate();
+    friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
 
-  friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
+
 };
 
 
@@ -60,8 +70,11 @@ class Bomb : public Orders{
   Bomb(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
   Bomb(const Bomb& otherBomb);
   Bomb& operator=(const Bomb& otherBomb);
-
   friend ostream& operator<<(ostream& os , const Bomb& bomb);
+  void execute();
+  void validate();
+  void print(ostream& os) const;
+
 };
 
 
@@ -70,8 +83,11 @@ class Airlift : public Orders{
   Airlift(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
   Airlift(const Airlift& otherAirlift);
   Airlift& operator=(const Airlift& otherAirlift );
-
   friend ostream& operator<<(ostream& os , const Airlift& airlift);
+  void execute();
+  void validate();
+  void print(ostream& os) const;
+
 };
 
 
@@ -80,9 +96,26 @@ class Advance : public Orders{
     Advance(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
     Advance(const Advance& otherAdvance);
     Advance& operator=(const Advance& otherAdvance);
-
     friend ostream& operator<<(ostream& os , const Advance& advance);
+    void execute();
+    void validate();
+    void print(ostream& os) const;
+
 };
+
+class Blockade : public Orders{
+  public:
+    Blockade(int numberOfArmyUnits, string sourceTerritory, string targetTerritory);
+    Blockade(const Blockade& otherBlockade);
+    Blockade& operator=(const Blockade& otherBlockade);
+    friend ostream& operator<<(ostream& os , const Advance& advance);
+    void execute();
+    void validate();
+    void print(ostream& os) const;
+
+};
+
+
 
 class Orderlist {
 public:
@@ -90,6 +123,8 @@ public:
     std::vector<std::unique_ptr<Orders>> orderList;//the data member of orderlist 
     void remove(Orders& order);
     void move(Orders& order , int index);
+
+
 };
 
 

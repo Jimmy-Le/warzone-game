@@ -1,10 +1,10 @@
 #include "Orders.h"
-#include "Player.h"
-#include <string>
-#include "testOrderLists.h"
 
-int testOrderList() {
-      // 1️⃣ Base Order creation
+
+
+int main(){
+
+  // 1️⃣ Base Order creation
     Orders baseOrder(5, "Canada", "USA");
     cout << "\nBase Order:\n" << baseOrder << endl;
 
@@ -73,7 +73,4 @@ int testOrderList() {
 
     cout << "\n===== END OF DRIVER TEST =====" << endl;
     return 0;
-
-}
-
-
+  };
