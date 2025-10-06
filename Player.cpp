@@ -90,9 +90,7 @@ ostream& operator<<(ostream& out, const Player& player) {
     }
 
     out << "\n-Cards: " << endl;
-    for (const auto& card : *player.cardCollection->hand) {                             // Cards in player's hand
-        out << card.cardType << " " << endl;
-    }
+    out << *player.cardCollection << endl;                                              // Player's cards
 
     out << "\n-Orders: " << endl;
 
@@ -179,7 +177,7 @@ void Player::issueOrder() {
         finished =  generateOrder();
     }
         
-   
+                            
 }
 
 

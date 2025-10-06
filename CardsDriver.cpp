@@ -27,7 +27,7 @@ void testCards() {
     for (int o = 0; o < playerHand.hand->size();) {
         playerHand.hand->at(o).play(&playerHand,&gameDeck,&player);                 // Plays all Cards within the Hand and returns them all to the Deck
     }
-    cout << gameDeck << endl;            cout << player << endl;                                    // Displays the contents of the Deck
+    cout << gameDeck << endl;                                               // Displays the contents of the Deck
     cout << playerHand << endl;                                             // Displays the contents of the Hand
     cout << player << endl;                                                 // Displays the contents of the Player
 }
