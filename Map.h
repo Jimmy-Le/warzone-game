@@ -10,6 +10,8 @@
 #include <map>
 #include <set>
 
+#include "Player.h"
+
 using namespace std;
 
 //Forward declarations
