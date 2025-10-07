@@ -361,6 +361,11 @@ GameEngine::GameEngine(Status *state)
 {
     this->state = state;
 }
+// destructor
+GameEngine::~GameEngine()
+{
+    delete this->state;
+}
 // assignment operator
 GameEngine &GameEngine::operator=(const GameEngine &otherGameEngine)
 {
@@ -507,7 +512,7 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         break;
     case 9:
         cout << "Goodbye!" << endl;
-        delete currentStatus;
+        delete theGameEngine;
         exit(0);
         break;
     }

@@ -174,7 +174,8 @@ public:
     GameEngine();                            // default constructor
     GameEngine(Status *state);               // parameterized
     GameEngine(GameEngine &otherGameEngine); // copy constructor
-                                             // assignment operator
+    ~GameEngine();                           // destructor
+                   //  assignment operator
     GameEngine &operator=(const GameEngine &otherGameEngine);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const GameEngine &gameEngineObject);
