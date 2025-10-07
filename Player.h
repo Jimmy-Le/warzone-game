@@ -10,7 +10,7 @@
 #include <string>
 using namespace std;
 
-
+// Forward declarations to avoid circular dependencies
 class Orderlist;
 class Orders;
 class Card;

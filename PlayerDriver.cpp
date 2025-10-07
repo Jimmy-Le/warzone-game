@@ -35,6 +35,10 @@ void testPlayers(){
     deck.~Deck();
 }
 
+/***
+ * playerMenu()
+ * Displays a menu to test the Player class functionalities
+ */
 void playerMenu(){
 
     bool exit = false;
