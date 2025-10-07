@@ -3,7 +3,6 @@
 /***
  * Player Constructor, 
  * Initializes the set of territories, cards, and orderlist of a Player
- * TODO Update this to be the proper type
  */
 Player::Player(){
     this->name = new string("John Doe");
@@ -16,7 +15,6 @@ Player::Player(){
  * Parameterized Player Constructor,
  * Initializes the set of territories, cards, and orderlist of a Player
  * Gives the player a name
- * TODO Update this to be the proper type
  */
 Player::Player(string name) {
     this->name = new string(name);
@@ -288,8 +286,8 @@ bool Player::generateOrder() {
             order = std::make_unique<Negotiate>(numUnits, source, target);
             orderCollection->orderList.push_back(std::move(order));
             cout << "New Negotiate Order created.\n" << endl;
-            break;                                                              // If the player enters an invalid type , cancel the order issueing
-        default:
+            break;                                                              
+        default: // If the player enters an invalid type , cancel the order issueing
             cout << "Invalid choice. Order not created.\n" << endl;
             break;
         }  

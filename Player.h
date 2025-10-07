@@ -15,6 +15,7 @@ class Orderlist;
 class Orders;
 class Card;
 class Hand;
+class Territory;
 
 class Player{
     public:

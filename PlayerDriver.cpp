@@ -26,10 +26,13 @@ void testPlayers(){
     player.addToAttack(new Territory("Germany"));
     player.addToAttack(new Territory("Japan"));
 
-
-
+    Deck deck;
+    deck.draw(player.getHand());
+    deck.draw(player.getHand());
+    deck.draw(player.getHand());
 
     playerMenu();
+    deck.~Deck();
 }
 
 void playerMenu(){

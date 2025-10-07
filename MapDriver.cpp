@@ -9,11 +9,6 @@
 
 using namespace std;
 
-// int main(){
-//     testLoadMaps();
-//     return 0;
-// }
-
 /**
  * Driver function to test loading and validation of various map files.
  */
