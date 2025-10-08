@@ -3,7 +3,6 @@
 /***
  * Player Constructor, 
  * Initializes the set of territories, cards, and orderlist of a Player
- * TODO Update this to be the proper type
  */
 Player::Player(){
     this->name = new string("John Doe");
@@ -16,7 +15,6 @@ Player::Player(){
  * Parameterized Player Constructor,
  * Initializes the set of territories, cards, and orderlist of a Player
  * Gives the player a name
- * TODO Update this to be the proper type
  */
 Player::Player(string name) {
     this->name = new string(name);
@@ -235,12 +233,13 @@ bool Player::generateOrder() {
     cout << "2. Advance" << endl;
     cout << "3. Bomb (Requires Bomb Card)" << endl;
     cout << "4. Airlift (Requires Airlift Card)" << endl;
-    cout << "5. Negotiate (Requires Negotiate Card)" << endl;
-    cout << "6. Finish issuing orders\n" << endl;
+    cout << "5. Negotiate (Requires Diplomacy Card)" << endl;
+    cout << "6. Blockade (Requires Blockade Card)" << endl;
+    cout << "7. Finish issuing orders\n" << endl;
     cout << *cardCollection << endl; // Display the player's cards
     cin >> orderChoice;                                                         // Get the player's choice
 
-    if (orderChoice == 6){
+    if (orderChoice == 7){
         return true;                                                            // Exit if the player is finished issuing orders
     }
 
@@ -288,8 +287,15 @@ bool Player::generateOrder() {
             order = std::make_unique<Negotiate>(numUnits, source, target);
             orderCollection->orderList.push_back(std::move(order));
             cout << "New Negotiate Order created.\n" << endl;
-            break;                                                              // If the player enters an invalid type , cancel the order issueing
-        default:
+            break;                                                              
+        }
+        case 6: {
+            order = std::make_unique<Blockade>(numUnits, source, target);
+            orderCollection->orderList.push_back(std::move(order));
+            cout << "New Blockade Order created.\n" << endl;
+            break;                                                              
+        }
+        default: { // If the player enters an invalid type , cancel the order issueing
             cout << "Invalid choice. Order not created.\n" << endl;
             break;
         }  

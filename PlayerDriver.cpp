@@ -26,12 +26,19 @@ void testPlayers(){
     player.addToAttack(new Territory("Germany"));
     player.addToAttack(new Territory("Japan"));
 
-
-
+    Deck deck;
+    deck.draw(player.getHand());
+    deck.draw(player.getHand());
+    deck.draw(player.getHand());
 
     playerMenu();
+    deck.~Deck();
 }
 
+/***
+ * playerMenu()
+ * Displays a menu to test the Player class functionalities
+ */
 void playerMenu(){
 
     bool exit = false;
