@@ -48,6 +48,10 @@ int testOrderList() {
     assignedOrder = baseOrder;    // assignment operator
     cout << "Copied:\n" << copyOrder << endl;
     cout << "Assigned:\n" << assignedOrder << endl;
+    DeployOrder copyDeployOrder = deploy;
+    cout << "Copied:\n" << copyDeployOrder << endl;
+    cout << "Assigned:\n" << deploy << endl;
+    
 
     // 5️⃣ Orderlist functionality
     cout << "\n===== Testing Orderlist =====" << endl;
@@ -76,9 +80,9 @@ int testOrderList() {
 
 }
 
-// int main(){
-//     testOrderList();
-//     return 0;
-// }
+int main(){
+         testOrderList();
+    return 0;
+}
 
 
