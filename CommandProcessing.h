@@ -5,7 +5,8 @@
 #include <iostream>
 using std::cout;
 using std::string;
-
+#include <vector>
+using std::vector;
 // forward declaration
 class CommandProcessor;
 class Command;
@@ -15,6 +16,7 @@ class Command;
 class CommandProcessor
 {
 private:
+    vector<Command *> *allCommands; // pointer to a vector of command pointers
     void readCommand();
     void saveCommand(Command *command);
 

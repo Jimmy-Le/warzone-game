@@ -6,6 +6,9 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
+#include <vector>
+using std::allocator;
+using std::vector;
 
 // forward declaration
 class CommandProcessor;
@@ -32,7 +35,16 @@ void CommandProcessor::readCommand()
     // otherwise, validate will display an error message
 }
 
-// void saveCommand(Command command);
+// receives the pointer to a command object, makes a copy and stores it in a collection of command objects
+void CommandProcessor::saveCommand(Command *command)
+{
+    // creates a new command object on the heap
+    // REMEMBER TO DELETE AT THE END OF THE PROGRAM!!!!
+    Command *newCommand = new Command(*command);
+
+    // stores the command in the vector attribute of the commandProcessor class
+    this->allCommands->push_back(newCommand);
+}
 
 // CommandProcessor(); // default constructor
 // // CommandProcessor();               // parameterized
