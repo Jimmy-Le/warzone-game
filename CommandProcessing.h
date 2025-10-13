@@ -16,7 +16,7 @@ class CommandProcessor
 {
 private:
     void readCommand();
-    void saveCommand(Command command);
+    void saveCommand(Command *command);
 
 public:
     CommandProcessor(); // default constructor
@@ -28,7 +28,7 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
     void getCommand();
-    void validate(Command command);
+    bool validate(Command command);
 };
 
 //-----------------COMMAND CLASS----------------//
@@ -36,12 +36,13 @@ public:
 class Command
 {
 private:
-    string command;
-    string effect;
+    string *command;
+    string *effect;
 
 public:
     Command();                                                                        // default constructor
     Command(Command &otherCommand);                                                   // copy constructor
+    Command(string commandString);                                                    // parameterized
     ~Command();                                                                       // destructor
     Command &operator=(const Command &otherCommand);                                  // assignment operator
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
