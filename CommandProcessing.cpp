@@ -46,7 +46,13 @@ void CommandProcessor::saveCommand(Command *command)
     this->allCommands->push_back(newCommand);
 }
 
-// CommandProcessor(); // default constructor
+// default constructor
+CommandProcessor::CommandProcessor()
+{
+    // creates a pointer to an empty vector
+    vector<Command *> *newVector = new vector<Command *>;
+    this->allCommands = newVector;
+}
 // // CommandProcessor();               // parameterized
 // CommandProcessor(CommandProcessor &otherCommandProcessor); // copy constructor
 // ~CommandProcessor();                                       // destructor
