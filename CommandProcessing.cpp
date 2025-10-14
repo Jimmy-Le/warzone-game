@@ -106,8 +106,21 @@ CommandProcessor &CommandProcessor::operator=(const CommandProcessor &otherComma
     return *this;
 };
 
-// // stream insertion operator
-// friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
+// stream insertion operator
+std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject)
+{
+    // checks to make sure the vector isn't empty
+    if (!commandProcessorObject.allCommands->empty())
+        // prints out all the commands
+        // will use the stream insertion operators from the command class
+        for (int i = 0; i < commandProcessorObject.allCommands->size(); i++)
+        {
+            out << commandProcessorObject.allCommands->at(i) << endl;
+        }
+    else
+        out << "There are no commands yet" << endl;
+    return out;
+};
 // void getCommand();
 // void validate(Command command);
 
