@@ -17,7 +17,7 @@ class CommandProcessor
 {
 private:
     vector<Command *> *allCommands; // pointer to a vector of command pointers
-    void readCommand();
+    Command *readCommand();
     void saveCommand(Command *command);
 
 public:

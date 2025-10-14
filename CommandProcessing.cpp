@@ -19,7 +19,7 @@ class Command;
 // gets a command from the console as a string
 // calls validate on the command to check if it is valid in the current game state
 // calls the save command method to save that command
-void CommandProcessor::readCommand()
+Command *CommandProcessor::readCommand()
 {
     cout << "Enter next command: " << endl; // prompts user
     string newCommand;                      // creates a string tostore the command
@@ -28,11 +28,13 @@ void CommandProcessor::readCommand()
     // if the command is valid, it will be saved
     if (validate(newCommand))
     {
-        // creates a new command object and keeps it as a pointer
+        // creates a new command object and returns it
         Command *command = &Command(newCommand);
-        saveCommand(command);
+        return command;
     }
     // otherwise, validate will display an error message
+    // we return a null pointer
+    return nullptr;
 }
 
 // receives the pointer to a command object, makes a copy and stores it in a collection of command objects
@@ -121,7 +123,19 @@ std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProce
         out << "There are no commands yet" << endl;
     return out;
 };
-// void getCommand();
+void CommandProcessor::getCommand()
+{
+    // creates a new command pointer (on stack)
+    // gets input from user
+    Command *commandRead = readCommand();
+    // if the command is valid
+    if (commandRead != nullptr)
+    {
+        // it is saved
+        saveCommand(commandRead);
+    }
+    // if command is invalid nothing will happen here, the validate method would have displayed the error message
+}
 // void validate(Command command);
 
 //-----------------COMMAND CLASS----------------//
