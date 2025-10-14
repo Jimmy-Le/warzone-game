@@ -54,10 +54,58 @@ CommandProcessor::CommandProcessor()
     this->allCommands = newVector;
 }
 // // CommandProcessor();               // parameterized
-// CommandProcessor(CommandProcessor &otherCommandProcessor); // copy constructor
-// ~CommandProcessor();                                       // destructor
-//                                                            //  assignment operator
-// CommandProcessor &operator=(const CommandProcessor &otherCommandProcessor);
+// copy constructor
+CommandProcessor::CommandProcessor(CommandProcessor &otherCommandProcessor)
+{
+    // copy over the vector (deep copy)
+    // makes a new vector
+    this->allCommands = new vector<Command *>;
+
+    // fills the vector with deep copies of the command objects
+    for (int i = 0; i < otherCommandProcessor.allCommands->size(); i++)
+    {
+        this->allCommands->at(i) = otherCommandProcessor.allCommands->at(i);
+    }
+}
+// destructor
+CommandProcessor::~CommandProcessor()
+{
+    // need to make sure the vector is properly deleted
+    //  loops through and deletes every command
+    for (int i = 0; i < this->allCommands->size(); i++)
+    {
+        // will call the destructor of the command class
+        delete this->allCommands->at(i);
+    }
+    // deletes the entire vector
+    delete this->allCommands;
+}
+//  assignment operator
+CommandProcessor &CommandProcessor::operator=(const CommandProcessor &otherCommandProcessor)
+{
+    // avoids self assignment
+    if (this != &otherCommandProcessor)
+    {
+        // gets rid of old vector
+        // loops through and deletes every command
+        for (int i = 0; i < this->allCommands->size(); i++)
+        {
+            delete this->allCommands->at(i);
+        }
+        // deletes the entire vector
+        delete this->allCommands;
+        // makes a new vector
+        this->allCommands = new vector<Command *>;
+
+        // fills the vector with deep copies of the command objects
+        for (int i = 0; i < otherCommandProcessor.allCommands->size(); i++)
+        {
+            this->allCommands->at(i) = otherCommandProcessor.allCommands->at(i);
+        }
+    }
+    return *this;
+};
+
 // // stream insertion operator
 // friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
 // void getCommand();
