@@ -42,9 +42,10 @@ private:
     string *effect;
 
 public:
-    Command();                                                                        // default constructor
-    Command(Command &otherCommand);                                                   // copy constructor
-    Command(string commandString);                                                    // parameterized
+    Command();                      // default constructor
+    Command(Command &otherCommand); // copy constructor
+    Command(string commandString);  // parameterized
+    Command(string commandString, string effectString);
     ~Command();                                                                       // destructor
     Command &operator=(const Command &otherCommand);                                  // assignment operator
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator

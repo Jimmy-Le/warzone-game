@@ -140,17 +140,92 @@ void CommandProcessor::getCommand()
 
 //-----------------COMMAND CLASS----------------//
 
-// class Command
-// {
-// private:
-//     string command;
-//     string effect;
+// default constructor
+Command::Command()
+{
+    // the command object will contain null pointers for the attributes
+    this->command = nullptr;
+    this->effect = nullptr;
+}
+// parameterized
+Command::Command(string commandString)
+{
+    // takes a command and creates the command object
+    this->command = new string(commandString);
+    // sets the effect to nullptr
+    this->effect = nullptr;
+}
+// parameterized 2
+Command::Command(string commandString, string effectString)
+{
+    // takes a command and an effect and creates the command object
+    this->command = new string(commandString);
+    // sets the effect to nullptr
+    this->effect = new string(effectString);
+}
+// copy constructor
+// takes another command object and makes a deep copy of it
+Command::Command(Command &otherCommand)
+{
+    // deep copy of the command
+    this->command = new string(*(otherCommand.command));
+    // deep copy of the effect
+    this->effect = new string(*(otherCommand.effect));
+}
+// destructor
+Command::~Command()
+{
+    // deletes the command and effect pointers
+    delete this->command;
+    delete this->effect;
+}
+// assignment operator
+Command &Command::operator=(const Command &otherCommand)
+{
+    // avoids self assignment
+    if (this != &otherCommand)
+    {
+        // deletes old Command information
+        delete this->command;
+        delete this->effect;
 
-// public:
-//     Command();                                                                        // default constructor
-//     Command(Command &otherCommand);                                                   // copy constructor
-//     ~Command();                                                                       // destructor
-//     Command &operator=(const Command &otherCommand);                                  // assignment operator
-//     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
+        // copies over the other command and effect
+        //  deep copy of the command
+        this->command = new string(*(otherCommand.command));
+        // deep copy of the effect
+        this->effect = new string(*(otherCommand.effect));
+
+        // returns the copied Command object
+        return *this;
+    }
+}
+// stream insertion operator
+std::ostream &operator<<(std::ostream &out, const Command &commandObject)
+{
+    // the format for displaying a command will be:
+    // CommandName: effect
+
+    // checks to make sure the command is not null
+    if (commandObject.command != nullptr)
+    {
+        // checks to make sure effect is not null
+        if (commandObject.effect != nullptr)
+        {
+            out << *(commandObject.command) << ": " << *(commandObject.effect);
+        }
+        // if command has something but effect is null then:
+        else
+        {
+            out << *(commandObject.command) << ": No effect";
+        }
+    }
+    // if command is null
+    else
+    {
+        // this case should not happen in the program but I still put it here in case
+        out << "No command specified";
+    }
+    return out;
+}
 //     void saveEffect();
 // };
