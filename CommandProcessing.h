@@ -30,7 +30,8 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
     void getCommand();
-    bool validate(Command command);
+    bool validate(string command);
+    Command *lastCommand(); // gets the command at the end of the list
 };
 
 //-----------------COMMAND CLASS----------------//
@@ -49,7 +50,8 @@ public:
     ~Command();                                                                       // destructor
     Command &operator=(const Command &otherCommand);                                  // assignment operator
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
-    void saveEffect();
+    void saveEffect(string effectString);
+    string getCommandString(); // getter for commandString
 };
 
 #endif
