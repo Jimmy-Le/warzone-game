@@ -9,6 +9,14 @@ using std::string;
 #include <string>
 #include "GameEngine.h"
 
+#include "CommandProcessing.h"
+
+// forward declaration
+class CommandProcessor;
+class Command;
+// global object
+extern CommandProcessor *theCommandProcessor;
+
 //----------------------------------CLASS IMPLEMENTATIONS---------------------------------------------------------//
 
 //----------STATUS CLASS --------------//
@@ -167,7 +175,7 @@ Status *PlayersAdded::transition(string input, Status *currentStatus)
     {
         return switchStatus(4, static_cast<PlayersAdded *>(currentStatus));
     }
-    else if (input == "assigncountries")
+    else if (input == "gamestart")
     {
         return switchStatus(5, static_cast<PlayersAdded *>(currentStatus));
     }
@@ -317,11 +325,11 @@ void ExecuteOrders::print(std::ostream &out) const
 Win::Win() {}
 Status *Win::transition(string input, Status *currentStatus)
 {
-    if (input == "play")
+    if (input == "replay")
     {
         return switchStatus(1, static_cast<Win *>(currentStatus));
     }
-    else if (input == "end")
+    else if (input == "quit")
     {
         return switchStatus(9, static_cast<Win *>(currentStatus));
     }
@@ -417,11 +425,38 @@ GameEngine *theGameEngine = new GameEngine(new Start());
 // this is the method that controls everything in a way
 void listen()
 {
+    // old version
+    //  Prompts user for command
+    //  cout << "Enter a command: ";
+    //  string input;
+    //  cin >> input;
 
-    // Prompts user for command
-    cout << "Enter a command: ";
+    // NEW CHANGES!!!
+    // Now, we will get commands from the commandProcessor!
+    // prompt user for command
+    theCommandProcessor->getCommand();
+    // now we can go check the vector of commands to get that command (if it is valid)
+    Command *command = theCommandProcessor->lastCommand();
+
+    // want to make sure it only grabs the first part of the string (before the space)
     string input;
-    cin >> input;
+    // finds the first instance of space character
+    // will be -1 if no space
+    int indexOfSpace = command->getCommandString().find(' ');
+    if (indexOfSpace != -1)
+    {
+        // we split the string
+        // only have the part before the space
+        input = command->getCommandString().substr(0, indexOfSpace);
+    }
+    else
+    {
+        // no space,no problem
+        input = command->getCommandString();
+    }
+
+    // essentially, now only some state changes will be triggered by the user/command line
+    // the other state changes will be done through other classes (i think, this is Jimmy's part)
 
     // keep track of previous state
     Status *oldStatus = theGameEngine->getState();
@@ -452,6 +487,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         newStatus = new Start();
         // return a pointer to the new state
         cout << "Change state to Start" << endl;
+        // now the effect will be saved in the command object
+        theCommandProcessor->lastCommand()->saveEffect("Transitions to the Start state");
         return newStatus;
         break;
     case 2:
@@ -459,7 +496,9 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // create new MapLoaded object
         newStatus = new MapLoaded();
         cout << "Change State to Map Loaded" << endl;
-        // return the modified pointer
+        // now the effect will be saved in the command object
+        theCommandProcessor->lastCommand()->saveEffect("Transitions to the map loaded state");
+        //  return the modified pointer
         return newStatus;
         break;
     case 3:
@@ -467,6 +506,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // create new MapValidated object
         newStatus = new MapValidated();
         cout << "Change State to Map Validated" << endl;
+        // now the effect will be saved in the command object
+        theCommandProcessor->lastCommand()->saveEffect("Transitions to the map validated state");
         // return the modified pointer
         return newStatus;
         break;
@@ -475,6 +516,10 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // create new PlayersAdded object
         newStatus = new PlayersAdded();
         cout << "Change State to Players Added" << endl;
+        // now the effect will be saved in the command object
+        // MIGHT CAUSE PROBLEMS IF OTHER PARTS ALSO INTERACT WITH THIS
+        // PLEASE LET ME KNOW IF YOUR PART TOUCHES THIS (arielle) TY
+        theCommandProcessor->lastCommand()->saveEffect("Transitions to the players added state");
         // return the modified pointer
         return newStatus;
         break;
@@ -483,6 +528,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // create new AssignReinforcement object
         newStatus = new AssignReinforcement();
         cout << "Change State to Assign Reinforcement" << endl;
+        // now the effect will be saved in the command object
+        theCommandProcessor->lastCommand()->saveEffect("Transitions to the assign reinforcement state");
         // return the modified pointer
         return newStatus;
         break;
@@ -512,6 +559,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         break;
     case 9:
         cout << "Goodbye!" << endl;
+        // now the effect will be saved in the command object
+        theCommandProcessor->lastCommand()->saveEffect("Exits the program");
         delete theGameEngine;
         exit(0);
         break;

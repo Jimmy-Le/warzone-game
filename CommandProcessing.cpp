@@ -5,14 +5,23 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::getline;
 using std::string;
 #include <vector>
 using std::allocator;
 using std::vector;
+#include "GameEngine.h"
+#include <limits>
 
 // forward declaration
 class CommandProcessor;
 class Command;
+
+// accesses the global variable from the gameEngine.cpp file
+extern GameEngine *theGameEngine;
+
+// global command processor object:
+CommandProcessor *theCommandProcessor = new CommandProcessor();
 
 //-----------------COMMAND PROCESSOR CLASS----------------//
 
@@ -21,25 +30,41 @@ class Command;
 // calls the save command method to save that command
 Command *CommandProcessor::readCommand()
 {
-    cout << "Enter next command: " << endl; // prompts user
-    string newCommand;                      // creates a string tostore the command
-    cin >> newCommand;                      // collects input from user
 
-    // if the command is valid, it will be saved
-    if (validate(newCommand))
+    // clears the buffer (prevents taking the newline character from the previous int input in GameEngine)
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    bool validCommand = false;
+    // will keep prompting user until a valid command is given
+    while (!validCommand)
     {
-        // creates a new command object and returns it
-        Command *command = &Command(newCommand);
-        return command;
+        cout << "Enter next command: " << endl; // prompts user
+        string newCommand;                      // creates a string tostore the command
+        getline(cin, newCommand);               // collects input from user
+
+        // if the command is valid, it will be saved
+        if (validate(newCommand))
+        {
+            // to exit the loop
+            validCommand = true;
+            // creates a new command object and returns it
+            Command *command = new Command(newCommand);
+            return command;
+        }
+        // otherwise, validate will display an error message
     }
-    // otherwise, validate will display an error message
-    // we return a null pointer
     return nullptr;
 }
 
 // receives the pointer to a command object, makes a copy and stores it in a collection of command objects
 void CommandProcessor::saveCommand(Command *command)
 {
+    cout << *command << endl;
+    if (command == nullptr)
+    {
+        cout << "Error: Tried to save a null command!" << endl;
+        return;
+    }
     // creates a new command object on the heap
     // REMEMBER TO DELETE AT THE END OF THE PROGRAM!!!!
     Command *newCommand = new Command(*command);
@@ -136,7 +161,81 @@ void CommandProcessor::getCommand()
     }
     // if command is invalid nothing will happen here, the validate method would have displayed the error message
 }
-// void validate(Command command);
+// validate method
+// checks if the command is valid in the current state
+bool CommandProcessor::validate(string command)
+{
+
+    // checks the game state:
+    Status *currentState = theGameEngine->getState();
+
+    // verifies if the command is valid in the state:
+    // i will check the whole words first
+    // dynamic cast will return a nullptr if the class of currentState does not match the one
+    // casting to.
+    if (command == "validatemap" && dynamic_cast<MapLoaded *>(currentState) != nullptr)
+    {
+        // valid command:)
+        return true;
+    }
+    else if (command == "gamestart" && dynamic_cast<PlayersAdded *>(currentState) != nullptr)
+    {
+        // valid command!
+        return true;
+    }
+    else if (command == "replay" && dynamic_cast<Win *>(currentState) != nullptr)
+    {
+        // valid
+        return true;
+    }
+    else if (command == "quit" && dynamic_cast<Win *>(currentState) != nullptr)
+    {
+        // valid
+        return true;
+    }
+    // now for the states that have 2 parts to the string:
+    else
+    {
+        // looks for the first space in the string
+        int indexOfSpace = command.find(' ');
+
+        // if its -1, there was no space
+        if (indexOfSpace != -1)
+        {
+            // we will take the first part of the string, before the space
+            string cutString = command.substr(0, indexOfSpace);
+
+            // now we compare and see if this string matches the commands we need
+            if (cutString == "loadmap" && (dynamic_cast<Start *>(currentState) != nullptr || dynamic_cast<MapLoaded *>(currentState) != nullptr))
+            {
+
+                // valid command!
+                return true;
+            }
+            else if (cutString == "addplayer" && (dynamic_cast<MapValidated *>(currentState) != nullptr || dynamic_cast<PlayersAdded *>(currentState) != nullptr))
+            {
+                return true;
+            }
+            else
+            {
+                // invalid command
+                cout << "Invalid Command" << endl;
+                return false;
+            }
+        }
+        else
+        {
+            // invalid command
+            cout << "Invalid Command" << endl;
+            return false;
+        }
+    }
+};
+
+Command *CommandProcessor::lastCommand()
+{
+    return this->allCommands->back();
+}
 
 //-----------------COMMAND CLASS----------------//
 
@@ -169,8 +268,15 @@ Command::Command(Command &otherCommand)
 {
     // deep copy of the command
     this->command = new string(*(otherCommand.command));
-    // deep copy of the effect
-    this->effect = new string(*(otherCommand.effect));
+    if (otherCommand.effect != nullptr)
+    {
+        // deep copy of the effect
+        this->effect = new string(*(otherCommand.effect));
+    }
+    else
+    {
+        this->effect = nullptr;
+    }
 }
 // destructor
 Command::~Command()
@@ -198,6 +304,7 @@ Command &Command::operator=(const Command &otherCommand)
         // returns the copied Command object
         return *this;
     }
+    return *this;
 }
 // stream insertion operator
 std::ostream &operator<<(std::ostream &out, const Command &commandObject)
@@ -233,4 +340,10 @@ std::ostream &operator<<(std::ostream &out, const Command &commandObject)
 void Command::saveEffect(string effectString)
 {
     this->effect = new string(effectString);
+}
+
+// gets the command string
+string Command::getCommandString()
+{
+    return *(this->command);
 }
