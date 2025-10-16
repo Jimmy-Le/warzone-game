@@ -227,5 +227,10 @@ std::ostream &operator<<(std::ostream &out, const Command &commandObject)
     }
     return out;
 }
-//     void saveEffect();
-// };
+
+// save effect method
+// receives a string and saves it in the command object
+void Command::saveEffect(string effectString)
+{
+    this->effect = new string(effectString);
+}

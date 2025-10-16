@@ -49,7 +49,7 @@ public:
     ~Command();                                                                       // destructor
     Command &operator=(const Command &otherCommand);                                  // assignment operator
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
-    void saveEffect();
+    void saveEffect(string effectString);
 };
 
 #endif
