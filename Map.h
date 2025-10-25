@@ -10,6 +10,8 @@
 #include <map>
 #include <set>
 
+#include "Player.h"
+
 using namespace std;
 
 //Forward declarations
@@ -141,6 +143,9 @@ class Map{
         bool isConnectedGraph() const; 
         bool areContinentsConnected() const;
         bool isEachTerritoryInOneContinent() const;
+
+        //for game setup (Ass2) -- distribution territories to players
+        void distributeTerritories(vector<Player*>& players);     
 
 };
 
