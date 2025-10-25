@@ -45,7 +45,7 @@ Orders::Orders(int numberOfArmyUnits , string sourceTerritory , string targetTer
 
 Orders::Orders(const Orders& otherOrder){
   this->numberOfArmyUnits = make_unique<int>(*otherOrder.numberOfArmyUnits);
-  //why do we use new  , so that each orders mebers have a separate location in the memory
+  //why do we use new  , so that each orders mebers have a separate location in the heap memory
   //as the memebers are pointers we do not want multiple pointers pointing to the same location in memory
   //that would be a shallow copy and could cause problems suppose we deleted on pointer the other would become a dangling pointer
 
@@ -56,13 +56,9 @@ Orders::Orders(const Orders& otherOrder){
 
 Orders& Orders::operator=(const Orders& otherOrder){
   if(this != &otherOrder){
-    // delete numberOfArmyUnits;
-    // delete sourceTerritory;
-    // delete targetTerritory;
-
-    this->numberOfArmyUnits =  make_unique<int>(*otherOrder.numberOfArmyUnits);
-    this->sourceTerritory =  make_unique<string>(*otherOrder.sourceTerritory);
-    this->targetTerritory = make_unique<string>(*otherOrder.targetTerritory);
+    *numberOfArmyUnits =  *otherOrder.numberOfArmyUnits;
+    *sourceTerritory = *otherOrder.sourceTerritory;
+    *targetTerritory = *otherOrder.targetTerritory;
   }
   return *this;
 
@@ -89,47 +85,63 @@ void Orders::setTargetTerritory(string targetTerritory) {
   *this->targetTerritory = targetTerritory;
 };
 
-// Orders::~Orders(
-//     delete numberOfArmyUnits;
-//     delete sourceTerritory;
-//     delete targetTerritory;
-// }
 
-
-ostream& operator<<(ostream& os ,const Orders& otherOrder){
-  os<< "Number of Army Units:" << otherOrder.getNumberOfArmyUnits() <<endl ; 
-  os << " Source Territory:" << otherOrder.getSourceTerritory() <<endl;
-  os << " Target Territory:" << otherOrder.getTargetTerritory() <<endl;
-  return os;
+void Orders::execute(){
+  cout<<"Orders is getting executed";
 };
-// int main(){
 
-//   Orders order1(5 , "India" , "China");
-//   cout << order1 << endl;
+void Orders::validate(){
+  cout<<"Order is validated";
+};
 
-//   Orders order2 = order1; //copy constructor
-//   cout << order2 << endl;
 
-//   Orders order3(10 , "USA" , "Canada");
-//   cout << order3 << endl;
-//   order3 = order1; //assignment operator
-//   cout << order3 << endl;
+  void Orders::print(ostream& os) const{
+    os<< "Number of Army Units:" << this->getNumberOfArmyUnits() <<endl ; 
+    os << " Source Territory:" <<this->getSourceTerritory() <<endl;
+    os << " Target Territory:" << this->getTargetTerritory() <<endl;
+      }
+ ostream& operator<<(ostream& os , const Orders& otherOrder){
+        otherOrder.print(os);  // Polymorphic call
+        return os;
+};
 
-//   return 0;
-// }
 
 //----------------------------------------------------------------------------
 //DeployOrder Class Method Implementations
-ostream& operator<<(ostream& os ,const DeployOrder& deploy) {
-  cout<<"DEPLOY ORDER IN EXECUTION" <<endl;
-  cout<<"----------------------------------------------";
-  ::operator<<(os ,static_cast<const Orders&>(deploy));
-return os;
-};
 
 //to select which base constructor runs in the initializer list is decided rightafter the : 
 DeployOrder::DeployOrder( int numberOfArmyUnits , string sourceTerritory  , string targetTerritory)
     : Orders(numberOfArmyUnits , sourceTerritory , targetTerritory) {};
+
+DeployOrder::DeployOrder() : Orders(){};
+
+DeployOrder::DeployOrder(const DeployOrder& deploy) : Orders::Orders(static_cast<const Orders&>(deploy)) {};
+
+DeployOrder& DeployOrder::operator=(const DeployOrder& otherDeployOrder){
+  Orders::operator=(static_cast<const Orders&>(otherDeployOrder));
+  return *this;
+};
+
+
+ void DeployOrder::print(ostream& os) const{
+        os << "DEPLOY ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
+
+  ostream& operator<<(ostream& os, const DeployOrder& deploy) {
+        deploy.print(os);      // reuse same print()
+        return os;
+    }
+
+void DeployOrder::execute(){
+  cout<<"Deploy order is getting executed";
+};
+
+void DeployOrder::validate(){
+  cout<<"Deploy order is validated";
+};
+
 
 
 //-----------------------------------------------------------------------------
@@ -137,6 +149,7 @@ DeployOrder::DeployOrder( int numberOfArmyUnits , string sourceTerritory  , stri
 Negotiate::Negotiate(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
+Negotiate::Negotiate() : Orders(){};
 
 Negotiate::Negotiate(const Negotiate& otherNegotiate): Orders(static_cast<const Orders&>(otherNegotiate))
   {};
@@ -151,19 +164,34 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate){
     return *this;
 };
 
-ostream& operator<<(ostream& os , const Negotiate& negotiate) {
-    cout<<"NEGOTIATE ORDER IN EXECUTION" <<endl;
-    cout<<"-------------------------------------------------" <<endl;
-    ::operator<<(os ,static_cast<const Orders&>(negotiate));
-    return os;
-};
+
+ void Negotiate::print(ostream& os) const{
+        os << "NEGOTIATE ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
+
+  ostream& operator<<(ostream& os, const Negotiate& negotiate) {
+        negotiate.print(os);      // reuse same print()
+        return os;
+    }
+
+  void Negotiate::execute(){
+  cout<<"Negotiate order is getting executed";
+  };
+
+  void Negotiate::validate(){
+  cout<<"Negotiate order is validated";
+  };
+
 
 //-------------------------------------------------------------------------------
 //BOMB SUBCLASS METHOD IMPLEMENTATION
 Bomb::Bomb(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
-
+Bomb::Bomb() : Orders(){};
+    
 Bomb::Bomb(const Bomb& otherBomb) : Orders(static_cast<const Orders&>(otherBomb)){};
 
 Bomb& Bomb::operator=(const Bomb& otherBomb){
@@ -171,41 +199,69 @@ Bomb& Bomb::operator=(const Bomb& otherBomb){
     return *this;
 };
 
-ostream& operator<<(ostream& os ,const Bomb& bomb) {
-  cout<<"BOMB ORDER IN EXECUTION" <<endl;
-  cout<<"-----------------------------------------------" <<endl;
- ::operator<<(os ,static_cast<const Orders&>(bomb));
- return os;
-    
-};
+
+ostream& operator<<(ostream& os, const Bomb& bomb) {
+        bomb.print(os);      // reuse same print()
+        return os;
+    }
+
+ void Bomb::print(ostream& os) const{
+        os << "BOMB ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
+
+    void Bomb::execute(){
+  cout<<"Bomb order is getting executed";
+  };
+
+  void Bomb::validate(){
+  cout<<"Bomb order is validated";
+  };
+
 
 //--------------------------------------------------------------------------------
 //ADVANCE SUBCLASS METHOD IMPLEMENTATION
 
 Advance::Advance(int numberOfArmyUnits , string sourceTerritory , string targetTerritory) : Orders(numberOfArmyUnits , sourceTerritory , targetTerritory) {};
 
+Advance::Advance() : Orders(){};
 
 Advance::Advance(const Advance& otherAdvance) : Orders(static_cast<const Orders&>(otherAdvance)){
  
 };
 
-ostream& operator<<(ostream& os ,const Advance& advance){
-  cout<<"ADVANCE ORDER IN EXECUTION" <<endl;
-  cout<<"------------------------------------------------" <<endl;
-  ::operator<<(os ,static_cast<const Orders&>(advance));
-  return os;
- 
-};
+ostream& operator<<(ostream& os, const Advance& advance) {
+        advance.print(os);      // reuse same print()
+        return os;
+    }
+
+ void Advance::print(ostream& os) const{
+        os << "ADVANCE ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
 
 Advance& Advance::operator=(const Advance& advance){
   Orders::operator=(static_cast<const Orders&>(advance));
   return *this;
 };
+
+  void Advance::execute(){
+  cout<<"Advance order is getting executed";
+  };
+
+  void Advance::validate(){
+  cout<<"Advance order is validated";
+  };
+
+
 //--------------------------------------------------------------------------------
 //AIRLIFT SUBCLASS METHOD IMPLEMENTATION
 Airlift::Airlift(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
     : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
 
+Airlift::Airlift() : Orders(){};    
 
 Airlift::Airlift(const Airlift& otherAirlift) : Orders(static_cast<const Orders&>(otherAirlift)){
 
@@ -216,13 +272,63 @@ Airlift& Airlift::operator=(const Airlift& otherAirlift){
     return *this;
 };
 
-ostream& operator<<(ostream& os ,const Airlift& airlift) {
-    cout<<"AIRLIFT ORDER IN EXECUTION" <<endl;
-    cout<<"----------------------------------------------------" <<endl; 
-    ::operator<<(os ,static_cast<const Orders&>(airlift));
-    return os;
+ostream& operator<<(ostream& os, const Airlift& airlift) {
+        airlift.print(os);      // reuse same print()
+        return os;
+    }
+
+ void Airlift::print(ostream& os) const{
+        os << "AIRLIFT ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
+
+  
+  void Airlift::execute(){
+  cout<<"Airlift order is getting executed";
+  };
+
+  void Airlift::validate(){
+  cout<<"Airlift order is validated";
+  };
+
+//--------------------------------------------------------------------------------
+// BLOCKADE SUBCLASS METHODS IMPLEMENTATION
+
+Blockade::Blockade(int numberOfArmyUnits, string sourceTerritory, string targetTerritory)
+    : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory) {};
+
+Blockade::Blockade() : Orders(){};
+
+Blockade::Blockade(const Blockade& otherBlockade) : Orders(static_cast<const Orders&>(otherBlockade)){};
+
+Blockade& Blockade::operator=(const Blockade& otherBlockade){
+    Orders::operator=(static_cast<const Orders&>(otherBlockade));
+    return *this;
 };
 
+ostream& operator<<(ostream& os, const Blockade& blockade) {
+        blockade.print(os);      // reuse same print()
+        return os;
+    }
+
+ void Blockade::print(ostream& os) const{
+        os << "BLOCKADE ORDER INFORMATION" << endl;
+        os << "-----------------------------------------------" << endl;
+        Orders::print(os);   // base info
+    }
+
+  
+  void Blockade::execute(){
+  cout<<"Blockade order is getting executed";
+  };
+
+  void Blockade::validate(){
+  cout<<"Blockade order is validated";
+  };
+
+//-------------------------------------------------------------------------
+//ORDERLIST 
 
 int found = 0;
 
@@ -231,12 +337,6 @@ void Orderlist::remove(Orders& order){
     
 
     for(int i =0 ; i< this->orderList.size() ; i++){ //this->orderlist represents the vector which is simply an object holding pointers to orders
-        //f(this->orderList[i].getType() == order)
-        cout<<"=================================================" <<endl;
-            cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
-            //what can solve this problem have an id with BOmb that generates unique id for each order ;
-            cout<<typeid(order).name() <<endl;
-            cout<<"=================================================" <<endl <<"\n";
         if(typeid(*this->orderList[i]).name()  == (typeid(order)).name()){
             //check for the equality of the rest of paramters
            if((*this->orderList[i]).getNumberOfArmyUnits() == order.getNumberOfArmyUnits() &&
@@ -268,12 +368,11 @@ void Orderlist::remove(Orders& order){
 void Orderlist::move(Orders& order , int index){
     int from;
   for(int i =0 ; i< this->orderList.size() ; i++){ //this->orderlist represents the vector which is simply an object holding pointers to orders
-        //f(this->orderList[i].getType() == order)
-        cout<<"=================================================" <<endl;
-            cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
-            //what can solve this problem have an id with BOmb that generates unique id for each order ;
-            cout<<typeid(order).name() <<endl;
-            cout<<"=================================================" <<endl <<"\n";
+        // cout<<"=================================================" <<endl;
+        //     cout<<typeid(*this->orderList[i]).name() <<endl; // i believe the problem is the both are essentially Orders so it deletes the first element , even if we asked for bomb
+        //     //what can solve this problem have an id with BOmb that generates unique id for each order ;
+        //     cout<<typeid(order).name() <<endl;
+        //     cout<<"=================================================" <<endl <<"\n";
         if(typeid(*this->orderList[i]).name()  == (typeid(order)).name()){
             //check for the equality of the rest of paramters
            if((*this->orderList[i]).getNumberOfArmyUnits() == order.getNumberOfArmyUnits() &&
