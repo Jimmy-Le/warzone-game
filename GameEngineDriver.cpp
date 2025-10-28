@@ -1,6 +1,7 @@
 // Contains a free function called testGameStates()
 #include "GameEngine.h"
 #include "GameEngineDriver.h"
+#include <iostream>
 
 // continuously calls the listen() function
 void testGameStates()
@@ -10,4 +11,13 @@ void testGameStates()
     {
         listen();
     }
+}
+
+extern GameEngine* theGameEngine;
+
+void testStartupPhase() {
+    if (!theGameEngine) {
+        theGameEngine = new GameEngine(); // initialize the global engine
+    }
+    theGameEngine->startupPhase();
 }

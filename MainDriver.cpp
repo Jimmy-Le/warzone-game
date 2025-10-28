@@ -17,6 +17,9 @@ int main()
         cout << "3. Orders List" << endl;
         cout << "4. Cards deck/hand" << endl;
         cout << "5. Game Engine (will end the program)" << endl;
+        cout << "Assignment 2" << endl;
+        cout << "6. Part 1: Command processor and command adapter" << endl;
+        cout << "7. Part 2: Game startup phase " << endl;
 
         int input;
         cin >> input;
@@ -37,6 +40,11 @@ int main()
             break;
         case 5:
             testGameStates();
+            break;
+        case 6:
+            break;
+        case 7:
+            testStartupPhase();
             break;
         default:
             cout << "Invalid option, try again" << endl;

@@ -6,6 +6,21 @@
 using std::cout;
 using std::string;
 #include <string>
+#include "Map.h"
+#include "Player.h"
+#include "Cards.h"
+
+// Forward declarations
+class Status;
+class Start;
+class MapLoaded;
+class MapValidated;
+class PlayersAdded;
+class AssignReinforcement;
+class IssueOrders;
+class ExecuteOrders;
+class Win;
+class GameEngine;
 
 // Forward declarations
 class Status;
@@ -169,6 +184,9 @@ class GameEngine
 {
 private:
     Status *state;
+    Map* gameMap = nullptr;
+    std::vector<Player*>* players = nullptr;
+    Deck* deck = nullptr;
 
 public:
     GameEngine();                            // default constructor
@@ -183,7 +201,19 @@ public:
     Status *getState() const;
     // setter
     void setState(Status *otherStatus);
+
+    //Startup Phase
+    void startupPhase();
+
+    //Helper functions for game setup
+    void loadMap(string filename);
+    void validateMap();
+    void addPlayers(string playerName);
+    void startGame();
 };
+
+//Global game engine pointer
+extern GameEngine *theGameEngine;
 
 /*
  --> Takes input from command line

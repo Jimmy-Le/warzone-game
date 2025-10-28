@@ -18,6 +18,8 @@ class Hand;
 class Territory;
 
 class Player{
+    private:
+        int reinforcementPool = 0;                                                    // Number of reinforcement armies the player has
     public:
         Player();                                                                       // Player Constructor
         Player(std::string name);                                                       // Parameterized Constructor
@@ -28,8 +30,10 @@ class Player{
         void addToDefend(Territory* territory);                                         // Add a territory to the list of territories to be defended
         void addToAttack(Territory* territory);                                         // Add a territory to the list of territories to be attacked
         Orderlist* getOrderList();                                                      // Returns the player's order list
-        Hand* getHand();                                                                // Returns the player's hand of cards
+        Hand* getHand();
 
+        void setReinforcementPool(int armies);                                        // Sets the number of reinforcement armies the player has
+        int getReinforcementPool() const;                                             // Returns the number of reinforcement armies
 
         std::vector<Territory*>* toDefend();                                            // Returns a list of territories to be defended
         std::vector<Territory*>* toAttack();                                            // Returns a list of territories to be attacked

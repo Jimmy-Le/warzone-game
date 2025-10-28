@@ -144,6 +144,9 @@ class Map{
         bool areContinentsConnected() const;
         bool isEachTerritoryInOneContinent() const;
 
+        //for game setup (Ass2) -- distribution territories to players
+        void distributeTerritories(vector<Player*>& players);     
+
 };
 
 /**
