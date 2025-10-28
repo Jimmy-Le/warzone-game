@@ -235,6 +235,16 @@ bool Player::generateOrder() {
     int numUnits;
     std::unique_ptr<Orders> order;
 
+/***
+ * This function will generate an order based on user input
+ * Currently it serves as the main functionality of issueOrder()
+ * It allows players to generate an invalid order
+ */
+bool Player::generateOrder() {
+    int orderChoice;
+    string source, target;
+    int numUnits;
+    std::unique_ptr<Orders> order;
 
     cout << "========== Generating Order ==========" << endl;       // Allows the player to choose which type of order to issue
     cout << "Please choose which order to issue:" << endl;

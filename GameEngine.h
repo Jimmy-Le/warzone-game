@@ -22,6 +22,18 @@ class ExecuteOrders;
 class Win;
 class GameEngine;
 
+// Forward declarations
+class Status;
+class Start;
+class MapLoaded;
+class MapValidated;
+class PlayersAdded;
+class AssignReinforcement;
+class IssueOrders;
+class ExecuteOrders;
+class Win;
+class GameEngine;
+
 /*
 --> Base class for status
 All other status classes will inherit from this one.
