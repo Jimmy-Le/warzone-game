@@ -450,6 +450,25 @@ bool Map::isEachTerritoryInOneContinent() const{
     return territorySet.size() == territories->size() && getisTerritoryIsContinent();
 }
 
+// distribute territories to players (for game setup - Ass2)
+void Map::distributeTerritories(vector<Player*>& players){
+    vector<Territory*> territories = *this->getTerritories();
+    if (territories.empty()){
+        cout << "No territories found in map." << endl;
+        return;
+    }
+
+    int numPlayers = players.size();
+    int i = 0;
+    for (auto* territory : territories){
+        Player* currentPlayer = players[i % numPlayers];
+        currentPlayer->addToDefend(territory);
+        i++;
+    }
+    cout << "Territories have been distributed to players." << endl;
+}
+
+
 // ==================== MapLoader Implementation ====================
 
 // Helper methods for parsing
