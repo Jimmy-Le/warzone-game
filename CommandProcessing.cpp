@@ -25,9 +25,6 @@ class FileLineReader;
 // accesses the global variable from the gameEngine.cpp file
 extern GameEngine *theGameEngine;
 
-// global command processor object:
-CommandProcessor *theCommandProcessor = new CommandProcessor();
-
 //-----------------COMMAND PROCESSOR CLASS----------------//
 
 // gets a command from the console as a string
@@ -364,6 +361,8 @@ Command *FileCommandProcessorAdapter::readCommand()
 {
     string newCommand = flr->readLineFromFile();
 
+    cout << "readCommand: " << newCommand << endl;
+
     // if the command is valid, it will be saved
     if (validate(newCommand))
     {
@@ -420,22 +419,23 @@ std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &f
     return out;
 };
 
-void FileCommandProcessorAdapter::getCommands()
+void FileCommandProcessorAdapter::getCommand()
 {
-    // will read every line until the end of the file
-    while (!this->flr->getReader()->eof())
+    // creates a new command pointer (on stack)
+    // gets input from user
+    Command *commandRead = readCommand();
+    // if the command is valid
+    if (commandRead != nullptr)
     {
-        // creates a new command pointer (on stack)
-        // gets input from user
-        Command *commandRead = readCommand();
-        // if the command is valid
-        if (commandRead != nullptr)
-        {
-            // it is saved
-            saveCommand(commandRead);
-        }
-        // if command is invalid nothing will happen here, the validate method would have displayed the error message
+        // it is saved
+        saveCommand(commandRead);
     }
+    // if command is invalid nothing will happen here, the validate method would have displayed the error message
+}
+
+FileLineReader *FileCommandProcessorAdapter::getFlr()
+{
+    return this->flr;
 }
 
 //-----------------------FILE LINE READER CLASS---------------------//
@@ -450,8 +450,7 @@ FileLineReader::FileLineReader()
 FileLineReader::FileLineReader(string filename)
 {
     this->filename = new string(filename);
-    ifstream newReader(filename);
-    this->reader = &newReader;
+    this->reader = new ifstream(filename);
 }
 
 // copy constructor

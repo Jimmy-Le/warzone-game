@@ -35,7 +35,7 @@ public:
     CommandProcessor &operator=(const CommandProcessor &otherCommandProcessor);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
-    void getCommand();
+    virtual void getCommand();
     bool validate(string command);
     Command *lastCommand(); // gets the command at the end of the list
 };
@@ -77,7 +77,8 @@ public:
     FileCommandProcessorAdapter &operator=(const FileCommandProcessorAdapter &otherFileCommandProcessorAdapter);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &fileCommandProcessorAdapterObject);
-    void getCommands();
+    void getCommand();
+    FileLineReader *getFlr();
 };
 
 //--------------FILE LINE READER CLASS--------------------//

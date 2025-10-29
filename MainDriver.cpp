@@ -6,7 +6,11 @@
 #include "CardsDriver.h"
 #include "MapDriver.h"
 #include "CommandProcessingDriver.h"
+#include "CommandProcessing.h"
 using namespace std;
+
+// global command processor object:
+CommandProcessor *theCommandProcessor = new CommandProcessor();
 
 int main()
 {
