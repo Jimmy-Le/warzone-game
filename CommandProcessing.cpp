@@ -12,10 +12,15 @@ using std::allocator;
 using std::vector;
 #include "GameEngine.h"
 #include <limits>
+#include <fstream>
+using std::getline;
+using std::ifstream;
 
 // forward declaration
 class CommandProcessor;
 class Command;
+class FileCommandProcessorAdapter;
+class FileLineReader;
 
 // accesses the global variable from the gameEngine.cpp file
 extern GameEngine *theGameEngine;
@@ -348,4 +353,143 @@ void Command::saveEffect(string effectString)
 string Command::getCommandString()
 {
     return *(this->command);
+}
+
+//---------------FILE COMMAND PROCESSOR ADAPTER CLASS--------------------//
+
+// reads a command from a file as a string
+// calls validate on the command to check if it is valid in the current game state
+// calls the save command method to save that command
+Command *FileCommandProcessorAdapter::readCommand()
+{
+    string newCommand = flr->readLineFromFile();
+
+    // if the command is valid, it will be saved
+    if (validate(newCommand))
+    {
+        // creates a new command object and returns it
+        Command *command = new Command(newCommand);
+        return command;
+    }
+    // otherwise, validate will display an error message
+
+    return nullptr;
+}
+
+// default constructor
+FileCommandProcessorAdapter::FileCommandProcessorAdapter()
+{
+    this->flr = new FileLineReader();
+}
+
+// parameterized constructor
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(string filename)
+{
+    this->flr = new FileLineReader(filename);
+}
+// copy constructor
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileCommandProcessorAdapter &otherFileCommandProcessorAdapter)
+{
+    // copy over the filereader
+    this->flr = new FileLineReader(*(otherFileCommandProcessorAdapter.flr));
+}
+// destructor
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter()
+{
+    delete this->flr;
+}
+//  assignment operator
+FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter &otherFileCommandProcessorAdapter)
+{
+    // avoids self assignment
+    if (this != &otherFileCommandProcessorAdapter)
+    {
+        // delete old data
+        delete this->flr;
+        // copy over from other object (deep copy)
+        this->flr = new FileLineReader(*(otherFileCommandProcessorAdapter.flr));
+    }
+}
+
+// stream insertion operator
+std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &fileCommandProcessorAdapterObject)
+{
+
+    out << "Reading from file: " << fileCommandProcessorAdapterObject.flr << endl;
+    return out;
+};
+
+void FileCommandProcessorAdapter::getCommand()
+{
+    // creates a new command pointer (on stack)
+    // gets input from user
+    Command *commandRead = readCommand();
+    // if the command is valid
+    if (commandRead != nullptr)
+    {
+        // it is saved
+        saveCommand(commandRead);
+    }
+    // if command is invalid nothing will happen here, the validate method would have displayed the error message
+}
+
+//-----------------------FILE LINE READER CLASS---------------------//
+
+// default constructor
+FileLineReader::FileLineReader()
+{
+    this->reader = nullptr;
+}
+
+// parameterized constructor
+FileLineReader::FileLineReader(string filename)
+{
+    this->filename = new string(filename);
+    ifstream newReader(filename);
+    this->reader = &newReader;
+}
+
+// copy constructor
+FileLineReader::FileLineReader(FileLineReader &otherflr)
+{
+    this->filename = new string(*(otherflr.filename));
+    this->reader = new ifstream(*(this->filename));
+}
+
+// destructor
+FileLineReader::~FileLineReader()
+{
+    this->reader->close();
+    delete reader;
+    delete filename;
+}
+
+// stream insertion operator
+std::ostream &operator<<(std::ostream &out, const FileLineReader &fileLineReaderObject)
+{
+    out << fileLineReaderObject.getFilename() << endl;
+    return out;
+};
+
+// getter for filename
+string FileLineReader::getFilename() const
+{
+    return *(this->filename);
+}
+
+string FileLineReader::readLineFromFile()
+{
+    ifstream *thisReader = this->reader;
+    string newCommand;
+    if (this->reader != nullptr)
+    {
+        // gets a line from the file
+        getline(*thisReader, newCommand);
+        return newCommand;
+    }
+    else
+    {
+        cout << "No file detected." << endl;
+        return "";
+    }
 }
