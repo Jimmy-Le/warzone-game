@@ -5,6 +5,7 @@
 #include "OrdersDriver.h"
 #include "CardsDriver.h"
 #include "MapDriver.h"
+#include "CommandProcessingDriver.h"
 using namespace std;
 
 int main()
@@ -42,6 +43,7 @@ int main()
             testGameStates();
             break;
         case 6:
+            testCommandProcessor();
             break;
         case 7:
             testStartupPhase();

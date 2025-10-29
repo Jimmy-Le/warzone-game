@@ -47,7 +47,7 @@ Command *CommandProcessor::readCommand()
         cout << "Enter next command: " << endl; // prompts user
         string newCommand;                      // creates a string tostore the command
         // Use std::ws to skip any whitespace/newlines instead
-        getline(cin >> std::ws, newCommand);   // collects input from user
+        getline(cin >> std::ws, newCommand); // collects input from user
 
         // if the command is valid, it will be saved
         if (validate(newCommand))
@@ -409,6 +409,7 @@ FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator=(const FileCo
         // copy over from other object (deep copy)
         this->flr = new FileLineReader(*(otherFileCommandProcessorAdapter.flr));
     }
+    return *this;
 }
 
 // stream insertion operator
@@ -419,18 +420,22 @@ std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &f
     return out;
 };
 
-void FileCommandProcessorAdapter::getCommand()
+void FileCommandProcessorAdapter::getCommands()
 {
-    // creates a new command pointer (on stack)
-    // gets input from user
-    Command *commandRead = readCommand();
-    // if the command is valid
-    if (commandRead != nullptr)
+    // will read every line until the end of the file
+    while (!this->flr->getReader()->eof())
     {
-        // it is saved
-        saveCommand(commandRead);
+        // creates a new command pointer (on stack)
+        // gets input from user
+        Command *commandRead = readCommand();
+        // if the command is valid
+        if (commandRead != nullptr)
+        {
+            // it is saved
+            saveCommand(commandRead);
+        }
+        // if command is invalid nothing will happen here, the validate method would have displayed the error message
     }
-    // if command is invalid nothing will happen here, the validate method would have displayed the error message
 }
 
 //-----------------------FILE LINE READER CLASS---------------------//
@@ -475,6 +480,12 @@ std::ostream &operator<<(std::ostream &out, const FileLineReader &fileLineReader
 string FileLineReader::getFilename() const
 {
     return *(this->filename);
+}
+
+// getter for reader
+ifstream *FileLineReader::getReader()
+{
+    return this->reader;
 }
 
 string FileLineReader::readLineFromFile()
