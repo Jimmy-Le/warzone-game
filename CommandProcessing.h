@@ -77,7 +77,7 @@ public:
     FileCommandProcessorAdapter &operator=(const FileCommandProcessorAdapter &otherFileCommandProcessorAdapter);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &fileCommandProcessorAdapterObject);
-    void getCommand();
+    void getCommands();
 };
 
 //--------------FILE LINE READER CLASS--------------------//
@@ -91,11 +91,13 @@ private:
     string *filename;
 
 public:
-    FileLineReader();                                                                         // default constructor
-    FileLineReader(string filename);                                                          // parameterized constructor
-    FileLineReader(FileLineReader &otherflr);                                                 // copy constructor
-    ~FileLineReader();                                                                        // destructor
-    string FileLineReader::getFilename() const;                                               // getter
+    FileLineReader();                         // default constructor
+    FileLineReader(string filename);          // parameterized constructor
+    FileLineReader(FileLineReader &otherflr); // copy constructor
+    ~FileLineReader();                        // destructor
+    string getFilename() const;
+    // getter for reader
+    ifstream *getReader();                                                                    // getter
     friend std::ostream &operator<<(std::ostream &out, const FileLineReader &fileLineReader); // stream insertion
     // reads a line from a file and returns it.
     string readLineFromFile();
