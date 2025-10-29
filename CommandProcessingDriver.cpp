@@ -9,6 +9,8 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+extern CommandProcessor *theCommandProcessor;
+
 // tests the command processor
 void testCommandProcessor()
 {
@@ -28,6 +30,7 @@ void testCommandProcessor()
     // take commmands from a file
     else if (input == 2)
     {
+
         // gets the filename
         cout << "Enter the file name: " << endl;
         string filename;
@@ -38,9 +41,14 @@ void testCommandProcessor()
         // creates a filecommandprocessor object
         FileCommandProcessorAdapter *fileAdapter = new FileCommandProcessorAdapter(filename);
 
-        cout << "Before reading" << endl;
-        // reads all commands
-        fileAdapter->getCommands();
+        // sets the global variable theCommandProcessor to fileAdapter (a subclass object)
+        theCommandProcessor = fileAdapter;
+
+        // cout << "Before reading" << endl;
+        // // reads all commands
+        // fileAdapter->getCommand();
+
+        testGameStates();
 
         // deletes the object (avoid memory leaks
         delete fileAdapter;
