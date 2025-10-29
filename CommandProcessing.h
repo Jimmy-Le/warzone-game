@@ -7,9 +7,13 @@ using std::cout;
 using std::string;
 #include <vector>
 using std::vector;
+#include <iostream>
+using std::ifstream;
 // forward declaration
 class CommandProcessor;
 class Command;
+class FileCommandProcessorAdapter;
+class FileLineReader;
 
 //-----------------COMMAND PROCESSOR CLASS----------------//
 
@@ -18,6 +22,8 @@ class CommandProcessor
 private:
     vector<Command *> *allCommands; // pointer to a vector of command pointers
     Command *readCommand();
+
+protected:
     void saveCommand(Command *command);
 
 public:
@@ -54,4 +60,44 @@ public:
     string getCommandString(); // getter for commandString
 };
 
+//-----------------FILE COMMAND PROCESSOR ADAPTER CLASS----------------//
+
+class FileCommandProcessorAdapter : public CommandProcessor
+{
+private:
+    FileLineReader *flr;
+    Command *readCommand();
+
+public:
+    FileCommandProcessorAdapter();                                                              // default constructor
+    FileCommandProcessorAdapter(string filename);                                               // parameterized
+    FileCommandProcessorAdapter(FileCommandProcessorAdapter &otherFileCommandProcessorAdapter); // copy constructor
+    ~FileCommandProcessorAdapter();                                                             // destructor
+                                                                                                //  assignment operator
+    FileCommandProcessorAdapter &operator=(const FileCommandProcessorAdapter &otherFileCommandProcessorAdapter);
+    // stream insertion operator
+    friend std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &fileCommandProcessorAdapterObject);
+    void getCommand();
+};
+
+//--------------FILE LINE READER CLASS--------------------//
+
+class FileLineReader
+{
+private:
+    // file input reader
+    ifstream *reader;
+    // filename
+    string *filename;
+
+public:
+    FileLineReader();                                                                         // default constructor
+    FileLineReader(string filename);                                                          // parameterized constructor
+    FileLineReader(FileLineReader &otherflr);                                                 // copy constructor
+    ~FileLineReader();                                                                        // destructor
+    string FileLineReader::getFilename() const;                                               // getter
+    friend std::ostream &operator<<(std::ostream &out, const FileLineReader &fileLineReader); // stream insertion
+    // reads a line from a file and returns it.
+    string readLineFromFile();
+};
 #endif
