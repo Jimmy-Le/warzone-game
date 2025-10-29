@@ -1,0 +1,7 @@
+loadmap Earth.map
+loadmap Alberta.map
+loadmap Earth.map
+validatemap
+addplayer Alice
+addplayer Bob
+gamestart

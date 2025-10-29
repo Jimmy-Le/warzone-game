@@ -364,6 +364,8 @@ Command *FileCommandProcessorAdapter::readCommand()
 {
     string newCommand = flr->readLineFromFile();
 
+    cout << "readCommand: " << newCommand << endl;
+
     // if the command is valid, it will be saved
     if (validate(newCommand))
     {
@@ -425,6 +427,7 @@ void FileCommandProcessorAdapter::getCommands()
     // will read every line until the end of the file
     while (!this->flr->getReader()->eof())
     {
+        cout << "while reading" << endl;
         // creates a new command pointer (on stack)
         // gets input from user
         Command *commandRead = readCommand();
@@ -450,8 +453,7 @@ FileLineReader::FileLineReader()
 FileLineReader::FileLineReader(string filename)
 {
     this->filename = new string(filename);
-    ifstream newReader(filename);
-    this->reader = &newReader;
+    this->reader = new ifstream(filename);
 }
 
 // copy constructor

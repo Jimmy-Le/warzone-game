@@ -33,13 +33,18 @@ void testCommandProcessor()
         string filename;
         cin >> filename;
 
+        cout << "the file name entered is: |" << filename << "|" << endl;
+
         // creates a filecommandprocessor object
         FileCommandProcessorAdapter *fileAdapter = new FileCommandProcessorAdapter(filename);
 
+        cout << "Before reading" << endl;
         // reads all commands
         fileAdapter->getCommands();
 
         // deletes the object (avoid memory leaks
         delete fileAdapter;
+
+        cout << "------End of Command Processor testing-------";
     }
 }
