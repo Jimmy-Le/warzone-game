@@ -210,6 +210,14 @@ public:
     void validateMap();
     void addPlayers(string playerName);
     void startGame();
+
+    // Main Game Loop
+    void mainGameLoop();
+
+    // Game Phases
+    void reinforcementPhase();
+    void issueOrderPhase();
+    void executeOrderPhase();
 };
 
 //Global game engine pointer
