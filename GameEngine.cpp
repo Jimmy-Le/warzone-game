@@ -465,6 +465,9 @@ void GameEngine::setState(Status *otherStatus)
             else if (dynamic_cast<AssignReinforcement*>(getState())) {
                 startGame();// start the game
                 inStartup = false;// exit startup phase
+
+                // Start main game loop (?)
+                mainGameLoop();
             }
            
         }
@@ -730,3 +733,98 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
     }
     return currentStatus;
 }
+
+/***
+ * ------------------------- The Main Game Loop -------------------------------
+ * This function will keep looping through the different phases of the game until the end condition is met.
+ * TODO: Implement the end condition (a player conquers all territories)
+ * For now, it will loop 
+ */
+void GameEngine::mainGameLoop(){
+    int maxRounds = 2;                              // For testing, limit to 2 rounds
+    int counter = 0;
+    while(counter < maxRounds){ 
+        reinforcementPhase();
+        issueOrderPhase();
+        executeOrderPhase();
+        counter++;
+    }
+}
+
+/***
+ * ------------------------- Reinforcement Phase -------------------------------
+ * This function will handle the reinforcement phase of the game.
+ * TODO: Give players armies based on the number of territories they own and any continent bonuses. (# of territories / 3) + bonus
+ * Minimum of 3 armies per turn.
+ * TODO: User the proper reinforcement function from the Player class
+ * 
+ */
+void GameEngine::reinforcementPhase(){
+    int ownedTerritories;
+    int reinforcements;
+    int continentBonus;
+
+    // Loop through each player and calculate the reinforcements they will receive
+    for (Player *player : *players){
+        ownedTerritories = player->toDefend()->size();                                      // Number of territories owned by the player
+        reinforcements = std::max(3, ownedTerritories / 3);                                 // Minimum of 3 armies per turn or # of territories / 3
+
+        
+        continentBonus = 0;                                                                 // Continent bonus for players that own all territories in a continent                          
+        std::vector<Continent*> *continents = gameMap->getContinents();
+        for (Continent* continent : *continents){                                           // Loop through each continent and checks if the player doesn't own all territories
+            bool ownsAll = true;                                                            // break if at least one territory is not owned by the player
+            for (Territory* territory : *continent->getTerritories()){
+                if (territory->getOwner() != player){
+                    ownsAll = false;
+                    break;
+                }
+            }
+            if (ownsAll){                                                                   // If the player does own all territories in the continent, add the bonus armies
+                continentBonus += continent->getBonusArmies();
+            }
+        }
+
+        reinforcements += continentBonus;                                                   // Sum the reinforcements and continent bonus together
+
+        // Ideally we have a addReinforcements method in Player class
+        player->setReinforcementPool(player->getReinforcementPool() + reinforcements);      // Update the player's reinforcement pool
+
+        cout << "Player " << player->getName() << " receives " << reinforcements << " army reinforcement units." << endl;
+    }
+    
+}
+
+/***
+ * ------------------------- Issue Order Phase -------------------------------
+ * This function will handle the issue order phase of the game.
+ * Each player will issue orders until they choose to end their turn.
+ */
+void GameEngine::issueOrderPhase(){
+    cout << " Issueing Orders..." << endl;
+
+    for(Player* player : *players){                                     // Call the issueOrder method for each player
+        cout << player->getName() << " is issuing orders." << endl;
+        player->issueOrder();
+    }
+}
+
+/***
+ * ------------------------- Execute Order Phase -------------------------------
+ * This function will handle the execute order phase of the game.
+ * Each player's orders will be validated and executed 
+ * 
+ */
+void GameEngine::executeOrderPhase(){
+    cout << " Executing Orders..." << endl;
+
+    for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
+        cout << player->getName() << " is executing orders." << endl;
+        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;
+        for (const auto& order : listOfOrders) {
+            order->validate();
+            order->execute();
+        }
+    }
+}
+
