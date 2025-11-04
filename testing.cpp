@@ -179,49 +179,49 @@ using namespace std;
 // #include "Map.h"
 // using namespace std;
 
-int main() {
-    cout << "===== BLOCKADE ORDER TEST =====" << endl;
+// int main() {
+//     cout << "===== BLOCKADE ORDER TEST =====" << endl;
 
-    // --- Setup Players ---
-    Player* player1 = new Player("Alice");
-    //Player* neutral = new Player("Neutral"); // optional if your system tracks neutral elsewhere
+//     // --- Setup Players ---
+//     Player* player1 = new Player("Alice");
+//     //Player* neutral = new Player("Neutral"); // optional if your system tracks neutral elsewhere
 
-    // --- Setup Territories ---
-    Territory* territoryA = new Territory("Montreal");
-    territoryA->setOwner(player1);
-    territoryA->setArmies(8);
-    player1->toDefend()->push_back(territoryA);
+//     // --- Setup Territories ---
+//     Territory* territoryA = new Territory("Montreal");
+//     territoryA->setOwner(player1);
+//     territoryA->setArmies(8);
+//     player1->toDefend()->push_back(territoryA);
 
-    cout << "\nBefore Blockade:" << endl;
-    cout << "Territory: " << territoryA->getName()
-         << " | Owner: " << territoryA->getOwner()->getName()
-         << " | Armies: " << territoryA->getArmies() << endl;
+//     cout << "\nBefore Blockade:" << endl;
+//     cout << "Territory: " << territoryA->getName()
+//          << " | Owner: " << territoryA->getOwner()->getName()
+//          << " | Armies: " << territoryA->getArmies() << endl;
 
-    // --- Add a dummy "Blockade" card so validation passes ---
-    Card blockadeCard("Blockade");
-    player1->getHand()->hand->push_back(blockadeCard);
+//     // --- Add a dummy "Blockade" card so validation passes ---
+//     Card blockadeCard("Blockade");
+//     player1->getHand()->hand->push_back(blockadeCard);
 
-    // --- Create and execute Blockade order ---
-    Blockade blockadeOrder(0, "", territoryA->getName());
-    blockadeOrder.execute(*player1);
+//     // --- Create and execute Blockade order ---
+//     Blockade blockadeOrder(0, "", territoryA->getName());
+//     blockadeOrder.execute(*player1);
 
-    cout << "\nAfter Blockade Execution:" << endl;
-    cout << "Territory: " << territoryA->getName()
-         << " | Owner: " << territoryA->getOwner()->getName()
-         << " | Armies: " << territoryA->getArmies() << endl;
+//     cout << "\nAfter Blockade Execution:" << endl;
+//     cout << "Territory: " << territoryA->getName()
+//          << " | Owner: " << territoryA->getOwner()->getName()
+//          << " | Armies: " << territoryA->getArmies() << endl;
 
-    // --- Validation checks ---
-    if (territoryA->getArmies() == 16 && territoryA->getOwner()->getName() == "Neutral") {
-        cout << "\n Test Passed: Blockade doubled armies and transferred ownership.\n";
-    } else {
-        cout << "\n Test Failed: Unexpected state after blockade.\n";
-    }
+//     // --- Validation checks ---
+//     if (territoryA->getArmies() == 16 && territoryA->getOwner()->getName() == "Neutral") {
+//         cout << "\n Test Passed: Blockade doubled armies and transferred ownership.\n";
+//     } else {
+//         cout << "\n Test Failed: Unexpected state after blockade.\n";
+//     }
 
-    // Cleanup
-    delete player1;
-    //delete neutral;
-    delete territoryA;
+//     // Cleanup
+//     delete player1;
+//     //delete neutral;
+//     delete territoryA;
 
-    cout << "\n===== END OF TEST =====" << endl;
-    return 0;
-}
+//     cout << "\n===== END OF TEST =====" << endl;
+//     return 0;
+// }

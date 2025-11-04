@@ -188,6 +188,8 @@ private:
     std::vector<Player*>* players = nullptr;
     Deck* deck = nullptr;
 
+    // Private helper functions
+    bool isGameOver();                      // Checks if a player has no more territories and boot them out, as well as if only one player remains
 public:
     GameEngine();                            // default constructor
     GameEngine(Status *state);               // parameterized
@@ -218,6 +220,8 @@ public:
     void reinforcementPhase();
     void issueOrderPhase();
     void executeOrderPhase();
+
+
 };
 
 //Global game engine pointer
