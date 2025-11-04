@@ -174,21 +174,21 @@ bool DeployOrder::validate(Player& player){
 //-----------------------------------------------------------------------------
 //NEGOTIATE SUBCLASS METHOD IMPLEMENTATIONS
 //TODO: i made change to the constructor of the Negotiate order as we need a Target player with home the issuing player sets a pact
-Negotiate::Negotiate(int numberOfArmyUnits, string sourceTerritory, string targetTerritory , Player* target) 
-    : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory)  , targetPlayer(target) {};
+Negotiate::Negotiate(int numberOfArmyUnits, string sourceTerritory, string targetTerritory , string enemy) 
+    : Orders(numberOfArmyUnits, sourceTerritory, targetTerritory)  , enemy(enemy) {};
 
 Negotiate::Negotiate() : Orders(){};
 
 Negotiate::Negotiate(const Negotiate& otherNegotiate)
     : Orders(static_cast<const Orders&>(otherNegotiate)) {
-    this->targetPlayer = otherNegotiate.targetPlayer;  // shallow copy of pointer, not ownership
+    this->enemy = otherNegotiate.getEnemy();  // shallow copy of pointer, not ownership
 }
 
 
 Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
     if (this != &otherNegotiate) {
         Orders::operator=(static_cast<const Orders&>(otherNegotiate));
-        this->targetPlayer = otherNegotiate.targetPlayer; // why would i need a deep copy if something happens to the player i would like it to be reflected in the player rather than a copy of the payer 
+        this->enemy = otherNegotiate.enemy; // why would i need a deep copy if something happens to the player i would like it to be reflected in the player rather than a copy of the payer 
     }
     return *this;
 }
@@ -199,7 +199,7 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
         os << "NEGOTIATE ORDER INFORMATION" << endl;
         os << "-----------------------------------------------" << endl;
         Orders::print(os);   // base info
-        os << *this->getTargetPlayer();
+        os << this->getEnemy();
     }
 
   ostream& operator<<(ostream& os, const Negotiate& negotiate) {
@@ -213,12 +213,21 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
             return;
         }
 
+       
+        //now we need to find the targetPlayer using the name of the enemy the issuing players wants to negotiate
+        Player* targetPlayer = nullptr;
+        for(auto* it : *player.toAttack()){
+            if(it->getOwner()->getName() == enemy){
+                targetPlayer = it->getOwner();
+            };
+        }
+
         // Mutual diplomacy setup
         player.negotiatedWith.push_back(targetPlayer);
         //FIXME: okay pkayer is a raw pointer , negotiateWith is a vector of unique pointers to players , my target player also unique but issuing player raw , that is what forms incocnsistencies 
         //keep the negotiatedWith vector of raw pointers ,and make target also raw but delete it / memeory management 
         
-        this->getTargetPlayer()->negotiatedWith.push_back(&player);
+        targetPlayer->negotiatedWith.push_back(&player);
 
         cout << "Diplomacy established between " << player.getName()
             << " and " << targetPlayer->getName()
@@ -226,16 +235,22 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
 }
 
   bool Negotiate::validate(Player& player){
-    if (this->getTargetPlayer() == nullptr) {
+     Player* targetPlayer = nullptr;
+        for(auto* it : *player.toAttack()){
+            if(it->getOwner()->getName() == enemy){
+                targetPlayer = it->getOwner();
+            };
+        }
+    if ( targetPlayer == nullptr) {
             cout << "INVALID NEGOTIATE ORDER: Target player not specified.\n";
             return false;
         }
-        if (this->getTargetPlayer() == &player) {
+        if (targetPlayer == &player) {
             cout << "INVALID NEGOTIATE ORDER: Cannot negotiate with yourself.\n";
             return false;
         }
         cout << "Negotiate order validated between " << player.getName()
-            << " and " << this->getTargetPlayer()->getName() << ".\n";
+            << " and " << targetPlayer->getName() << ".\n";
         return true;
 }
 

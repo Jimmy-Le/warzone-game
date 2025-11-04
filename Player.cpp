@@ -258,8 +258,9 @@ int Player::getReinforcementPool() const
 bool Player::generateOrder()
 {
     int orderChoice;
-    string source, target;
+    string source, target , enemy;
     int numUnits;
+    
     std::unique_ptr<Orders> order;
 
     cout << "========== Generating Order ==========" << endl; // Allows the player to choose which type of order to issue
@@ -297,6 +298,10 @@ bool Player::generateOrder()
     cout << "\nEnter number of army units: " << endl; // Get the number of armies
     cin >> numUnits;
 
+    cout <<"\n Enter the name of the enemy for negotiate order: " <<endl;
+    cin >> enemy;
+
+
     switch (orderChoice)
     { // Based on the Player's choice, create an Order and send it to the OrderList
     case 1:
@@ -333,7 +338,7 @@ bool Player::generateOrder()
     }
     case 5:
     {
-        order = std::make_unique<Negotiate>(numUnits, source, target);
+        order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Negotiate Order created.\n"
              << endl;
