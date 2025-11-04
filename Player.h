@@ -19,8 +19,9 @@ class Territory;
 
 class Player{
     private:
-        int reinforcementPool = 10;   
-        Hand* hand;                                                 // Number of reinforcement armies the player has
+        int reinforcementPool;                                                          // Number of reinforcement armies the player has
+        int tentativePool;                                                              // Number of reinforcement armies displayed during the reinforcement phase (Used to show how many armies are left to deploy)
+        Hand* hand;                                                 
     public:
         const string BANNER = "========================================";               // Banner for display purposes
         vector<Player*> negotiatedWith;
@@ -46,8 +47,6 @@ class Player{
         std::vector<Territory*>* toDefend();                                            // Returns a list of territories to be defended
         std::vector<Territory*>* toAttack();                                            // Returns a list of territories to be attacked
 
-        std::vector<Territory*>* getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
-
 
 
         void issueOrder() ;                                                             // Add a specific Order to the OrderList
@@ -57,14 +56,17 @@ class Player{
          //okay i have removed defend collection from private just so that i can work on execute of deploy order
     private:
         bool generateOrder();                                                                   // Helper to generate an order
-        void deployReinforcments(Territory *source);                                           // Helper to deploy reinforcements
+        void deployReinforcments(string source);                                           // Helper to deploy reinforcements
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
+
+        void getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
+
 
         std::string* name;
         Hand* cardCollection;                                           // The Player's Hand of Cards
         Orderlist* orderCollection;                           // The Player's List of Orders    
         std::vector<Territory*>* attackCollection;  // A List of Territories the Player should Attack
-        std::vector<Territory*>* defendCollection; // A List of Territories the Player should Defend                                    // A List of Orders a player executes
+        std::vector<Territory*>* defendCollection; // A List of Territories the Player should Defend                                    
 };
 
 #endif

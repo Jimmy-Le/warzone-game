@@ -790,7 +790,7 @@ void GameEngine::reinforcementPhase(){
         reinforcements += continentBonus;                                                   // Sum the reinforcements and continent bonus together
 
         // Ideally we have a addReinforcements method in Player class
-        player->setReinforcementPool(player->getReinforcementPool() + reinforcements);      // Update the player's reinforcement pool
+        player->addToReinforcementPool(reinforcements);      // Update the player's reinforcement pool
 
         cout << "Player " << player->getName() << " receives " << reinforcements << " army reinforcement units." << endl;
     }
@@ -815,6 +815,8 @@ void GameEngine::issueOrderPhase(){
  * ------------------------- Execute Order Phase -------------------------------
  * This function will handle the execute order phase of the game.
  * Each player's orders will be validated and executed 
+ * TODO: Ensure that orders are executed in the correct order (e.g., all deploy orders before attack orders)
+ * TODO: Make it execute and validate order in a round robin fashion rather than one player at a time
  * 
  */
 void GameEngine::executeOrderPhase(){
@@ -822,10 +824,10 @@ void GameEngine::executeOrderPhase(){
 
     for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
         cout << player->getName() << " is executing orders." << endl;
-        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;
+        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
         for (const auto& order : listOfOrders) {
-            order->validate();
-            order->execute();
+            order->validate(*player);
+            order->execute(*player);
         }
     }
 }
