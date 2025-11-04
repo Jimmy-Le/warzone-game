@@ -21,6 +21,7 @@ class Player{
     private:
         int reinforcementPool = 0;                                                    // Number of reinforcement armies the player has
     public:
+        const string BANNER = "========================================";               // Banner for display purposes
         Player();                                                                       // Player Constructor
         Player(std::string name);                                                       // Parameterized Constructor
         Player(const Player& other);                                                    // Player Copy Constructor
@@ -29,21 +30,33 @@ class Player{
         
         void addToDefend(Territory* territory);                                         // Add a territory to the list of territories to be defended
         void addToAttack(Territory* territory);                                         // Add a territory to the list of territories to be attacked
+        void removeFromDefend(Territory* territory);                                      // Remove a territory from the list of territories to be defended
+        void removeFromAttack(Territory* territory);                                      // Remove a territory from the list of territories to be attacked
+
         Orderlist* getOrderList();                                                      // Returns the player's order list
         Hand* getHand();
 
         void setReinforcementPool(int armies);                                        // Sets the number of reinforcement armies the player has
         int getReinforcementPool() const;                                             // Returns the number of reinforcement armies
+        void addToReinforcementPool(int armies);                                         // Adds armies to the reinforcement pool
+        void removeFromReinforcementPool(int armies);                                      // Removes armies from the reinforcement pool
 
         std::vector<Territory*>* toDefend();                                            // Returns a list of territories to be defended
         std::vector<Territory*>* toAttack();                                            // Returns a list of territories to be attacked
+
+        std::vector<Territory*>* getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
+
+
+
         void issueOrder() ;                                                             // Add a specific Order to the OrderList
 
         friend std::ostream& operator << (std::ostream& out, const Player& player);     // Overload the << operator for easy printing of Player details                                        // Player assignment operator
         std::string getName() const { return *name; }                                   // Getter for player's name
         
     private:
-        bool generateOrder();                                           // Helper to generate an order
+        bool generateOrder();                                                                   // Helper to generate an order
+        void deployReinforcments(Territory *source);                                           // Helper to deploy reinforcements
+        Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
         std::string* name;
 

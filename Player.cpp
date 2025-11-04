@@ -179,6 +179,20 @@ vector<Territory *> *Player::toDefend()
 vector<Territory *> *Player::toAttack()
 {
     return attackCollection;
+
+}
+
+vector<Territory *> *Player::getEnemyTerritories(Territory *source)
+{
+    vector<Territory *> *enemyTerritories = new vector<Territory *>();
+    for (Territory *adjacent : *(source->getAdjacentTerritories()))
+    {
+        if (adjacent->getOwner() != this)
+        {
+            enemyTerritories->push_back(adjacent);
+        }
+    }
+    return enemyTerritories;
 }
 
 /***
@@ -187,10 +201,21 @@ vector<Territory *> *Player::toAttack()
  * TODO maybe replace move with an insert function
  */
 void Player::issueOrder()
-{
+{   
+
     bool finished = false;
     while (!finished)
     {
+        cout << BANNER << endl;
+        cout << *name << "'s Territories" << endl;
+        cout << BANNER << endl;
+
+        for (Territory *territory : *defendCollection)
+        {
+            cout << "- " << territory->getName() << ": "  << territory->getArmies() << endl;
+        }
+
+
         finished = generateOrder();
     }
 }
@@ -218,6 +243,7 @@ void Player::addToAttack(Territory *territory)
         attackCollection->push_back(territory);
     }
 }
+
 
 /***
  * getOrderList()
@@ -260,6 +286,25 @@ bool Player::generateOrder()
     int numUnits;
     std::unique_ptr<Orders> order;
 
+    Territory* sourceTerritory;
+
+    // Validation for source territory can be added here
+
+    while(reinforcementPool > 0){
+        cout << "Remaining Reinforcement Pool: " << reinforcementPool << endl;
+        cout << "\nPlease choose a territory: " << endl; // Get the starting territory
+        cin >> source;
+
+        sourceTerritory = findTerritory(defendCollection, source);
+
+        if(sourceTerritory == nullptr){
+            cout << "Invalid territory. Please choose a valid territory from your list." << endl;
+            continue;
+        } else {
+            deployReinforcments(sourceTerritory);
+        }
+    } 
+
     cout << "========== Generating Order ==========" << endl; // Allows the player to choose which type of order to issue
     cout << "Please choose which order to issue:" << endl;
     cout << "1. Deploy" << endl;
@@ -278,12 +323,6 @@ bool Player::generateOrder()
         return true; // Exit if the player is finished issuing orders
     }
 
-    cout << "\nEnter source territory: " << endl; // Get the source territory
-    for (const Territory *territory : *defendCollection)
-    { // Display territories to defend
-        cout << territory->getName() << " " << endl;
-    }
-    cin >> source;
 
     cout << "\nEnter target territory: " << endl; // Get the target territory
     for (const Territory *territory : *attackCollection)
@@ -353,4 +392,53 @@ bool Player::generateOrder()
     }
     }
     return false;
+}
+
+void Player::deployReinforcments( Territory * source)
+{
+
+    int deployUnits;
+    cout << "Please enter the number of armies to deploy (Available: " << reinforcementPool << "): ";
+
+    cin >> deployUnits;
+
+    // Validate the number of armies to deploy
+    while (deployUnits < 0 || deployUnits > reinforcementPool)
+    {
+        cout << "Invalid number of armies. Please enter a value between 0 and " << reinforcementPool << ": ";
+        cin >> deployUnits;
+    }
+
+    // Create a Deploy order and add it to the order list
+    std::unique_ptr<Orders> deployOrder = std::make_unique<DeployOrder>(deployUnits, source->getName(), source->getName()); // maybe change the source
+    orderCollection->orderList.push_back(std::move(deployOrder));
+    cout << "Sending " << deployUnits << " units to " << source->getName() << endl;
+
+    // Update the reinforcement pool
+    removeFromReinforcementPool(deployUnits);
+}
+
+
+/***
+ * This function will find a territory by its name
+ */
+Territory *Player::findTerritory(std::vector<Territory*> *territoryList, string source){
+    for (Territory *territory : *territoryList){
+        if (territory->getName() == source){
+            return territory;
+        }
+    }
+    return nullptr; // Territory not found
+}
+
+void Player::addToReinforcementPool(int armies){
+    reinforcementPool += armies;
+}
+
+void Player::removeFromReinforcementPool(int armies){
+    if (armies <= reinforcementPool){
+        reinforcementPool -= armies;
+    } else {
+        reinforcementPool = 0;
+    }
 }

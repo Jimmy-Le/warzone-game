@@ -743,10 +743,12 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
 void GameEngine::mainGameLoop(){
     int maxRounds = 2;                              // For testing, limit to 2 rounds
     int counter = 0;
-    while(counter < maxRounds){ 
+    bool gameOver = false;
+    while(counter < maxRounds || gameOver == true){ 
         reinforcementPhase();
         issueOrderPhase();
         executeOrderPhase();
+        gameOver = isGameOver();
         counter++;
     }
 }
@@ -801,7 +803,7 @@ void GameEngine::reinforcementPhase(){
  * Each player will issue orders until they choose to end their turn.
  */
 void GameEngine::issueOrderPhase(){
-    cout << " Issueing Orders..." << endl;
+    cout << "Issueing Orders...\n" << endl;
 
     for(Player* player : *players){                                     // Call the issueOrder method for each player
         cout << player->getName() << " is issuing orders." << endl;
@@ -816,7 +818,7 @@ void GameEngine::issueOrderPhase(){
  * 
  */
 void GameEngine::executeOrderPhase(){
-    cout << " Executing Orders..." << endl;
+    cout << "Executing Orders...\n" << endl;
 
     for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
         cout << player->getName() << " is executing orders." << endl;
@@ -826,5 +828,30 @@ void GameEngine::executeOrderPhase(){
             order->execute();
         }
     }
+}
+
+
+bool GameEngine::isGameOver(){
+    // Check if any player has no more territories
+    for (Player* player: *players) {
+        if(player->toDefend()->empty()) {                           // Would need to make sure that this list is updated properly
+            cout << "Player " << player->getName() << " has been eliminated!" << endl;
+            
+            players->erase(std::remove(players->begin(), players->end(), player), players->end()); // Remove player from the game
+            delete player; // Free memory
+            player = NULL;
+        }
+      
+    }
+
+    // Check if only one player remains
+    if (players->size() == 1) {
+        cout << "Player " << (*players)[0]->getName() << " is the winner!" << endl;
+        return true; // Game over
+    } else {
+        cout << players->size() << " players remain in the game." << endl;
+    }
+
+    return false; // Game continues
 }
 
