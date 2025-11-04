@@ -52,7 +52,7 @@ Card& Card::operator=(const Card& other) {                                      
 void Card::play(Hand * specificHand,Deck * specificDeck, Player* player) {                           // This function plays a Card from a specified Hand and then returns it to a specified Deck                   
     int usedCard = findIndexOfCard(specificHand->hand, this->cardType);                             // Finds and save the index of the played Card
     Orderlist* playerOrders = player->getOrderList();
-
+    //FIXME: Time to write the implementation for actual returning the card to the deck.
     // The following if/else section is to find the Card type and continue depending on which
     if ((* this->cardType) == "bomb") {
         playerOrders->orderList.push_back(make_unique<Bomb>(Bomb(0, "", "")));
@@ -71,7 +71,7 @@ void Card::play(Hand * specificHand,Deck * specificDeck, Player* player) {      
         cout << "Player used a airlift card. The card has been returned to the deck.\n" << endl;
     }
     else if ((* this->cardType) == "diplomacy") {
-        playerOrders->orderList.push_back(make_unique<Negotiate>(Negotiate(0, "", "")));
+        playerOrders->orderList.push_back(make_unique<Negotiate>(Negotiate(0, "", "" , nullptr)));
         cout << "Player used a diplomacy card. The card has been returned to the deck.\n" << endl;
     }
     specificDeck->deck->push_back(specificHand->hand->at(usedCard));                                // This adds the Card back to the Deck

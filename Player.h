@@ -19,9 +19,11 @@ class Territory;
 
 class Player{
     private:
-        int reinforcementPool = 0;                                                    // Number of reinforcement armies the player has
+        int reinforcementPool = 10;   
+        Hand* hand;                                                 // Number of reinforcement armies the player has
     public:
         const string BANNER = "========================================";               // Banner for display purposes
+        vector<Player*> negotiatedWith;
         Player();                                                                       // Player Constructor
         Player(std::string name);                                                       // Parameterized Constructor
         Player(const Player& other);                                                    // Player Copy Constructor
@@ -52,19 +54,17 @@ class Player{
 
         friend std::ostream& operator << (std::ostream& out, const Player& player);     // Overload the << operator for easy printing of Player details                                        // Player assignment operator
         std::string getName() const { return *name; }                                   // Getter for player's name
-        
+         //okay i have removed defend collection from private just so that i can work on execute of deploy order
     private:
         bool generateOrder();                                                                   // Helper to generate an order
         void deployReinforcments(Territory *source);                                           // Helper to deploy reinforcements
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
         std::string* name;
-
-        std::vector<Territory*>* defendCollection;                      // A List of Territories the Player should Defend
-        std::vector<Territory*>* attackCollection;                      // A List of Territories the Player should Attack
-        Hand* cardCollection;                                           // A List of Cards in a Player's hand
-
-        Orderlist* orderCollection;                                     // A List of Orders a player executes
+        Hand* cardCollection;                                           // The Player's Hand of Cards
+        Orderlist* orderCollection;                           // The Player's List of Orders    
+        std::vector<Territory*>* attackCollection;  // A List of Territories the Player should Attack
+        std::vector<Territory*>* defendCollection; // A List of Territories the Player should Defend                                    // A List of Orders a player executes
 };
 
 #endif
