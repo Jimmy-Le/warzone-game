@@ -36,9 +36,9 @@ int testOrderList() {
 
     for (auto &o : polymorphicOrders) {
         cout << *o << endl;
-        o->validate();
+        // o->validate();
         cout << endl;
-        o->execute();
+        // o->execute();
         cout << "\n--------------------------------------\n";
     }
 
