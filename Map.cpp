@@ -22,7 +22,7 @@ Territory::Territory() {
 Territory::Territory(const string& territoryName){
     name = new string(territoryName);
     owner = nullptr;
-    armies = new int(0);
+    armies = new int(15);
     continent = nullptr;
     adjacentTerritories = new vector<Territory*>();
 }

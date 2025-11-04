@@ -7,7 +7,9 @@
 Player::Player()
 {
     this->name = new string("John Doe");
+    Territory* t = new Territory("Mexico");
     this->defendCollection = new vector<Territory *>();
+    this->defendCollection->push_back(t);
     this->attackCollection = new vector<Territory *>();
     this->cardCollection = new Hand();
     this->orderCollection = new Orderlist(); // the default constructor of orderlist used i didnt define any for orderlist class
@@ -70,7 +72,7 @@ Player::Player(const Player &other)
     orderCollection = new Orderlist();
     for (const auto &order : other.orderCollection->orderList)
     {
-        Orders *newOrder = new Orders(*order);
+        Orders *newOrder = new Orders(*order); //objects from an abstract class cannot be instantiated
         orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
     }
 }
@@ -234,7 +236,7 @@ Orderlist *Player::getOrderList()
  */
 Hand *Player::getHand()
 {
-    return cardCollection;
+    return this->cardCollection;
 }
 
 //--------Functions related to reinforcement armies pool(Ass2)-------//
