@@ -61,16 +61,17 @@ class DeployOrder : public Orders{
 class Negotiate : public Orders{
   public:
     Negotiate();
-    Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory , Player* targetPlayer = nullptr);
+    Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory , string enemy);
     Negotiate(const Negotiate& otherNegotiate);
     Negotiate& operator=(const Negotiate& otherNegotiate);
     void print(ostream& os) const;
     void execute(Player& player);
     bool validate(Player& player);
     friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
-    Player* getTargetPlayer() const { return targetPlayer ;} //TODO: I BELIEVE THE GET IS SPECIFIC METHOD FOR THE UNIQUE PTR
+    string getEnemy() const { return enemy ; }; //TODO: I BELIEVE THE GET IS SPECIFIC METHOD FOR THE UNIQUE PTR
+    void setEnemy( string enemy){ this->enemy = enemy ; };
     private:
-      Player* targetPlayer;
+      string enemy;
 
 
 };

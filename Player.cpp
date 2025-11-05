@@ -307,8 +307,9 @@ int Player::getReinforcementPool() const
 bool Player::generateOrder()
 {
     int orderChoice;
-    string source, target;
+    string source, target , enemy;
     int numUnits;
+    
     std::unique_ptr<Orders> order;
 
     Territory* sourceTerritory;
@@ -342,6 +343,26 @@ bool Player::generateOrder()
     {
         return true; // Exit if the player is finished issuing orders
     }
+
+    cout << "\nEnter source territory: " << endl; // Get the source territory
+    for (const Territory *territory : *defendCollection)
+    { // Display territories to defend
+        cout << territory->getName() << " " << endl;
+    }
+    cin >> source;
+
+    cout << "\nEnter target territory: " << endl; // Get the target territory
+    for (const Territory *territory : *attackCollection)
+    { // Display territories to attack
+        cout << territory->getName() << " " << endl;
+    }
+    cin >> target;
+
+    cout << "\nEnter number of army units: " << endl; // Get the number of armies
+    cin >> numUnits;
+
+    cout <<"\n Enter the name of the enemy for negotiate order: " <<endl;
+    cin >> enemy;
 
 
     switch (orderChoice)
@@ -397,9 +418,7 @@ bool Player::generateOrder()
     }
     case 5: // Negotiate Order
     {
-        cout << "Please enter the target player you would like to negotiate with: " << endl; // Get the target player
-        cin >> target;
-        order = std::make_unique<Negotiate>(numUnits, source, target); // Change the target territory later?  // TODO FIX THIS
+        order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Negotiate Order created.\n" << endl;
         break;
