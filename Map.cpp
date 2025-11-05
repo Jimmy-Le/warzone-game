@@ -97,7 +97,7 @@ void Territory::setName(const string& territoryName) {
 
 void Territory::setOwner(Player* newOwner){
     owner = newOwner;
-} 
+}
 
 void Territory::setArmies(int newArmies){
     *armies = newArmies;
@@ -462,6 +462,9 @@ void Map::distributeTerritories(vector<Player*>& players){
     int i = 0;
     for (auto* territory : territories){
         Player* currentPlayer = players[i % numPlayers];
+        // Set ownership
+        territory->setOwner(currentPlayer);
+        // Add to the player's defend list
         currentPlayer->addToDefend(territory);
         i++;
     }
