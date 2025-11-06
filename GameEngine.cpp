@@ -382,7 +382,8 @@ GameEngine::GameEngine(Status *state)
 GameEngine::~GameEngine()
 {
     delete this->state;
-    if (gameMap != nullptr){
+    if (gameMap != nullptr)
+    {
         delete gameMap;
     }
 }
@@ -427,109 +428,131 @@ void GameEngine::setState(Status *otherStatus)
 };
 
 //------------------------- StARTUP PHASE (ASS2)----------------------------
-    void GameEngine::startupPhase(){
-        cout << "\n================== STARTUP PHASE =================\n" << endl;
-        cout << "Commands:\n"
-        <<"1. loadmap <filename> \n"
-        <<"2. validatemap  \n"
-        <<"3. addplayer <playerName> \n"
-        <<"4. gamestart \n";
+void GameEngine::startupPhase()
+{
+    cout << "\n================== STARTUP PHASE =================\n"
+         << endl;
+    cout << "Commands:\n"
+         << "1. loadmap <filename> \n"
+         << "2. validatemap  \n"
+         << "3. addplayer <playerName> \n"
+         << "4. gamestart \n";
 
-        bool inStartup = true;
-        while(inStartup){
-            listen();
-            // Get the last command and its argument
-            Command* cmd = theCommandProcessor->lastCommand();
-            string cmdStr = cmd->getCommandString();
-            string command, arg;
-            
-            // Parse command and argument
+    bool inStartup = true;
+    while (inStartup)
+    {
+        listen();
+        // Get the last command and its argument
+        Command *cmd = theCommandProcessor->lastCommand();
+        string cmdStr = cmd->getCommandString();
+        string command, arg;
 
-            size_t spacePos = cmdStr.find(' ');
-            if (spacePos != string::npos) {
-                command = cmdStr.substr(0, spacePos);
-                arg = cmdStr.substr(spacePos + 1);
-            } else {
-                command = cmdStr;
-            }
+        // Parse command and argument
 
-            if (dynamic_cast<MapLoaded*>(getState())) {
-            loadMap(arg);// load the map
-            }
-            else if (dynamic_cast<MapValidated*>(getState())) {
-                validateMap();// validate the map
-            }
-            else if (dynamic_cast<PlayersAdded*>(getState())) {
-                addPlayers(arg);// add players
-            }
-            else if (dynamic_cast<AssignReinforcement*>(getState())) {
-                startGame();// start the game
-                inStartup = false;// exit startup phase
-            }
-           
+        size_t spacePos = cmdStr.find(' ');
+        if (spacePos != string::npos)
+        {
+            command = cmdStr.substr(0, spacePos);
+            arg = cmdStr.substr(spacePos + 1);
+        }
+        else
+        {
+            command = cmdStr;
+        }
+
+        if (dynamic_cast<MapLoaded *>(getState()))
+        {
+            loadMap(arg); // load the map
+        }
+        else if (dynamic_cast<MapValidated *>(getState()))
+        {
+            validateMap(); // validate the map
+        }
+        else if (dynamic_cast<PlayersAdded *>(getState()))
+        {
+            addPlayers(arg); // add players
+        }
+        else if (dynamic_cast<AssignReinforcement *>(getState()))
+        {
+            startGame();       // start the game
+            inStartup = false; // exit startup phase
         }
     }
+}
 
 //-------------------------HELPER FUNCTIONS FOR GAME SETUP----------------------------
-void GameEngine::loadMap(string filename){
-    cout<<"Loading map file: "<< filename << endl;
+void GameEngine::loadMap(string filename)
+{
+    cout << "Loading map file: " << filename << endl;
 
     MapLoader loader;
-    Map* loadedMap = loader.loadMap(filename);
+    Map *loadedMap = loader.loadMap(filename);
 
-    if (loadedMap ==nullptr){
-        cout<< "Failed to load map from file: " << filename << endl;
+    if (loadedMap == nullptr)
+    {
+        cout << "Failed to load map from file: " << filename << endl;
         return;
     }
-    if (gameMap != nullptr){
+    if (gameMap != nullptr)
+    {
         delete gameMap;
     }
     gameMap = loadedMap;
 
-    cout <<"Map loaded successfully from filename:"<< filename << endl;
+    cout << "Map loaded successfully from filename:" << filename << endl;
 }
 
-void GameEngine::validateMap(){
-    if (gameMap == nullptr){
-        cout<< "No map loaded"<< endl;
+void GameEngine::validateMap()
+{
+    if (gameMap == nullptr)
+    {
+        cout << "No map loaded" << endl;
         return;
     }
 
-    cout<<"Validating map..."<< endl;
+    cout << "Validating map..." << endl;
     bool isValid = gameMap->validate();
 
-    if (isValid){
-        cout<<"Map is valid!"<< endl;
-    } else {
-        cout<<"Map is invalid!"<< endl;
+    if (isValid)
+    {
+        cout << "Map is valid!" << endl;
+    }
+    else
+    {
+        cout << "Map is invalid!" << endl;
     }
 }
 
-void GameEngine::addPlayers(string playerName){
-    if (players == nullptr){
-        players = new std::vector<Player*>();
+void GameEngine::addPlayers(string playerName)
+{
+    if (players == nullptr)
+    {
+        players = new std::vector<Player *>();
     }
 
-    if (players->size() >=6){
-        cout<<"Maximum number of players reached."<< endl;
+    if (players->size() >= 6)
+    {
+        cout << "Maximum number of players reached." << endl;
         return;
     }
 
-    Player* newPlayer = new Player(playerName);
+    Player *newPlayer = new Player(playerName);
     players->push_back(newPlayer);
 
-    cout<<"Player added: " << playerName << endl;
+    cout << "Player added: " << playerName << endl;
 }
 
-void GameEngine::startGame(){
-    if (players->size()<2){
-        cout <<"At least two players are requiredto start the game."<< endl;
+void GameEngine::startGame()
+{
+    if (players->size() < 2)
+    {
+        cout << "At least two players are requiredto start the game." << endl;
         return;
     }
 
-    cout << "\nStarting game setup..."<< endl;
+    cout << "\nStarting game setup..." << endl;
     // a) fairly distribute all the territories to the players
-    cout << "Distributing territories..."<< endl;
+    cout << "Distributing territories..." << endl;
     gameMap->distributeTerritories(*players);
 
     // b) determine randomly the order of play of the players in the game
@@ -537,23 +560,27 @@ void GameEngine::startGame(){
     std::shuffle(players->begin(), players->end(), std::mt19937{std::random_device{}()});
 
     // ensure deck exists before drawing cards
-    if (deck == nullptr) {
+    if (deck == nullptr)
+    {
         cout << "Initializing deck..." << endl;
         deck = new Deck(); // ensure Deck has a default ctor; adjust if not
     }
 
     // c) give 50 initial army units to the players (placed in reinforcement pool)
     cout << "Assigning 50 armies per player..." << endl;
-    for (auto* player : *players){
-        //give 50 initial army units to the players, which are placed in their respective reinforcement pool 
+    for (auto *player : *players)
+    {
+        // give 50 initial army units to the players, which are placed in their respective reinforcement pool
         player->setReinforcementPool(50);
     }
 
     // d) let each player draw 2 initial cards from the deck
     cout << "Dealing 2 cards to each player..." << endl;
-    for (auto* player : *players){
+    for (auto *player : *players)
+    {
         // check deck and hand validity inside draw if implemented; assuming valid here
-        if (deck != nullptr) {
+        if (deck != nullptr)
+        {
             deck->draw(player->getHand());
             deck->draw(player->getHand());
         }
@@ -572,46 +599,24 @@ GameEngine *theGameEngine = new GameEngine(new Start());
 // this is the method that controls everything in a way
 void listen()
 {
-    // old version
-    //  Prompts user for command
-    //  cout << "Enter a command: ";
-    //  string input;
-    //  cin >> input;
-
-    // NEW CHANGES!!!
     // Now, we will get commands from the commandProcessor!
     // prompt user for command
     theCommandProcessor->getCommand();
     // now we can go check the vector of commands to get that command (if it is valid)
     Command *command = theCommandProcessor->lastCommand();
 
-    //---- Only take the 1st one as the command ----//
-    // // want to make sure it only grabs the first part of the string (before the space)
-    // string input;
-    // // finds the first instance of space character
-    // // will be -1 if no space
-    // int indexOfSpace = command->getCommandString().find(' ');
-    // if (indexOfSpace != -1)
-    // {
-    //     // we split the string
-    //     // only have the part before the space
-    //     input = command->getCommandString().substr(0, indexOfSpace);
-    // }
-    // else
-    // {
-    //     // no space,no problem
-    //     input = command->getCommandString();
-    // }
-
     string fullCmd = command->getCommandString();
     string input;
     string arg;
 
     int indexOfSpace = fullCmd.find(' ');
-    if (indexOfSpace != string::npos) {
+    if (indexOfSpace != string::npos)
+    {
         input = fullCmd.substr(0, indexOfSpace);
         arg = fullCmd.substr(indexOfSpace + 1);
-    } else {
+    }
+    else
+    {
         input = fullCmd;
         arg = "";
     }
@@ -631,8 +636,6 @@ void listen()
         // if we don't, then we switch the state in GameEngine
         theGameEngine->setState(nextStatus);
     }
-
-
 };
 
 //--------------------------SWITCH STATUS-------------------------//
