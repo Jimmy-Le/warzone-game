@@ -54,24 +54,25 @@ void Card::play(Hand * specificHand,Deck * specificDeck, Player* player) {      
     Orderlist* playerOrders = player->getOrderList();
     //FIXME: Time to write the implementation for actual returning the card to the deck.
     // The following if/else section is to find the Card type and continue depending on which
+    // We are currently removing the functionality of adding to the player's OrderList as we will implement that in the issueOrders
     if ((* this->cardType) == "bomb") {
-        playerOrders->orderList.push_back(make_unique<Bomb>(Bomb(0, "", "")));
+        // playerOrders->orderList.push_back(make_unique<Bomb>(Bomb(0, "", "")));
         cout << "Player used a bomb card. The card has been returned to the deck.\n" << endl;
     }
     else if ((* this->cardType) == "reinforcement") {
-        playerOrders->orderList.push_back(make_unique<DeployOrder>(DeployOrder(0, "", "")));
+        // playerOrders->orderList.push_back(make_unique<DeployOrder>(DeployOrder(0, "", "")));
         cout << "Player used a reinforcement card. The card has been returned to the deck.\n" << endl;
     }
     else if ((* this->cardType) == "blockade") {
-        playerOrders->orderList.push_back(make_unique<Blockade>(Blockade(0, "", "")));
+        // playerOrders->orderList.push_back(make_unique<Blockade>(Blockade(0, "", "")));
         cout << "Player used a blockade card. The card has been returned to the deck.\n" << endl;
     }
     else if ((* this->cardType) == "airlift") {
-        playerOrders->orderList.push_back(make_unique<Airlift>(Airlift(0, "", "")));
+        // playerOrders->orderList.push_back(make_unique<Airlift>(Airlift(0, "", "")));
         cout << "Player used a airlift card. The card has been returned to the deck.\n" << endl;
     }
     else if ((* this->cardType) == "diplomacy") {
-        playerOrders->orderList.push_back(make_unique<Negotiate>(Negotiate(0, "", "" , nullptr)));
+        // playerOrders->orderList.push_back(make_unique<Negotiate>(Negotiate(0, "", "" , nullptr)));
         cout << "Player used a diplomacy card. The card has been returned to the deck.\n" << endl;
     }
     specificDeck->deck->push_back(specificHand->hand->at(usedCard));                                // This adds the Card back to the Deck

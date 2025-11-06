@@ -176,7 +176,7 @@ vector<Territory *> *Player::toDefend()
 /***
  * toAttack()
  * Returns a list of territories that are to be attacked
- * TODO Arbitrarily choose which territory to be attacked
+ * I am interpreting this as returning all territories adjacent to the player's territories that are owned by other players
  */
 vector<Territory *> *Player::toAttack()
 {
@@ -224,20 +224,14 @@ void Player::issueOrder()
         cout << *name << "'s Territories" << endl;
         cout << BANNER << endl;
 
-        for (Territory *territory : *defendCollection)
-        {
-            cout << "- " << territory->getName() << ": "  << territory->getArmies() <<" " << territory->getOwner() << endl;
-        }
+        printTerritoryList(defendCollection);
 
         cout << BANNER << endl;
         cout << "Territories to attack" << endl;
         cout << BANNER << endl;
 
         toAttack(); // Update the attack collection
-        for (Territory *territory : *attackCollection)
-        {
-            cout << "- " << territory->getName() << ": "  << territory->getArmies() << " " << territory->getOwner() << endl;
-        }
+        printTerritoryList(attackCollection);
 
 
 
@@ -344,26 +338,6 @@ bool Player::generateOrder()
         return true; // Exit if the player is finished issuing orders
     }
 
-    cout << "\nEnter source territory: " << endl; // Get the source territory
-    for (const Territory *territory : *defendCollection)
-    { // Display territories to defend
-        cout << territory->getName() << " " << endl;
-    }
-    cin >> source;
-
-    cout << "\nEnter target territory: " << endl; // Get the target territory
-    for (const Territory *territory : *attackCollection)
-    { // Display territories to attack
-        cout << territory->getName() << " " << endl;
-    }
-    cin >> target;
-
-    cout << "\nEnter number of army units: " << endl; // Get the number of armies
-    cin >> numUnits;
-
-    cout <<"\n Enter the name of the enemy for negotiate order: " <<endl;
-    cin >> enemy;
-
 
     switch (orderChoice)
     { // Based on the Player's choice, create an Order and send it to the OrderList
@@ -379,6 +353,14 @@ bool Player::generateOrder()
     {
         cout << "Please enter the source territory you would like your army to advance from: " << endl; // Get the source territory
         cin >> source;
+
+        sourceTerritory = findTerritory(defendCollection, source);
+        if(sourceTerritory != nullptr){
+            cout << BANNER << endl;
+            printTerritoryList(sourceTerritory->getAdjacentTerritories());
+            cout << BANNER << endl;
+        }
+        
         cout << "Please enter the target territory you would like your army to advance to: " << endl;   // Get the target territory
         cin >> target;
         cout << "Please enter the number of army units to advance: " << endl;                           // Get the number of army units
@@ -394,8 +376,17 @@ bool Player::generateOrder()
 
         cout << "Please enter the source territory you would like to bomb from: " << endl; // Get the source territory
         cin >> source;
+
+        sourceTerritory = findTerritory(defendCollection, source);
+        if(sourceTerritory != nullptr){
+            cout << BANNER << endl;
+            printTerritoryList(sourceTerritory->getAdjacentTerritories());
+            cout << BANNER << endl;
+        }
+        
         cout << "Please enter the target territory you would like to bomb: " << endl;      // Get the target territory
         cin >> target;
+
 
         order = std::make_unique<Bomb>(0, source, target);
         orderCollection->orderList.push_back(std::move(order));
@@ -404,6 +395,11 @@ bool Player::generateOrder()
     }
     case 4: // Airlift Order
     {
+
+        cout << BANNER << endl;
+        printTerritoryList(defendCollection);
+        cout << BANNER << endl;
+
         cout << "Please enter the source territory you would like your army to airlift from: " << endl; // Get the source territory
         cin >> source; 
         cout << "Please enter the target territory you would like your army to airlift to: " << endl;   // Get the target territory
@@ -425,6 +421,9 @@ bool Player::generateOrder()
     }
     case 6:
     {
+        cout << BANNER << endl;
+        printTerritoryList(defendCollection);
+        cout << BANNER << endl;
         cout << "Please enter the territory you would like form a blockade: " << endl; // Get the source territory
         cin >> source;
         order = std::make_unique<Blockade>(0, source, source);          // Might have to change the target later
@@ -438,6 +437,8 @@ bool Player::generateOrder()
         break;
     }
     }
+    
+    sourceTerritory = nullptr;
     return false;
 }
 
@@ -498,5 +499,12 @@ void Player::removeFromReinforcementPool(int armies){
         reinforcementPool -= armies;
     } else {
         reinforcementPool = 0;
+    }
+}
+
+void Player::printTerritoryList(std::vector<Territory*>* territoryList){
+
+    for (Territory *territory : *territoryList){
+        cout << "- "<< std::setw(20) << std::left << (territory->getOwner()->getName() + ": ") << territory->getName() << " = "  << territory->getArmies() << endl;
     }
 }

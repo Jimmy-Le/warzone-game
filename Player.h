@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 // Forward declarations to avoid circular dependencies
@@ -60,7 +61,7 @@ class Player{
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
         void getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
-
+        void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
         std::string* name;
         Hand* cardCollection;                                           // The Player's Hand of Cards
