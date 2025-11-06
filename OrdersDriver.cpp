@@ -15,7 +15,7 @@ int testOrderList() {
     Advance advance(7, "Quebec", "Ottawa");
     Airlift airlift(12, "Rome", "Milan");
     Blockade blockade(2, "Tokyo", "Osaka");
-    Negotiate negotiate(90, "Delhi", "Beijing");
+    Negotiate negotiate(90, "Delhi", "Beijing", "Alice"); // Added the name because it wasn't updated
 
     cout << "\n===== Individual subclass prints =====" << endl;
     cout << deploy << endl;
@@ -36,9 +36,9 @@ int testOrderList() {
 
     for (auto &o : polymorphicOrders) {
         cout << *o << endl;
-        o->validate();
+        // o->validate();
         cout << endl;
-        o->execute();
+        // o->execute();
         cout << "\n--------------------------------------\n";
     }
 

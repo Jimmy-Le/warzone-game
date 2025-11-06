@@ -2,9 +2,15 @@
 #define ORDERS_H
 #include  <typeinfo>
 #include <memory>
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include "Map.h"
+#include "Player.h"
+class Player; //forward declaration to avoid circular dependency
+
 using namespace std;
 
 
@@ -27,8 +33,8 @@ class Orders{
       void setNumberOfArmyUnits(int numberOfArmyUnits);
       void setSourceTerritory(string sourceTerritory);
       void setTargetTerritory(string targetTerritory);
-      virtual void validate( ); //only in case we have base pointer ti an object of child class 
-      virtual void execute();
+      virtual bool validate(Player& player ) ; //only in case we have base pointer ti an object of child class 
+      virtual void execute(Player& player) ;
       virtual ~Orders()  = default; //virtual destructor// do i need this maybe not i will remove 
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
       virtual void print(ostream& os) const;
@@ -43,8 +49,8 @@ class DeployOrder : public Orders{
       DeployOrder(const DeployOrder& deploy);
       friend ostream& operator<<(ostream& os , const DeployOrder& deploy);
       DeployOrder& operator=(const DeployOrder& otherDeployOrder);
-      void execute();
-      void validate();
+      void execute(Player& player);
+      bool validate(Player& player);
       void print(ostream& os) const;
 
    
@@ -55,13 +61,17 @@ class DeployOrder : public Orders{
 class Negotiate : public Orders{
   public:
     Negotiate();
-    Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory);
+    Negotiate(int numberOfArmyUnits , string sourceTerritory , string targetTerritory , string enemy);
     Negotiate(const Negotiate& otherNegotiate);
     Negotiate& operator=(const Negotiate& otherNegotiate);
     void print(ostream& os) const;
-    void execute();
-    void validate();
+    void execute(Player& player);
+    bool validate(Player& player);
     friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
+    string getEnemy() const { return enemy ; }; //TODO: I BELIEVE THE GET IS SPECIFIC METHOD FOR THE UNIQUE PTR
+    void setEnemy( string enemy){ this->enemy = enemy ; };
+    private:
+      string enemy;
 
 
 };
@@ -74,8 +84,8 @@ class Bomb : public Orders{
     Bomb(const Bomb& otherBomb);
     Bomb& operator=(const Bomb& otherBomb);
     friend ostream& operator<<(ostream& os , const Bomb& bomb);
-    void execute();
-    void validate();
+    void execute(Player& player);
+    bool validate(Player& player);
     void print(ostream& os) const;
 
 };
@@ -88,8 +98,8 @@ class Airlift : public Orders{
     Airlift(const Airlift& otherAirlift);
     Airlift& operator=(const Airlift& otherAirlift );
     friend ostream& operator<<(ostream& os , const Airlift& airlift);
-    void execute();
-    void validate();
+    void execute(Player& player);
+    bool validate(Player& player);
     void print(ostream& os) const;
 
 };
@@ -102,8 +112,8 @@ class Advance : public Orders{
     Advance(const Advance& otherAdvance);
     Advance& operator=(const Advance& otherAdvance);
     friend ostream& operator<<(ostream& os , const Advance& advance);
-    void execute();
-    void validate();
+    void execute(Player& player);
+    bool validate(Player& player);
     void print(ostream& os) const;
 
 };
@@ -115,8 +125,8 @@ class Blockade : public Orders{
     Blockade(const Blockade& otherBlockade);
     Blockade& operator=(const Blockade& otherBlockade);
     friend ostream& operator<<(ostream& os , const Advance& advance);
-    void execute();
-    void validate();
+    void execute(Player& player);
+    bool validate(Player& player);
     void print(ostream& os) const;
 
 };
@@ -133,9 +143,10 @@ public:
 
 };
 
-
-
 #endif
+
+
+
 
 
 

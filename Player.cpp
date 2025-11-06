@@ -7,7 +7,9 @@
 Player::Player()
 {
     this->name = new string("John Doe");
+    // Territory* t = new Territory("Mexico");
     this->defendCollection = new vector<Territory *>();
+    // this->defendCollection->push_back(t);
     this->attackCollection = new vector<Territory *>();
     this->cardCollection = new Hand();
     this->orderCollection = new Orderlist(); // the default constructor of orderlist used i didnt define any for orderlist class
@@ -70,7 +72,7 @@ Player::Player(const Player &other)
     orderCollection = new Orderlist();
     for (const auto &order : other.orderCollection->orderList)
     {
-        Orders *newOrder = new Orders(*order);
+        Orders *newOrder = new Orders(*order); //objects from an abstract class cannot be instantiated
         orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
     }
 }
@@ -174,11 +176,36 @@ vector<Territory *> *Player::toDefend()
 /***
  * toAttack()
  * Returns a list of territories that are to be attacked
- * TODO Arbitrarily choose which territory to be attacked
+ * I am interpreting this as returning all territories adjacent to the player's territories that are owned by other players
  */
 vector<Territory *> *Player::toAttack()
 {
+    
+    
+    attackCollection->clear(); // Clear previous entries
+    for (Territory *territory : *defendCollection)
+    {
+        getEnemyTerritories(territory);
+    }
+
     return attackCollection;
+
+}
+
+/***
+ * This helper function helps to find the adjacent territories and add it to the attackCollection
+ * Make sure to clear the attackCollection before calling this function to ensure that it is updated properly
+ */
+void Player::getEnemyTerritories(Territory *source){
+    for (Territory *adjacent : *(source->getAdjacentTerritories()))
+    {
+        if (adjacent->getOwner() != this)
+        {   
+            if(std::find_if(attackCollection->begin(), attackCollection->end(), [&](Territory* territory){return territory->getName() == adjacent->getName();}) == attackCollection->end()){ // Avoid duplicates
+                attackCollection->push_back(adjacent);
+            }
+        }
+    }
 }
 
 /***
@@ -187,10 +214,27 @@ vector<Territory *> *Player::toAttack()
  * TODO maybe replace move with an insert function
  */
 void Player::issueOrder()
-{
+{   
+
     bool finished = false;
+    tentativePool = reinforcementPool;                          // Initialize tentative pool at the start of issuing orders
     while (!finished)
     {
+        cout << BANNER << endl;
+        cout << *name << "'s Territories" << endl;
+        cout << BANNER << endl;
+
+        printTerritoryList(defendCollection);
+
+        cout << BANNER << endl;
+        cout << "Territories to attack" << endl;
+        cout << BANNER << endl;
+
+        toAttack(); // Update the attack collection
+        printTerritoryList(attackCollection);
+
+
+
         finished = generateOrder();
     }
 }
@@ -219,6 +263,7 @@ void Player::addToAttack(Territory *territory)
     }
 }
 
+
 /***
  * getOrderList()
  * Returns the player's order list
@@ -234,7 +279,7 @@ Orderlist *Player::getOrderList()
  */
 Hand *Player::getHand()
 {
-    return cardCollection;
+    return this->cardCollection;
 }
 
 //--------Functions related to reinforcement armies pool(Ass2)-------//
@@ -256,9 +301,24 @@ int Player::getReinforcementPool() const
 bool Player::generateOrder()
 {
     int orderChoice;
-    string source, target;
+    string source, target , enemy;
     int numUnits;
+    
     std::unique_ptr<Orders> order;
+
+    Territory* sourceTerritory;
+
+    // Validation for source territory can be added here
+
+    while(tentativePool > 0){
+        cout << "Remaining Reinforcement Pool: " << tentativePool << endl;
+        cout << "\nPlease choose a territory: " << endl; // Get the starting territory
+        cin >> source;
+
+        // sourceTerritory = findTerritory(defendCollection, source);
+        deployReinforcments(source);
+    
+    } 
 
     cout << "========== Generating Order ==========" << endl; // Allows the player to choose which type of order to issue
     cout << "Please choose which order to issue:" << endl;
@@ -278,79 +338,173 @@ bool Player::generateOrder()
         return true; // Exit if the player is finished issuing orders
     }
 
-    cout << "\nEnter source territory: " << endl; // Get the source territory
-    for (const Territory *territory : *defendCollection)
-    { // Display territories to defend
-        cout << territory->getName() << " " << endl;
-    }
-    cin >> source;
-
-    cout << "\nEnter target territory: " << endl; // Get the target territory
-    for (const Territory *territory : *attackCollection)
-    { // Display territories to attack
-        cout << territory->getName() << " " << endl;
-    }
-    cin >> target;
-
-    cout << "\nEnter number of army units: " << endl; // Get the number of armies
-    cin >> numUnits;
 
     switch (orderChoice)
     { // Based on the Player's choice, create an Order and send it to the OrderList
-    case 1:
+    case 1: // Deploy Order (Should always be 0 tentativePool, but we allow the players to issue it anyway)
     {
-        order = std::make_unique<DeployOrder>(numUnits, source, target);
-        orderCollection->orderList.push_back(std::move(order));
-        cout << "New Deploy Order created.\n"
-             << endl;
+        cout << "Remaining Reinforcement Pool: " << tentativePool << endl;
+        cout << "\nPlease choose a territory: " << endl; // Get the starting territory
+        cin >> source;
+        deployReinforcments(source); // Deploy orders are handled separately
         break;
     }
-    case 2:
+    case 2: // Advance Order
     {
+        cout << "Please enter the source territory you would like your army to advance from: " << endl; // Get the source territory
+        cin >> source;
+
+        sourceTerritory = findTerritory(defendCollection, source);
+        if(sourceTerritory != nullptr){
+            cout << BANNER << endl;
+            printTerritoryList(sourceTerritory->getAdjacentTerritories());
+            cout << BANNER << endl;
+        }
+        
+        cout << "Please enter the target territory you would like your army to advance to: " << endl;   // Get the target territory
+        cin >> target;
+        cout << "Please enter the number of army units to advance: " << endl;                           // Get the number of army units
+        cin >> numUnits;    
+
         order = std::make_unique<Advance>(numUnits, source, target);
         orderCollection->orderList.push_back(std::move(order));
-        cout << "New Advance Order created.\n"
-             << endl;
+        cout << "New Advance Order created.\n" << endl;
         break;
     }
-    case 3:
+    case 3: // Bomb Order
     {
-        order = std::make_unique<Bomb>(numUnits, source, target);
+
+        cout << "Please enter the source territory you would like to bomb from: " << endl; // Get the source territory
+        cin >> source;
+
+        sourceTerritory = findTerritory(defendCollection, source);
+        if(sourceTerritory != nullptr){
+            cout << BANNER << endl;
+            printTerritoryList(sourceTerritory->getAdjacentTerritories());
+            cout << BANNER << endl;
+        }
+        
+        cout << "Please enter the target territory you would like to bomb: " << endl;      // Get the target territory
+        cin >> target;
+
+
+        order = std::make_unique<Bomb>(0, source, target);
         orderCollection->orderList.push_back(std::move(order));
-        cout << "New Bomb Order created.\n"
-             << endl;
+        cout << "New Bomb Order created.\n" << endl;
         break;
     }
-    case 4:
+    case 4: // Airlift Order
     {
+
+        cout << BANNER << endl;
+        printTerritoryList(defendCollection);
+        cout << BANNER << endl;
+
+        cout << "Please enter the source territory you would like your army to airlift from: " << endl; // Get the source territory
+        cin >> source; 
+        cout << "Please enter the target territory you would like your army to airlift to: " << endl;   // Get the target territory
+        cin >> target;
+        cout << "Please enter the number of army units to airlift: " << endl;                         // Get the number of army units
+        cin >> numUnits;
+
         order = std::make_unique<Airlift>(numUnits, source, target);
         orderCollection->orderList.push_back(std::move(order));
-        cout << "New Airlift Order created.\n"
-             << endl;
+        cout << "New Airlift Order created.\n" << endl;
         break;
     }
-    case 5:
+    case 5: // Negotiate Order
     {
-        order = std::make_unique<Negotiate>(numUnits, source, target);
+        order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
         orderCollection->orderList.push_back(std::move(order));
-        cout << "New Negotiate Order created.\n"
-             << endl;
+        cout << "New Negotiate Order created.\n" << endl;
         break;
     }
     case 6:
     {
-        order = std::make_unique<Blockade>(numUnits, source, target);
+        cout << BANNER << endl;
+        printTerritoryList(defendCollection);
+        cout << BANNER << endl;
+        cout << "Please enter the territory you would like form a blockade: " << endl; // Get the source territory
+        cin >> source;
+        order = std::make_unique<Blockade>(0, source, source);          // Might have to change the target later
         orderCollection->orderList.push_back(std::move(order));
-        cout << "New Blockade Order created.\n"
-             << endl;
+        cout << "New Blockade Order created.\n" << endl;
         break;
     }
     default:
     { // If the player enters an invalid type , cancel the order issueing
-        cout << "Invalid choice. Order not created.\n"
-             << endl;
+        cout << "Invalid choice. Order not created.\n" << endl;
         break;
     }
     }
+    
+    sourceTerritory = nullptr;
     return false;
+}
+
+/***
+ * This function will handle the deployment of reinforcements to allied territories
+ */
+void Player::deployReinforcments( string source)
+{
+
+    int deployUnits;
+    cout << "Please enter the number of armies to deploy (Available: " << tentativePool << "): ";
+
+    cin >> deployUnits;
+
+    // Validate the number of armies to deploy
+    while (deployUnits < 0 || deployUnits > tentativePool)
+    {
+        cout << "Invalid number of armies. Please enter a value between 0 and " << tentativePool << ": ";
+        cin >> deployUnits;
+    }
+
+    // Create a Deploy order and add it to the order list
+    std::unique_ptr<Orders> deployOrder = std::make_unique<DeployOrder>(deployUnits, source, source); // maybe change the source
+    orderCollection->orderList.push_back(std::move(deployOrder));
+    cout << source << " has tentatively increased army units by " << deployUnits << endl;
+
+    // Update the reinforcement pool
+    tentativePool -= deployUnits;
+    // removeFromReinforcementPool(deployUnits);
+    // source->setArmies(source->getArmies() + deployUnits); // Update the armies in the territory (Maybe have a proper function later) or have it in the execute section
+}
+
+
+/***
+ * This function will find a territory by its name
+ */
+Territory *Player::findTerritory(std::vector<Territory*> *territoryList, string source){
+    for (Territory *territory : *territoryList){
+        if (territory->getName() == source){
+            return territory;
+        }
+    }
+    return nullptr; // Territory not found
+}
+
+/***
+ * This function will add armies to the reinforcement pool
+ */
+void Player::addToReinforcementPool(int armies){
+    reinforcementPool += armies;
+}
+
+/***
+ * This function will remove armies from the reinforcement pool
+ */
+void Player::removeFromReinforcementPool(int armies){
+    if (armies <= reinforcementPool){
+        reinforcementPool -= armies;
+    } else {
+        reinforcementPool = 0;
+    }
+}
+
+void Player::printTerritoryList(std::vector<Territory*>* territoryList){
+
+    for (Territory *territory : *territoryList){
+        cout << "- "<< std::setw(20) << std::left << (territory->getOwner()->getName() + ": ") << territory->getName() << " = "  << territory->getArmies() << endl;
+    }
 }
