@@ -324,7 +324,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
     // Step 1: Check if player owns a Bomb card
       bool hasBombCard = false;
       for (auto card : *player.getHand()->hand) {
-          if (*(card.cardType) == "Bomb") { // your current check
+          if (*(card.cardType) == "bomb") { // your current check
               hasBombCard = true;
               break;
           }
@@ -472,17 +472,19 @@ void Advance::execute(Player& player) {
     int defenderKills = round(0.7 * defendingUnits);
     cout<<attackerKills <<endl;
     cout<<defenderKills <<endl;
-    cout<<(attackerKills >= defenderKills);
+    // cout<<(attackerKills >= defenderKills);
     if (attackerKills >= defenderKills) {
-        cout << "ATTACKER WINS THE BATTLE!\n";
+        cout << player.getName() <<" WINS THE BATTLE!"<<endl;
 
         int survivingAttackers = attackingUnits - defenderKills;
         sourceTerr->setArmies(sourceTerr->getArmies() - attackingUnits);
         targetTerr->setArmies(max(0, survivingAttackers));
+        targetTerr->getOwner()->removeFromDefend(targetTerr);                   // Remove territory from defender's list
         targetTerr->setOwner(&player);
 
         // Move conquered territory to player's defend list (push existing pointer)
         player.toDefend()->push_back(targetTerr);
+        // Remove conquered territory from the defendants's list
 
         // Remove from attack list (erase by pointer)
         auto& attackList = *player.toAttack();
@@ -495,7 +497,7 @@ void Advance::execute(Player& player) {
         sharedDeck.draw(player.getHand());
         cout << "Player rewarded with a card for conquering a territory.\n";
     } else {
-        cout << "DEFENDER WINS THE BATTLE.\n";
+        cout <<targetTerr->getOwner()->getName() <<" WINS THE BATTLE.\n";
         int remainingDefenders = defendingUnits - attackerKills;
         targetTerr->setArmies(remainingDefenders);
         sourceTerr->setArmies(sourceTerr->getArmies() - attackingUnits);
@@ -640,7 +642,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
     // Step 1 :Check if player has an Airlift card
     bool hasAirliftCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "Airlift") {
+        if (*(card.cardType) == "airlift") {
             hasAirliftCard = true;
             break;
         }
@@ -766,7 +768,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
    // Step 1: Check if player has a Blockade card
     bool hasBlockadeCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "Blockade") {
+        if (*(card.cardType) == "blockade") {
             hasBlockadeCard = true;
             break;
         }

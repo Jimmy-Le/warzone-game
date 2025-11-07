@@ -1,0 +1,21 @@
+[Map]
+author=Brigham Judd
+image=Earth.bmp
+wrap=yes
+scroll=horizontal
+warn=yes
+
+[Continents]
+North America=7
+
+
+[Territories]
+AA,40,120,North America,AB,AC
+AB,105,155,North America,AA,AC,AF
+AC,130,130,North America,AB,AF,AD
+AD,210,60,North America,AC,AE
+AE,305,80,North America,AD,AC
+AF,140,165,North America,AB,AC
+
+
+

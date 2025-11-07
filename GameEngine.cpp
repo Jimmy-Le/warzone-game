@@ -428,50 +428,46 @@ void GameEngine::setState(Status *otherStatus)
 };
 
 //------------------------- StARTUP PHASE (ASS2)----------------------------
-    void GameEngine::startupPhase(){
-        cout << "\n================== STARTUP PHASE =================\n" << endl;
-        cout << "Commands:\n"
-        <<"1. loadmap <filename> \n"
-        <<"2. validatemap  \n"
-        <<"3. addplayer <playerName> \n"
-        <<"4. gamestart \n";
+void GameEngine::startupPhase(){
+    cout << "\n================== STARTUP PHASE =================\n" << endl;
+    cout << "Commands:\n"
+    <<"1. loadmap <filename> \n"
+    <<"2. validatemap  \n"
+    <<"3. addplayer <playerName> \n"
+    <<"4. gamestart \n";
 
-        bool inStartup = true;
-        while(inStartup){
-            listen();
-            // Get the last command and its argument
-            Command* cmd = theCommandProcessor->lastCommand();
-            string cmdStr = cmd->getCommandString();
-            string command, arg;
-            
-            // Parse command and argument
+    bool inStartup = true;
+    while(inStartup){
+        listen();
+        // Get the last command and its argument
+        Command* cmd = theCommandProcessor->lastCommand();
+        string cmdStr = cmd->getCommandString();
+        string command, arg;
+        
+        // Parse command and argument
 
-            size_t spacePos = cmdStr.find(' ');
-            if (spacePos != string::npos) {
-                command = cmdStr.substr(0, spacePos);
-                arg = cmdStr.substr(spacePos + 1);
-            } else {
-                command = cmdStr;
-            }
-
-            if (dynamic_cast<MapLoaded*>(getState())) {
-            loadMap(arg);// load the map
-            }
-            else if (dynamic_cast<MapValidated*>(getState())) {
-                validateMap();// validate the map
-            }
-            else if (dynamic_cast<PlayersAdded*>(getState())) {
-                addPlayers(arg);// add players
-            }
-            else if (dynamic_cast<AssignReinforcement*>(getState())) {
-                startGame();// start the game
-                inStartup = false;// exit startup phase
-
-                // Start main game loop (?)
-                mainGameLoop();
-            }
-           
+        size_t spacePos = cmdStr.find(' ');
+        if (spacePos != string::npos) {
+            command = cmdStr.substr(0, spacePos);
+            arg = cmdStr.substr(spacePos + 1);
+        } else {
+            command = cmdStr;
         }
+
+        if (dynamic_cast<MapLoaded*>(getState())) {
+        loadMap(arg);// load the map
+        }
+        else if (dynamic_cast<MapValidated*>(getState())) {
+            validateMap();// validate the map
+        }
+        else if (dynamic_cast<PlayersAdded*>(getState())) {
+            addPlayers(arg);// add players
+        }
+        else if (dynamic_cast<AssignReinforcement*>(getState())) {
+            startGame();// start the game
+            inStartup = false;// exit startup phase
+        }
+        
     }
 }
 
@@ -736,16 +732,22 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
  * For now, it will loop 
  */
 void GameEngine::mainGameLoop(){
-    int maxRounds = 2;                              // For testing, limit to 2 rounds
-    int counter = 0;
+    int maxRounds = 5;                              // For testing, limit to 2 rounds
+    int rounds = 0;
     bool gameOver = false;
-    while(counter < maxRounds || gameOver == true){ 
-        reinforcementPhase();
+    while(gameOver != true){ 
+        cout << "\n================== ROUND " << rounds + 1 << " =================" << endl;
+
+        if(rounds != 0){ //Do not distribute reinforcements in the first round  
+            reinforcementPhase();
+        }
+        
         issueOrderPhase();
         executeOrderPhase();
         gameOver = isGameOver();
-        counter++;
+        rounds++;
     }
+    theGameEngine->setState(new Win()); // Transition to Win state
 }
 
 /***
@@ -761,6 +763,7 @@ void GameEngine::reinforcementPhase(){
     int reinforcements;
     int continentBonus;
 
+    cout << "\n======================= Reinforcement Phase =======================\n" << endl;
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players){
         ownedTerritories = player->toDefend()->size();                                      // Number of territories owned by the player
@@ -778,6 +781,7 @@ void GameEngine::reinforcementPhase(){
                 }
             }
             if (ownsAll){                                                                   // If the player does own all territories in the continent, add the bonus armies
+                cout << "Player " << player->getName() << " owns all territories in continent " << continent->getName() << " and receives a bonus of " << continent->getBonusArmies() << " armies." << endl;
                 continentBonus += continent->getBonusArmies();
             }
         }
@@ -798,11 +802,13 @@ void GameEngine::reinforcementPhase(){
  * Each player will issue orders until they choose to end their turn.
  */
 void GameEngine::issueOrderPhase(){
-    cout << "Issueing Orders...\n" << endl;
+    cout << "\n======================= Issuing Orders Phase =======================\n" << endl;
 
-    for(Player* player : *players){                                     // Call the issueOrder method for each player
+    for(auto pIt = players->begin(); pIt != players->end();){    // Call the issueOrder method for each player
+        Player* player  = *pIt;                      
         cout << player->getName() << " is issuing orders." << endl;
         player->issueOrder();
+        pIt++;
     }
 }
 
@@ -810,33 +816,76 @@ void GameEngine::issueOrderPhase(){
  * ------------------------- Execute Order Phase -------------------------------
  * This function will handle the execute order phase of the game.
  * Each player's orders will be validated and executed 
- * TODO: Ensure that orders are executed in the correct order (e.g., all deploy orders before attack orders)
- * TODO: Make it execute and validate order in a round robin fashion rather than one player at a time
  * 
  */
 void GameEngine::executeOrderPhase(){
-    cout << "Executing Orders...\n" << endl;
+    cout << "\n======================= Execute Orders Phase =======================n" << endl;
 
-    for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
+    int playerAmount = players->size();
+    bool playerCompleted = false;
+
+    bool noMoreOrders = false;
+
+    DeployOrder* checkDeployOrder = nullptr;
+    
+    // ========== Deploy Orders First For All Players==========
+    cout << "\nExecuting Deploy Orders First...\n" << endl;
+    for(auto pIt = players->begin(); pIt != players->end(); ){   
+        Player * player = *pIt;                                                  // Call the Validate and Execute for all orders for each player
+
+        bool isNotDeploy = false;                                                       // Start off assuming it is a deploy order for the deploy phase
         cout << player->getName() << " is executing orders." << endl;
         std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
-        for (const auto& order : listOfOrders) {
-            order->validate(*player);
-            order->execute(*player);
+
+        for (auto it = listOfOrders.begin(); it != listOfOrders.end(); ) {               // Iterate through the player's order list
+            std::unique_ptr<Orders>& order = *it;
+
+            checkDeployOrder = dynamic_cast<DeployOrder*>(order.get());                 // Check if the order is a deploy order
+            if(checkDeployOrder != nullptr){                                            // If it is not a deploy order,prepare to break out of the loop to move to the next player     
+                order->execute(*player);      
+                player->getOrderList()->remove(*(order.get()));
+                isNotDeploy = true;
+            }  
+            else{
+                it++;                                                                 // Move to the next order if it is not a deploy order
+            }
+
+        }
+        pIt++;
+    }
+    cout << "\nExecuting Remaining Orders...\n" << endl;
+    // ========== Then Execute All Other Orders ==========
+    while(!noMoreOrders){                                                                 // Continue until all players have no more orders
+        noMoreOrders = true;                                                              // Assume all players have no more orders
+        for(Player* player : *players){                                                   // Loop through each player
+            std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;
+            
+            if(!listOfOrders.empty()){                                                    // If the player has orders left to execute
+                noMoreOrders = false;                                                     // At least one player has orders left
+                std::unique_ptr<Orders>& order = listOfOrders.front();                    // Get the first order in the list
+                order->execute(*player);                                                  // Execute the order
+                player->getOrderList()->remove(*(order.get()));                           // Remove the executed order from the list
+            }
         }
     }
+   
+    
 }
 
 
 bool GameEngine::isGameOver(){
     // Check if any player has no more territories
-    for (Player* player: *players) {
+    for (auto it = players->begin(); it != players->end(); ) {
+        Player* player = *it;
+
         if(player->toDefend()->empty()) {                           // Would need to make sure that this list is updated properly
             cout << "Player " << player->getName() << " has been eliminated!" << endl;
             
             players->erase(std::remove(players->begin(), players->end(), player), players->end()); // Remove player from the game
             delete player; // Free memory
             player = NULL;
+        } else {
+            ++it;
         }
       
     }

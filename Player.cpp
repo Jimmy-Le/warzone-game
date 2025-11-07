@@ -36,18 +36,20 @@ Player::~Player()
 {
     delete name;
 
-    // Free each Territory pointer in the territories to defend collection
-    for (Territory *territory : *defendCollection)
-    {
-        delete territory;
-    }
+    // // Free each Territory pointer in the territories to defend collection
+    // for (Territory *territory : *defendCollection)
+    // {
+    //     delete territory;
+    // }
 
-    // Free each Territory pointer in the territories to attack collection
-    for (Territory *territory : *attackCollection)
-    {
-        delete territory;
-    }
+    // // Free each Territory pointer in the territories to attack collection
+    // for (Territory *territory : *attackCollection)
+    // {
+    //     delete territory;
+    // }
 
+    defendCollection->clear();
+    attackCollection->clear();
     delete defendCollection;
     delete attackCollection;
     delete cardCollection;
@@ -414,6 +416,8 @@ bool Player::generateOrder()
     }
     case 5: // Negotiate Order
     {
+        cout << "Please enter the name of the player you would like to negotiate with: " << endl; // Get the target player
+        cin >> enemy;
         order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Negotiate Order created.\n" << endl;
@@ -506,5 +510,19 @@ void Player::printTerritoryList(std::vector<Territory*>* territoryList){
 
     for (Territory *territory : *territoryList){
         cout << "- "<< std::setw(20) << std::left << (territory->getOwner()->getName() + ": ") << territory->getName() << " = "  << territory->getArmies() << endl;
+    }
+}
+
+void Player::removeFromDefend(Territory* territory){
+    auto it = std::remove(defendCollection->begin(), defendCollection->end(), territory);
+    if (it != defendCollection->end()) {
+        defendCollection->erase(it, defendCollection->end());
+    }
+}
+
+void Player::removeFromAttack(Territory* territory){
+    auto it = std::remove(attackCollection->begin(), attackCollection->end(), territory);
+    if (it != attackCollection->end()) {
+        attackCollection->erase(it, attackCollection->end());
     }
 }
