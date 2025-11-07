@@ -414,6 +414,8 @@ bool Player::generateOrder()
     }
     case 5: // Negotiate Order
     {
+        cout << "Please enter the name of the player you would like to negotiate with: " << endl; // Get the target player
+        cin >> enemy;
         order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Negotiate Order created.\n" << endl;

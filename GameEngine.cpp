@@ -741,15 +741,20 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
  * For now, it will loop 
  */
 void GameEngine::mainGameLoop(){
-    int maxRounds = 2;                              // For testing, limit to 2 rounds
-    int counter = 0;
+    int maxRounds = 5;                              // For testing, limit to 2 rounds
+    int rounds = 0;
     bool gameOver = false;
-    while(counter < maxRounds || gameOver == true){ 
-        reinforcementPhase();
+    while(gameOver != true){ 
+        cout << "\n================== ROUND " << rounds + 1 << " =================\n" << endl;
+
+        if(rounds != 0){ //Do not distribute reinforcements in the first round  
+            reinforcementPhase();
+        }
+        
         issueOrderPhase();
         executeOrderPhase();
         gameOver = isGameOver();
-        counter++;
+        rounds++;
     }
 }
 
@@ -766,6 +771,7 @@ void GameEngine::reinforcementPhase(){
     int reinforcements;
     int continentBonus;
 
+    cout << "\n Starting Reinforcement Phase...\n" << endl;
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players){
         ownedTerritories = player->toDefend()->size();                                      // Number of territories owned by the player
@@ -803,7 +809,7 @@ void GameEngine::reinforcementPhase(){
  * Each player will issue orders until they choose to end their turn.
  */
 void GameEngine::issueOrderPhase(){
-    cout << "Issueing Orders...\n" << endl;
+    cout << "\nStarting Issuing Orders Phase...\n" << endl;
 
     for(Player* player : *players){                                     // Call the issueOrder method for each player
         cout << player->getName() << " is issuing orders." << endl;
@@ -820,16 +826,47 @@ void GameEngine::issueOrderPhase(){
  * 
  */
 void GameEngine::executeOrderPhase(){
-    cout << "Executing Orders...\n" << endl;
+    cout << "\nStarting Execute Orders Phase...\n" << endl;
 
-    for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
-        cout << player->getName() << " is executing orders." << endl;
-        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
-        for (const auto& order : listOfOrders) {
-            order->validate(*player);
-            order->execute(*player);
+    int playerAmount = players->size();
+    int playerCompleted = 0;
+
+    bool noMoreOrders = false;
+    
+
+    while(!noMoreOrders){
+
+        for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
+
+            bool isNotDeploy = true;
+            cout << player->getName() << " is executing orders." << endl;
+            std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
+
+            for (const auto& order : listOfOrders) {
+                // order->validate(*player);                                    // We already validate orders in the execute method
+                order->execute(*player);
+                player->getOrderList()->remove(*(order.get()));                 // Remove the executed order from the player's order list
+                break;
+            }
+
+            if(player->getOrderList()->orderList.size() == 0){
+                playerCompleted++;
+            }
+        }
+        if(playerCompleted >= playerAmount){
+            noMoreOrders = true;
         }
     }
+
+
+    // for(Player* player : *players){                                 // Call the Validate and Execute for all orders for each player
+    //     cout << player->getName() << " is executing orders." << endl;
+    //     std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
+    //     for (const auto& order : listOfOrders) {
+    //         order->validate(*player);
+    //         order->execute(*player);
+    //     }
+    // }
 }
 
 
@@ -849,6 +886,7 @@ bool GameEngine::isGameOver(){
     // Check if only one player remains
     if (players->size() == 1) {
         cout << "Player " << (*players)[0]->getName() << " is the winner!" << endl;
+        setState(new Win());
         return true; // Game over
     } else {
         cout << players->size() << " players remain in the game." << endl;

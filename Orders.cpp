@@ -324,7 +324,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
     // Step 1: Check if player owns a Bomb card
       bool hasBombCard = false;
       for (auto card : *player.getHand()->hand) {
-          if (*(card.cardType) == "Bomb") { // your current check
+          if (*(card.cardType) == "bomb") { // your current check
               hasBombCard = true;
               break;
           }
@@ -640,7 +640,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
     // Step 1 :Check if player has an Airlift card
     bool hasAirliftCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "Airlift") {
+        if (*(card.cardType) == "airlift") {
             hasAirliftCard = true;
             break;
         }
@@ -766,7 +766,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
    // Step 1: Check if player has a Blockade card
     bool hasBlockadeCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "Blockade") {
+        if (*(card.cardType) == "blockade") {
             hasBlockadeCard = true;
             break;
         }
