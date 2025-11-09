@@ -37,3 +37,19 @@ void testStartupPhase()
     }
     theGameEngine->startupPhase();
 }
+
+void testMainGameLoop(){
+    if (!theGameEngine)
+    {
+        theGameEngine = new GameEngine(); // initialize the global engine
+    }
+    theGameEngine->loadMap("Shorter.map");
+    theGameEngine->validateMap();
+    theGameEngine->addPlayers("Alice");
+    theGameEngine->addPlayers("Bob");
+    theGameEngine->addPlayers("Charlie");
+    // theGameEngine->addPlayers("Dan");
+    theGameEngine->startGame();
+    theGameEngine->mainGameLoop();
+
+}

@@ -567,17 +567,19 @@ void Advance::execute(Player& player) {
     int defenderKills = round(0.7 * defendingUnits);
     cout<<attackerKills <<endl;
     cout<<defenderKills <<endl;
-    cout<<(attackerKills >= defenderKills);
+    // cout<<(attackerKills >= defenderKills);
     if (attackerKills >= defenderKills) {
-        cout << "ATTACKER WINS THE BATTLE!\n";
+        cout << player.getName() <<" WINS THE BATTLE!"<<endl;
 
         int survivingAttackers = attackingUnits - defenderKills;
         sourceTerr->setArmies(sourceTerr->getArmies() - attackingUnits);
         targetTerr->setArmies(max(0, survivingAttackers));
+        targetTerr->getOwner()->removeFromDefend(targetTerr);                   // Remove territory from defender's list
         targetTerr->setOwner(&player);
 
         // Move conquered territory to player's defend list (push existing pointer)
         player.toDefend()->push_back(targetTerr);
+        // Remove conquered territory from the defendants's list
 
         // Remove from attack list (erase by pointer)
         auto& attackList = *player.toAttack();
@@ -590,7 +592,7 @@ void Advance::execute(Player& player) {
         sharedDeck.draw(player.getHand());
         cout << "Player rewarded with a card for conquering a territory.\n";
     } else {
-        cout << "DEFENDER WINS THE BATTLE.\n";
+        cout <<targetTerr->getOwner()->getName() <<" WINS THE BATTLE.\n";
         int remainingDefenders = defendingUnits - attackerKills;
         targetTerr->setArmies(remainingDefenders);
         sourceTerr->setArmies(sourceTerr->getArmies() - attackingUnits);
