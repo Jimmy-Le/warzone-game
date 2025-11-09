@@ -5,5 +5,6 @@
 #include "Player.h"
 
 int testOrderList();
+void testOrdersExecution();
 
 #endif
