@@ -26,6 +26,7 @@ int main()
         cout << "6. Part 1: Command processor and command adapter" << endl;
         cout << "7. Part 2: Game startup phase " << endl;
         cout << "8. Part 3: Main Game Loop " << endl;
+        cout << "9. Part 4: Orders Execution" << endl;
 
         int input;
         cin >> input;
@@ -55,6 +56,9 @@ int main()
             break;
         case 8:
             testMainGameLoop();
+            break;
+        case 9:
+            testOrderExecution();
             break;
         default:
             cout << "Invalid option, try again" << endl;

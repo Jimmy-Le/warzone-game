@@ -10,6 +10,7 @@
 #include <cmath>
 #include "Map.h"
 #include "Player.h"
+#include "Cards.h"
 class Player; //forward declaration to avoid circular dependency
 
 using namespace std;
@@ -35,7 +36,7 @@ class Orders{
       void setSourceTerritory(string sourceTerritory);
       void setTargetTerritory(string targetTerritory);
       virtual bool validate(Player& player ) ; //only in case we have base pointer ti an object of child class 
-      virtual void execute(Player& player) ;
+      virtual int execute(Player& player);     // returns the status
       virtual ~Orders()  = default; //virtual destructor// do i need this maybe not i will remove 
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
       virtual void print(ostream& os) const;
@@ -50,7 +51,7 @@ class DeployOrder : public Orders{
       DeployOrder(const DeployOrder& deploy);
       friend ostream& operator<<(ostream& os , const DeployOrder& deploy);
       DeployOrder& operator=(const DeployOrder& otherDeployOrder);
-      void execute(Player& player);
+      int execute(Player& player);
       bool validate(Player& player);
       void print(ostream& os) const;
 
@@ -66,7 +67,7 @@ class Negotiate : public Orders{
     Negotiate(const Negotiate& otherNegotiate);
     Negotiate& operator=(const Negotiate& otherNegotiate);
     void print(ostream& os) const;
-    void execute(Player& player);
+    int execute(Player& player);
     bool validate(Player& player);
     friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
     string getEnemy() const { return enemy ; }; //TODO: I BELIEVE THE GET IS SPECIFIC METHOD FOR THE UNIQUE PTR
@@ -85,7 +86,7 @@ class Bomb : public Orders{
     Bomb(const Bomb& otherBomb);
     Bomb& operator=(const Bomb& otherBomb);
     friend ostream& operator<<(ostream& os , const Bomb& bomb);
-    void execute(Player& player);
+    int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
 
@@ -99,7 +100,7 @@ class Airlift : public Orders{
     Airlift(const Airlift& otherAirlift);
     Airlift& operator=(const Airlift& otherAirlift );
     friend ostream& operator<<(ostream& os , const Airlift& airlift);
-    void execute(Player& player);
+    int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
 
@@ -113,7 +114,7 @@ class Advance : public Orders{
     Advance(const Advance& otherAdvance);
     Advance& operator=(const Advance& otherAdvance);
     friend ostream& operator<<(ostream& os , const Advance& advance);
-    void execute(Player& player);
+    int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
 
@@ -126,7 +127,7 @@ class Blockade : public Orders{
     Blockade(const Blockade& otherBlockade);
     Blockade& operator=(const Blockade& otherBlockade);
     friend ostream& operator<<(ostream& os , const Advance& advance);
-    void execute(Player& player);
+    int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
 
