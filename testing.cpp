@@ -225,3 +225,74 @@ using namespace std;
 //     cout << "\n===== END OF TEST =====" << endl;
 //     return 0;
 // }
+
+
+// int main() {
+//     // --- Setup two players and their territories ---
+//     Player alice("Alice");
+//     Player bob("Bob");
+
+
+//     Territory* a1 = new Territory("Alpha");
+//     Territory* b1 = new Territory("Bravo");
+
+//     a1->setOwner(&alice);
+//     b1->setOwner(&bob);
+
+//     // Ensure each player controls a territory adjacent to the other
+//     a1->addAdjacentTerritory(b1);
+//     b1->addAdjacentTerritory(a1);
+
+//     alice.addToDefend(a1);
+//     bob.addToDefend(b1);
+    
+//     // --- Add each other's territories to attack list ---
+//     alice.addToAttack(b1);
+//     bob.addToAttack(a1);
+//     cout<<endl;
+//     cout<< "This is just a quick check ";
+//     cout<< b1->getOwner()->getName() <<endl;
+//     cout<< b1->getOwner()->getName() <<endl;
+//     Card diplomacyCard("Diplomacy");
+//     alice.getHand()->hand->push_back(diplomacyCard);
+//     // --- Create orders for both players ---
+//     auto adv1 = make_unique<Advance>(5, "Alpha", "Bravo"); // Alice attacking Bob
+//     auto bomb1 = make_unique<Bomb>(0, "Alpha", "Bravo");   // Alice bombing Bob
+//     auto nego1 = make_unique<Negotiate>(0, "", "", "Bob"); // Alice negotiating with Bob
+
+//     auto adv2 = make_unique<Advance>(4, "Bravo", "Alpha"); // Bob attacking Alice
+//     auto bomb2 = make_unique<Bomb>(0, "Bravo", "Alpha");   // Bob bombing Alice
+
+//     alice.getOrderList()->orderList.push_back(move(adv1));
+//     alice.getOrderList()->orderList.push_back(move(bomb1));
+//     alice.getOrderList()->orderList.push_back(move(nego1));
+
+//     bob.getOrderList()->orderList.push_back(move(adv2));
+//     bob.getOrderList()->orderList.push_back(move(bomb2));
+
+//     // --- Display orders before Negotiate executes ---
+//     cout << "\n===== BEFORE NEGOTIATE =====" << endl;
+//     cout << "Alice Orders:\n";
+//     for (auto& o : alice.getOrderList()->orderList)
+//         cout << "  - " << typeid(*o).name() << " (" << o->getSourceTerritory() << " -> " << o->getTargetTerritory() << ")\n";
+
+//     cout << "Bob Orders:\n";
+//     for (auto& o : bob.getOrderList()->orderList)
+//         cout << "  - " << typeid(*o).name() << " (" << o->getSourceTerritory() << " -> " << o->getTargetTerritory() << ")\n";
+
+//     // --- Execute Negotiate (Alice initiates) ---
+//     cout << "\n===== NEGOTIATE EXECUTION =====" << endl;
+//     alice.getOrderList()->orderList.back()->execute(alice); // Last order is Negotiate
+
+//     // --- Display orders after Negotiate executes ---
+//     cout << "\n===== AFTER NEGOTIATE =====" << endl;
+//     cout << "Alice Orders:\n";
+//     for (auto& o : alice.getOrderList()->orderList)
+//         cout << "  - " << typeid(*o).name() << " (" << o->getSourceTerritory() << " -> " << o->getTargetTerritory() << ")\n";
+
+//     cout << "Bob Orders:\n";
+//     for (auto& o : bob.getOrderList()->orderList)
+//         cout << "  - " << typeid(*o).name() << " (" << o->getSourceTerritory() << " -> " << o->getTargetTerritory() << ")\n";
+
+//     return 0;
+// }

@@ -217,7 +217,7 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
         //now we need to find the targetPlayer using the name of the enemy the issuing players wants to negotiate
         Player* targetPlayer = nullptr;
         for(auto* it : *player.toAttack()){
-            if(it->getOwner()->getName() == enemy){
+            if(it->getOwner()->getName() == this->enemy){  //there's an enemy name that is the data member of the Negotiate Order 
                 targetPlayer = it->getOwner();
             };
         }
@@ -228,15 +228,108 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate) {
         //keep the negotiatedWith vector of raw pointers ,and make target also raw but delete it / memeory management 
         
         targetPlayer->negotiatedWith.push_back(&player);
+        //At this point a pact has been formed between issuin player and the target player 
+
 
         cout << "Diplomacy established between " << player.getName()
             << " and " << targetPlayer->getName()
             << ". They cannot attack each other this turn.\n";
+
+            //here is what we need to moving forward to make this Negotiate order effective 
+            //first scan through the list of Issuing player an remove any attacking order from the orderlist 
+            //then we move over to the orderlist of the enemy and do the same as mentioned before 
+            //so this would ensure the attacking orders involving these two players are cancelled which is the result of the negotiation 
+            //between both the player 
+
+
+            //Handling the attack orders in Players orderlist oki buddy
+            vector<Orders*> issuerRemovals;
+            for (auto& uptr : player.getOrderList()->orderList) {
+                Orders* it = uptr.get();
+                if(!it){
+                    continue;
+                }
+                if(typeid(*it) == typeid(Bomb)){
+                    issuerRemovals.push_back(it);
+                    continue;
+                }
+
+                if(typeid(*it) == typeid(Advance)){
+                    for(auto in : *player.toDefend()){
+                        //this means the advance is probably attacking 
+                        if(in->getName() != it->getTargetTerritory()){
+                            issuerRemovals.push_back(it);
+                            break;
+
+                        }
+
+                    
+                    } 
+                
+                }
+            }
+            for(auto* doomed : issuerRemovals){
+                player.getOrderList()->remove(*doomed);
+            }
+            
+
+            //the same process of eviction of the attack orders but for enemy players 
+            vector<Orders*> targetRemovals;
+            for (auto& uptr2 : targetPlayer->getOrderList()->orderList) {
+                Orders* it = uptr2.get();
+                if(!it){
+                    continue;
+                }
+                if(typeid(*it) == typeid(Bomb)){
+                    targetRemovals.push_back(it);
+                    continue;
+                }
+
+                if(typeid(*it) == typeid(Advance)){
+                    for(auto in : *targetPlayer->toDefend()){
+                        //this means the advance is probably attacking 
+                        if(in->getName() != it->getTargetTerritory()){
+                            targetRemovals.push_back(it);
+                            break;
+
+                        }
+
+                    
+                    } 
+                
+                }
+            }
+            for(auto* doomed : targetRemovals){
+                targetPlayer->getOrderList()->remove(*doomed);
+            }
 }
 
+
   bool Negotiate::validate(Player& player){
+     // Step 1: Check if player owns a Bomb card
+      bool hasDiplomacyCard = false;
+      for (auto card : *player.getHand()->hand) {
+            string cn = *(card.cardType);
+          transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+          if (cn == "diplomacy") { // Compare after transformation
+            cout<<*(card.cardType);
+
+              hasDiplomacyCard = true;
+              break;
+          }
+      }
+
+      if (!hasDiplomacyCard) {
+          cout << "NEGOTIATE ORDER INVALID: Player does not have a diplomacy card in hand.\n";
+          return false;
+      }
+
+      //this is not write toAttack does contain territories belonging to enemy but that could be any 
      Player* targetPlayer = nullptr;
+     cout<<"Entering the for loop" <<endl;
         for(auto* it : *player.toAttack()){
+            cout<<(it->getOwner()->getName());
+            cout<<(it->getOwner()->getName() == enemy) <<endl;
             if(it->getOwner()->getName() == enemy){
                 targetPlayer = it->getOwner();
             };
@@ -324,7 +417,9 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
     // Step 1: Check if player owns a Bomb card
       bool hasBombCard = false;
       for (auto card : *player.getHand()->hand) {
-          if (*(card.cardType) == "bomb") { // your current check
+          string cn = *(card.cardType);
+          transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+          if (cn == "bomb") { // Compare after transformation to lowercase
               hasBombCard = true;
               break;
           }
@@ -642,7 +737,9 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
     // Step 1 :Check if player has an Airlift card
     bool hasAirliftCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "airlift") {
+        string cn = *(card.cardType);
+          transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+          if (cn == "airlift") { // Compare after transformation
             hasAirliftCard = true;
             break;
         }
@@ -768,7 +865,9 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
    // Step 1: Check if player has a Blockade card
     bool hasBlockadeCard = false;
     for (auto card : *player.getHand()->hand) {
-        if (*(card.cardType) == "blockade") {
+        string cn = *(card.cardType);
+          transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+          if (cn == "blockade") { // Compare after transformation
             hasBlockadeCard = true;
             break;
         }
