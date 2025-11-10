@@ -822,6 +822,7 @@ void GameEngine::executeOrderPhase(){
     cout << "\n======================= Execute Orders Phase =======================n" << endl;
 
     int playerAmount = players->size();
+    int status = 0;
     bool playerCompleted = false;
 
     bool noMoreOrders = false;
@@ -833,7 +834,6 @@ void GameEngine::executeOrderPhase(){
     for(auto pIt = players->begin(); pIt != players->end(); ){   
         Player * player = *pIt;                                                  // Call the Validate and Execute for all orders for each player
 
-        bool isNotDeploy = false;                                                       // Start off assuming it is a deploy order for the deploy phase
         cout << player->getName() << " is executing orders." << endl;
         std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
 
@@ -844,15 +844,44 @@ void GameEngine::executeOrderPhase(){
             if(checkDeployOrder != nullptr){                                            // If it is not a deploy order,prepare to break out of the loop to move to the next player     
                 order->execute(*player);      
                 player->getOrderList()->remove(*(order.get()));
-                isNotDeploy = true;
             }  
             else{
                 it++;                                                                 // Move to the next order if it is not a deploy order
             }
-
         }
         pIt++;
     }
+
+    // ========== Searching For Negotiate Orders ==========
+    cout << "\nExecuting Negotiate Orders...\n" << endl;
+    for(auto pIt = players->begin(); pIt != players->end(); ){
+        Player * player = *pIt;                                                                     // Call the Validate and Execute for all orders for each player
+
+        bool isNotNegotiate = false;                                                                // Start off assuming it is a negotiate order for the negotiate phase
+        cout << player->getName() << " is executing orders." << endl;
+        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
+
+        for (auto it = listOfOrders.begin(); it != listOfOrders.end(); ) {                          // Iterate through the player's order list
+            std::unique_ptr<Orders>& order = *it;
+
+            Negotiate* checkNegotiateOrder = dynamic_cast<Negotiate*>(order.get());                 // Check if the order is a negotiate order
+        if(checkNegotiateOrder != nullptr){                                                         // If it is not a negotiate order, check the next ordeer    
+                status = order->execute(*player);      
+                
+                if(status != -1){
+                    
+                }
+                player->getOrderList()->remove(*(order.get()));
+                isNotNegotiate = true;
+            }  
+            else{
+                it++;                                                                               // Move to the next order if it is not a negotiate order
+            }
+        }
+        pIt++;
+    }
+
+
     cout << "\nExecuting Remaining Orders...\n" << endl;
     // ========== Then Execute All Other Orders ==========
     while(!noMoreOrders){                                                                 // Continue until all players have no more orders
@@ -864,12 +893,12 @@ void GameEngine::executeOrderPhase(){
                 noMoreOrders = false;                                                     // At least one player has orders left
                 std::unique_ptr<Orders>& order = listOfOrders.front();                    // Get the first order in the list
                 order->execute(*player);                                                  // Execute the order
+                //TODO: Remove Card from hand 
+
                 player->getOrderList()->remove(*(order.get()));                           // Remove the executed order from the list
             }
         }
     }
-   
-    
 }
 
 

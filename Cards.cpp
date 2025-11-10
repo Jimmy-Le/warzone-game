@@ -38,6 +38,7 @@ ostream& operator<<(ostream& os, const Hand& h) {                               
     return os;
 }
 
+
 /**
  * These are the implementations of the functions which concern the Card class
  */
