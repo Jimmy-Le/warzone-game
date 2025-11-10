@@ -10,7 +10,7 @@ using std::string;
 #include "GameEngine.h"
 #include <algorithm>
 #include <random>
-
+#include "LoggingObserver.h"
 #include "CommandProcessing.h"
 
 // forward declaration
@@ -424,7 +424,15 @@ void GameEngine::setState(Status *otherStatus)
     if (this->state != nullptr)
         delete this->state;
     this->state = otherStatus;
+    notify(this); // log state change
 };
+
+string GameEngine::stringToLog() {
+    std::ostringstream oss;
+    oss << "GameEngine state changed to: " << *getState();
+    return oss.str();
+}
+
 
 //------------------------- StARTUP PHASE (ASS2)----------------------------
     void GameEngine::startupPhase(){

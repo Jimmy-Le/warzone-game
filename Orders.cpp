@@ -88,6 +88,7 @@ void Orders::setTargetTerritory(string targetTerritory) {
 
 void Orders::execute(){
   cout<<"Orders is getting executed";
+  notify(this); // Log this event
 };
 
 void Orders::validate(){
@@ -104,6 +105,12 @@ void Orders::validate(){
         otherOrder.print(os);  // Polymorphic call
         return os;
 };
+
+std::string Orders::stringToLog() {
+    return "Order executed: " + getSourceTerritory() + " -> " +
+           getTargetTerritory() + " | Armies: " + std::to_string(getNumberOfArmyUnits());
+}
+
 
 
 //----------------------------------------------------------------------------
@@ -136,6 +143,7 @@ DeployOrder& DeployOrder::operator=(const DeployOrder& otherDeployOrder){
 
 void DeployOrder::execute(){
   cout<<"Deploy order is getting executed";
+  notify(this); // Log this event
 };
 
 void DeployOrder::validate(){
@@ -178,6 +186,7 @@ Negotiate& Negotiate::operator=(const Negotiate& otherNegotiate){
 
   void Negotiate::execute(){
   cout<<"Negotiate order is getting executed";
+  notify(this); // Log this event
   };
 
   void Negotiate::validate(){
@@ -213,6 +222,7 @@ ostream& operator<<(ostream& os, const Bomb& bomb) {
 
     void Bomb::execute(){
   cout<<"Bomb order is getting executed";
+  notify(this); // Log this event
   };
 
   void Bomb::validate(){
@@ -249,6 +259,7 @@ Advance& Advance::operator=(const Advance& advance){
 
   void Advance::execute(){
   cout<<"Advance order is getting executed";
+  notify(this); // Log this event
   };
 
   void Advance::validate(){
@@ -286,6 +297,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
   
   void Airlift::execute(){
   cout<<"Airlift order is getting executed";
+  notify(this); // Log this event
   };
 
   void Airlift::validate(){
@@ -321,6 +333,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
   
   void Blockade::execute(){
   cout<<"Blockade order is getting executed";
+  notify(this); // Log this event
   };
 
   void Blockade::validate(){
@@ -395,6 +408,22 @@ this->orderList.insert(
  
 }
 
+void Orderlist::addOrder(std::unique_ptr<Orders> order) {
+    // Add to vector
+    orderList.push_back(std::move(order));
+    // Trigger log entry
+    notify(this);
+}
+
+std::string Orderlist::stringToLog() {
+    if (!orderList.empty()) {
+        const Orders* lastOrder = orderList.back().get();
+        return "Order added to list: from " + lastOrder->getSourceTerritory() +
+               " to " + lastOrder->getTargetTerritory() +
+               " | Armies: " + std::to_string(lastOrder->getNumberOfArmyUnits());
+    }
+    return "OrderList is empty.";
+}
 
 
 

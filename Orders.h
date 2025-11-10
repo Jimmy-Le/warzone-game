@@ -5,11 +5,13 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include "LoggingObserver.h"
+
 using namespace std;
 
 
 //now we will decalre the class orders 
-class Orders{
+class Orders : public Subject, public ILoggable {
   protected:
     unique_ptr<int> numberOfArmyUnits;
     unique_ptr<string> sourceTerritory;
@@ -32,6 +34,7 @@ class Orders{
       virtual ~Orders()  = default; //virtual destructor// do i need this maybe not i will remove 
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
       virtual void print(ostream& os) const;
+      std::string stringToLog() override;
 
   
 };
@@ -123,12 +126,14 @@ class Blockade : public Orders{
 
 
 
-class Orderlist {
+class Orderlist : public Subject, public ILoggable {
 public:
     Orderlist() = default;
     std::vector<std::unique_ptr<Orders>> orderList;//the data member of orderlist 
     void remove(Orders& order);
     void move(Orders& order , int index);
+    void addOrder(std::unique_ptr<Orders> order);
+    std::string stringToLog() override;
 
 
 };

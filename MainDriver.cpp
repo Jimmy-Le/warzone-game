@@ -7,6 +7,7 @@
 #include "MapDriver.h"
 #include "CommandProcessingDriver.h"
 #include "CommandProcessing.h"
+#include "LoggingObserverDriver.h"
 using namespace std;
 
 // global command processor object:
@@ -25,6 +26,7 @@ int main()
         cout << "Assignment 2" << endl;
         cout << "6. Part 1: Command processor and command adapter" << endl;
         cout << "7. Part 2: Game startup phase " << endl;
+        cout << "8. Part 5: Logging observer driver" << endl;
 
         int input;
         cin >> input;
@@ -51,6 +53,9 @@ int main()
             break;
         case 7:
             testStartupPhase();
+            break;
+        case 8:
+            testLoggingObserver();
             break;
         default:
             cout << "Invalid option, try again" << endl;

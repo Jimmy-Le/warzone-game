@@ -1,0 +1,4 @@
+CommandProcessor saved command: loadmap
+GameEngine state changed to: Game State: MapLoaded
+Order added to list: from Canada to USA | Armies: 5
+Order executed: Canada -> USA | Armies: 5

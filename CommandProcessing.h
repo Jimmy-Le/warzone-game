@@ -3,6 +3,7 @@
 
 // Header to the CommandProcessing.cpp file
 #include <iostream>
+#include "LoggingObserver.h"
 using std::cout;
 using std::string;
 #include <vector>
@@ -17,14 +18,14 @@ class FileLineReader;
 
 //-----------------COMMAND PROCESSOR CLASS----------------//
 
-class CommandProcessor
+class CommandProcessor : public Subject, public ILoggable
 {
 private:
     vector<Command *> *allCommands; // pointer to a vector of command pointers
     Command *readCommand();
 
 protected:
-    void saveCommand(Command *command);
+
 
 public:
     CommandProcessor(); // default constructor
@@ -36,13 +37,15 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const CommandProcessor &commandProcessorObject);
     virtual void getCommand();
+    void saveCommand(Command *command);
     bool validate(string command);
     Command *lastCommand(); // gets the command at the end of the list
+    std::string stringToLog() override;
 };
 
 //-----------------COMMAND CLASS----------------//
 
-class Command
+class Command : public Subject, public ILoggable
 {
 private:
     string *command;
@@ -58,6 +61,7 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
     void saveEffect(string effectString);
     string getCommandString(); // getter for commandString
+    std::string stringToLog();
 };
 
 //-----------------FILE COMMAND PROCESSOR ADAPTER CLASS----------------//

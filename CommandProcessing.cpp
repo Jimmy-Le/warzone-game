@@ -1,6 +1,7 @@
 // For part 1 of assignment 2
 
 #include "CommandProcessing.h"
+#include "LoggingObserver.h"
 #include <iostream>
 using std::cin;
 using std::cout;
@@ -75,6 +76,9 @@ void CommandProcessor::saveCommand(Command *command)
 
     // stores the command in the vector attribute of the commandProcessor class
     this->allCommands->push_back(newCommand);
+
+    // Notify the log observer
+    notify(this);
 }
 
 // default constructor
@@ -241,6 +245,17 @@ Command *CommandProcessor::lastCommand()
     return this->allCommands->back();
 }
 
+std::string CommandProcessor::stringToLog() //stringToLog override for the CommandProcessor class
+{
+    if (!allCommands->empty())
+    {
+        Command* lastCmd = allCommands->back();
+        return "CommandProcessor saved command: " + lastCmd->getCommandString();
+    }
+    return "CommandProcessor: no commands logged.";
+}
+
+
 //-----------------COMMAND CLASS----------------//
 
 // default constructor
@@ -344,12 +359,20 @@ std::ostream &operator<<(std::ostream &out, const Command &commandObject)
 void Command::saveEffect(string effectString)
 {
     this->effect = new string(effectString);
+    notify(this); // Notify LogObserver when effect is saved
 }
 
 // gets the command string
 string Command::getCommandString()
 {
     return *(this->command);
+}
+
+std::string Command::stringToLog()  // stringToLog override for the Command class
+{
+    std::string cmd = (command != nullptr) ? *command : "NULL";
+    std::string eff = (effect != nullptr) ? *effect : "No effect";
+    return "Command: " + cmd + " | Effect: " + eff;
 }
 
 //---------------FILE COMMAND PROCESSOR ADAPTER CLASS--------------------//

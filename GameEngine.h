@@ -9,6 +9,7 @@ using std::string;
 #include "Map.h"
 #include "Player.h"
 #include "Cards.h"
+#include "LoggingObserver.h"
 
 // Forward declarations
 class Status;
@@ -180,7 +181,7 @@ public:
 /*
 GAME ENGINE CLASS
 */
-class GameEngine
+class GameEngine : public Subject, public ILoggable
 {
 private:
     Status *state;
@@ -210,6 +211,8 @@ public:
     void validateMap();
     void addPlayers(string playerName);
     void startGame();
+
+    std::string stringToLog() override;
 };
 
 //Global game engine pointer
