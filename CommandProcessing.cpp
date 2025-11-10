@@ -33,18 +33,13 @@ extern GameEngine *theGameEngine;
 // calls the save command method to save that command
 Command *CommandProcessor::readCommand()
 {
-
-    // Remove this line since it's causing the double-enter issue
-    // // clears the buffer (prevents taking the newline character from the previous int input in GameEngine)
-    // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
     bool validCommand = false;
     // will keep prompting user until a valid command is given
     while (!validCommand)
     {
         cout << "Enter next command: " << endl; // prompts user
         string newCommand;                      // creates a string tostore the command
-        // Use std::ws to skip any whitespace/newlines instead
+        // Use std::ws to skip any whitespace/newlines
         getline(cin >> std::ws, newCommand); // collects input from user
 
         // if the command is valid, it will be saved
@@ -88,7 +83,6 @@ CommandProcessor::CommandProcessor()
     vector<Command *> *newVector = new vector<Command *>;
     this->allCommands = newVector;
 }
-// // CommandProcessor();               // parameterized
 // copy constructor
 CommandProcessor::CommandProcessor(CommandProcessor &otherCommandProcessor)
 {

@@ -7,7 +7,6 @@
 #include "MapDriver.h"
 #include "CommandProcessingDriver.h"
 #include "CommandProcessing.h"
-#include "LoggingObserverDriver.h"
 using namespace std;
 
 // global command processor object:
@@ -23,10 +22,11 @@ int main()
         cout << "3. Orders List" << endl;
         cout << "4. Cards deck/hand" << endl;
         cout << "5. Game Engine (will end the program)" << endl;
-        cout << "Assignment 2" << endl;
+        cout << "============  Assignment 2 ============" << endl;
         cout << "6. Part 1: Command processor and command adapter" << endl;
         cout << "7. Part 2: Game startup phase " << endl;
-        cout << "8. Part 5: Logging observer driver" << endl;
+        cout << "8. Part 3: Main Game Loop " << endl;
+        cout << "9. Part 4: Orders Execution" << endl;
 
         int input;
         cin >> input;
@@ -55,7 +55,10 @@ int main()
             testStartupPhase();
             break;
         case 8:
-            testLoggingObserver();
+            testMainGameLoop();
+            break;
+        case 9:
+            testOrderExecution();
             break;
         default:
             cout << "Invalid option, try again" << endl;

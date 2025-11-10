@@ -82,6 +82,7 @@ public:
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const FileCommandProcessorAdapter &fileCommandProcessorAdapterObject);
     void getCommand();
+    // getter for the fileLineReader
     FileLineReader *getFlr();
 };
 

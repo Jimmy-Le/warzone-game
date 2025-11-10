@@ -51,6 +51,8 @@ public:
 
     Hand& operator=(const Hand& other);                             // This is the overloaded assignment operator for Hands
     friend std::ostream& operator<<(ostream& os, const Hand& h);    // This is the stream operator for a Hand
+
+    // Card* findCard(std::string type);                               // This function finds and returns a Card of a specified type from the Hand
 };
 
 /**
