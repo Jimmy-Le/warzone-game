@@ -46,3 +46,6 @@
 
 #Debug File
 outDebug
+
+#Logging Files
+gamelog.txt

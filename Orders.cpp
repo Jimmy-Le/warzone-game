@@ -319,8 +319,7 @@ int Negotiate::execute(Player& player){
             string cn = *(card.cardType);
           transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
           if (cn == "diplomacy") { // Compare after transformation
-            cout<<*(card.cardType);
-
+            // cout<<*(card.cardType);
               hasDiplomacyCard = true;
               break;
           }
