@@ -361,6 +361,7 @@ void Command::saveEffect(string effectString)
 {
     this->effect = new string(effectString);
     notify(this); // Notify LogObserver when effect is saved
+    cout << *this << endl;
 }
 
 // gets the command string
