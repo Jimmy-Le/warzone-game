@@ -40,8 +40,9 @@
 # debug information files
 *.dwo
 
-#VS Code files
+#IDE files
 .vscode
+.idea
 
 #Debug File
 outDebug
