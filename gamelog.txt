@@ -1,6 +1,0 @@
-CommandProcessor saved command: Alberta.map
-GameEngine state changed to: Game State: MapLoaded
-Player: John Doe | Action: Deployed 10 units to Canada
-Player: John Doe | Action: Deployed 7 units to USA
-Player: John Doe | Action: Deployed 6 units to Mexico
-Player: John Doe | Action: Issued Advance order: 2 units from Canada to USA
