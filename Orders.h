@@ -36,8 +36,8 @@ class Orders : public Subject, public ILoggable {
       void setNumberOfArmyUnits(int numberOfArmyUnits);
       void setSourceTerritory(string sourceTerritory);
       void setTargetTerritory(string targetTerritory);
-      virtual bool validate(Player& player ) ; //only in case we have base pointer ti an object of child class 
-      virtual int execute(Player& player);     // returns the status
+      virtual bool validate(Player& player ) ; //only in case we have base pointer to an object of child class 
+      virtual int execute(Player& player) = 0;     // returns the status
       virtual ~Orders()  = default; //virtual destructor// do i need this maybe not i will remove 
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
       virtual void print(ostream& os) const;
