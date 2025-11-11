@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "LoggingObserver.h"
 
 /***
  * Player Constructor,
@@ -369,6 +370,8 @@ bool Player::generateOrder()
         cin >> numUnits;    
 
         order = std::make_unique<Advance>(numUnits, source, target);
+        setLastAction("Issued Advance order: " + std::to_string(numUnits) + " units from " + source + " to " + target);
+        notify(this);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Advance Order created.\n" << endl;
         break;
@@ -391,6 +394,8 @@ bool Player::generateOrder()
 
 
         order = std::make_unique<Bomb>(0, source, target);
+        setLastAction("Issued Bomb order: " + source + " bombed " + target);
+        notify(this);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Bomb Order created.\n" << endl;
         break;
@@ -410,6 +415,8 @@ bool Player::generateOrder()
         cin >> numUnits;
 
         order = std::make_unique<Airlift>(numUnits, source, target);
+        setLastAction("Issued Airlift order: " + std::to_string(numUnits) + " units from " + source + " to " + target);
+        notify(this);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Airlift Order created.\n" << endl;
         break;
@@ -419,6 +426,8 @@ bool Player::generateOrder()
         cout << "Please enter the name of the player you would like to negotiate with: " << endl; // Get the target player
         cin >> enemy;
         order = std::make_unique<Negotiate>(numUnits, source, target , enemy);
+        setLastAction("Issued Negotiate order with player " + enemy);
+        notify(this);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Negotiate Order created.\n" << endl;
         break;
@@ -431,6 +440,8 @@ bool Player::generateOrder()
         cout << "Please enter the territory you would like form a blockade: " << endl; // Get the source territory
         cin >> source;
         order = std::make_unique<Blockade>(0, source, source);          // Might have to change the target later
+        setLastAction("Issued Blockade order on territory " + source);
+        notify(this);
         orderCollection->orderList.push_back(std::move(order));
         cout << "New Blockade Order created.\n" << endl;
         break;
@@ -438,6 +449,8 @@ bool Player::generateOrder()
     default:
     { // If the player enters an invalid type , cancel the order issueing
         cout << "Invalid choice. Order not created.\n" << endl;
+        setLastAction("Attempted to issue invalid order.");
+        notify(this);
         break;
     }
     }
@@ -466,6 +479,8 @@ void Player::deployReinforcments( string source)
 
     // Create a Deploy order and add it to the order list
     std::unique_ptr<Orders> deployOrder = std::make_unique<DeployOrder>(deployUnits, source, source); // maybe change the source
+    setLastAction("Deployed " + std::to_string(deployUnits) + " units to " + source);
+    notify(this);
     orderCollection->orderList.push_back(std::move(deployOrder));
     cout << source << " has tentatively increased army units by " << deployUnits << endl;
 
@@ -525,4 +540,14 @@ void Player::removeFromAttack(Territory* territory){
     if (it != attackCollection->end()) {
         attackCollection->erase(it, attackCollection->end());
     }
+}
+
+void Player::setLastAction(const std::string &action) {
+    lastAction = action;
+}
+
+std::string Player::stringToLog() {
+    std::ostringstream logStream;
+    logStream << "Player: " << *name << " | Action: " << lastAction;
+    return logStream.str();
 }

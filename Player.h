@@ -4,7 +4,7 @@
 #include "Cards.h"
 #include "Orders.h"
 #include "Map.h"
-
+#include "LoggingObserver.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -18,8 +18,9 @@ class Card;
 class Hand;
 class Territory;
 
-class Player{
+class Player : public Subject, public ILoggable{
     private:
+        std::string lastAction;
         int reinforcementPool;                                                          // Number of reinforcement armies the player has
         int tentativePool;                                                              // Number of reinforcement armies displayed during the reinforcement phase (Used to show how many armies are left to deploy)
         Hand* hand;                                                 
@@ -55,6 +56,10 @@ class Player{
         friend std::ostream& operator << (std::ostream& out, const Player& player);     // Overload the << operator for easy printing of Player details                                        // Player assignment operator
         std::string getName() const { return *name; }                                   // Getter for player's name
          //okay i have removed defend collection from private just so that i can work on execute of deploy order
+
+        void setLastAction(const std::string &action);
+        std::string stringToLog() override;
+
     private:
         bool generateOrder();                                                                   // Helper to generate an order
         void deployReinforcments(string source);                                           // Helper to deploy reinforcements

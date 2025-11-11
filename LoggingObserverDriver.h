@@ -1,0 +1,10 @@
+//
+// Created by Keishaun on 2025-11-10.
+//
+
+#ifndef WARZONE_GAME_LOGGINGOBSERVERDRIVER_H
+#define WARZONE_GAME_LOGGINGOBSERVERDRIVER_H
+
+void testLoggingObserver();
+
+#endif //WARZONE_GAME_LOGGINGOBSERVERDRIVER_H
