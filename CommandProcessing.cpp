@@ -42,7 +42,7 @@ Command *CommandProcessor::readCommand()
         // Use std::ws to skip any whitespace/newlines
         getline(cin >> std::ws, newCommand); // collects input from user
 
-        // if the command is valid, it will be saved
+        // if the command is valid, it will be saved with no effect
         if (validate(newCommand))
         {
             // to exit the loop
@@ -51,7 +51,15 @@ Command *CommandProcessor::readCommand()
             Command *command = new Command(newCommand);
             return command;
         }
-        // otherwise, validate will display an error message
+        else
+        { // if the command is invalid, it will be saved with an error message as an effect
+            // validate will also display an error message
+            //  creates a new command object and returns it
+            Command *command = new Command(newCommand);
+            // saves an error message as an effect
+            command->saveEffect("Invalid command, no effect.");
+            return command;
+        }
     }
     return nullptr;
 }
@@ -239,16 +247,15 @@ Command *CommandProcessor::lastCommand()
     return this->allCommands->back();
 }
 
-std::string CommandProcessor::stringToLog() //stringToLog override for the CommandProcessor class
+std::string CommandProcessor::stringToLog() // stringToLog override for the CommandProcessor class
 {
     if (!allCommands->empty())
     {
-        Command* lastCmd = allCommands->back();
+        Command *lastCmd = allCommands->back();
         return "CommandProcessor saved command: " + lastCmd->getCommandString();
     }
     return "CommandProcessor: no commands logged.";
 }
-
 
 //-----------------COMMAND CLASS----------------//
 
@@ -362,7 +369,7 @@ string Command::getCommandString()
     return *(this->command);
 }
 
-std::string Command::stringToLog()  // stringToLog override for the Command class
+std::string Command::stringToLog() // stringToLog override for the Command class
 {
     std::string cmd = (command != nullptr) ? *command : "NULL";
     std::string eff = (effect != nullptr) ? *effect : "No effect";
