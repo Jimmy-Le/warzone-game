@@ -761,10 +761,8 @@ void GameEngine::mainGameLoop(){
 /***
  * ------------------------- Reinforcement Phase -------------------------------
  * This function will handle the reinforcement phase of the game.
- * TODO: Give players armies based on the number of territories they own and any continent bonuses. (# of territories / 3) + bonus
+ * It will give players armies based on the number of territories they own and any continent bonuses. (# of territories / 3) + bonus
  * Minimum of 3 armies per turn.
- * TODO: User the proper reinforcement function from the Player class
- * 
  */
 void GameEngine::reinforcementPhase(){
     int ownedTerritories;
@@ -796,8 +794,7 @@ void GameEngine::reinforcementPhase(){
 
         reinforcements += continentBonus;                                                   // Sum the reinforcements and continent bonus together
 
-        // Ideally we have a addReinforcements method in Player class
-        player->addToReinforcementPool(reinforcements);      // Update the player's reinforcement pool
+        player->addToReinforcementPool(reinforcements);                                     // Update the player's reinforcement pool
 
         cout << "Player " << player->getName() << " receives " << reinforcements << " army reinforcement units." << endl;
     }
@@ -829,10 +826,7 @@ void GameEngine::issueOrderPhase(){
 void GameEngine::executeOrderPhase(){
     cout << "\n======================= Execute Orders Phase =======================n" << endl;
 
-    int playerAmount = players->size();
-    int status = 0;
-    bool playerCompleted = false;
-
+    int status = 0;                                                                 // Status to track order execution success/failure, will be used to remove a card from the players hand                          
     bool noMoreOrders = false;
 
     DeployOrder* checkDeployOrder = nullptr;
@@ -840,21 +834,21 @@ void GameEngine::executeOrderPhase(){
     // ========== Deploy Orders First For All Players==========
     cout << "\nExecuting Deploy Orders First...\n" << endl;
     for(auto pIt = players->begin(); pIt != players->end(); ){   
-        Player * player = *pIt;                                                  // Call the Validate and Execute for all orders for each player
+        Player * player = *pIt;                                                                     // Call the Validate and Execute for all orders for each player
 
         cout << player->getName() << " is executing orders." << endl;
-        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
-
-        for (auto it = listOfOrders.begin(); it != listOfOrders.end(); ) {               // Iterate through the player's order list
+        std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     // Get the player's order list
+    
+        for (auto it = listOfOrders.begin(); it != listOfOrders.end(); ) {                          // Iterate through the player's order list
             std::unique_ptr<Orders>& order = *it;
 
-            checkDeployOrder = dynamic_cast<DeployOrder*>(order.get());                 // Check if the order is a deploy order
-            if(checkDeployOrder != nullptr){                                            // If it is not a deploy order,prepare to break out of the loop to move to the next player     
+            checkDeployOrder = dynamic_cast<DeployOrder*>(order.get());                             // Check if the order is a deploy order
+            if(checkDeployOrder != nullptr){                                                        // If it is not a deploy order,prepare to break out of the loop to move to the next player     
                 order->execute(*player);      
                 player->getOrderList()->remove(*(order.get()));
             }  
             else{
-                it++;                                                                 // Move to the next order if it is not a deploy order
+                it++;                                                                               // Move to the next order if it is not a deploy order
             }
         }
         pIt++;
@@ -864,8 +858,7 @@ void GameEngine::executeOrderPhase(){
     cout << "\nExecuting Negotiate Orders...\n" << endl;
     for(auto pIt = players->begin(); pIt != players->end(); ){
         Player * player = *pIt;                                                                     // Call the Validate and Execute for all orders for each player
-
-        bool isNotNegotiate = false;                                                                // Start off assuming it is a negotiate order for the negotiate phase
+                                                            
         cout << player->getName() << " is executing orders." << endl;
         std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;     
 
@@ -873,52 +866,53 @@ void GameEngine::executeOrderPhase(){
             std::unique_ptr<Orders>& order = *it;
 
             Negotiate* checkNegotiateOrder = dynamic_cast<Negotiate*>(order.get());                 // Check if the order is a negotiate order
-        if(checkNegotiateOrder != nullptr){                                                         // If it is not a negotiate order, check the next ordeer    
-                status = order->execute(*player);      
-                
-                if(status != -1){
-                    
-                }
-                player->getOrderList()->remove(*(order.get()));
-                isNotNegotiate = true;
+            if(checkNegotiateOrder != nullptr){                                                     // If it is not a negotiate order, check the next ordeer    
+                status = order->execute(*player);                                                   // Execute the negotiate order  
+                player->getOrderList()->remove(*(order.get()));                                     // Remove the executed order from the list
             }  
             else{
                 it++;                                                                               // Move to the next order if it is not a negotiate order
             }
         }
-        pIt++;
+        pIt++;                                                                                      // Move to the next player
     }
 
 
     cout << "\nExecuting Remaining Orders...\n" << endl;
     // ========== Then Execute All Other Orders ==========
-    while(!noMoreOrders){                                                                 // Continue until all players have no more orders
-        noMoreOrders = true;                                                              // Assume all players have no more orders
-        for(Player* player : *players){                                                   // Loop through each player
+    while(!noMoreOrders){                                                                           // Continue until all players have no more orders
+        noMoreOrders = true;                                                                        // Assume all players have no more orders
+        for(Player* player : *players){                                                             // Loop through each player
             std::vector<std::unique_ptr<Orders>>& listOfOrders = player->getOrderList()->orderList;
             
-            if(!listOfOrders.empty()){                                                    // If the player has orders left to execute
-                noMoreOrders = false;                                                     // At least one player has orders left
-                std::unique_ptr<Orders>& order = listOfOrders.front();                    // Get the first order in the list
-                order->execute(*player);                                                  // Execute the order
+            if(!listOfOrders.empty()){                                                               // If the player has orders left to execute
+                noMoreOrders = false;                                                                // At least one player has orders left
+                std::unique_ptr<Orders>& order = listOfOrders.front();                               // Get the first order in the list
+                order->execute(*player);                                                             // Execute the order
                 //TODO: Remove Card from hand 
 
-                player->getOrderList()->remove(*(order.get()));                           // Remove the executed order from the list
+                player->getOrderList()->remove(*(order.get()));                                      // Remove the executed order from the list
             }
         }
     }
 }
 
 
+/***
+ * ------------------------- Check for Game Over -------------------------------
+ * This function will check if the game is over.by checking if there are only 1 player left
+ * This function also removes players who have been eliminated (no territories left)
+ * The game is over when a player conquers all territories.
+ */
 bool GameEngine::isGameOver(){
     // Check if any player has no more territories
     for (auto it = players->begin(); it != players->end(); ) {
         Player* player = *it;
 
-        if(player->toDefend()->empty()) {                           // Would need to make sure that this list is updated properly
+        if(player->toDefend()->empty()) {                                                           // Would need to make sure that this list is updated properly
             cout << "Player " << player->getName() << " has been eliminated!" << endl;
             
-            players->erase(std::remove(players->begin(), players->end(), player), players->end()); // Remove player from the game
+            players->erase(std::remove(players->begin(), players->end(), player), players->end());  // Remove player from the game
             delete player; // Free memory
             player = NULL;
         } else {

@@ -183,10 +183,8 @@ vector<Territory *> *Player::toDefend()
  */
 vector<Territory *> *Player::toAttack()
 {
-    
-    
-    attackCollection->clear(); // Clear previous entries
-    for (Territory *territory : *defendCollection)
+    attackCollection->clear();                                  //IMPORTANT: Clear previous entries to avoid duplicates
+    for (Territory *territory : *defendCollection)              // Loop through each territory the player owns and find adjacent enemy territories
     {
         getEnemyTerritories(territory);
     }
@@ -197,7 +195,7 @@ vector<Territory *> *Player::toAttack()
 
 /***
  * This helper function helps to find the adjacent territories and add it to the attackCollection
- * Make sure to clear the attackCollection before calling this function to ensure that it is updated properly
+ * IMPORTANT:Make sure to clear the attackCollection before calling this function to ensure that it is updated properly
  */
 void Player::getEnemyTerritories(Territory *source){
     for (Territory *adjacent : *(source->getAdjacentTerritories()))
@@ -235,8 +233,6 @@ void Player::issueOrder()
 
         toAttack(); // Update the attack collection
         printTerritoryList(attackCollection);
-
-
 
         finished = generateOrder();
     }
@@ -286,11 +282,17 @@ Hand *Player::getHand()
 }
 
 //--------Functions related to reinforcement armies pool(Ass2)-------//
+/***
+ * This is a setter for the Reinforcement Pool
+ */
 void Player::setReinforcementPool(int arimes)
 {
     this->reinforcementPool = arimes;
 }
 
+/***
+ * This function get the reinforcement pool
+ */
 int Player::getReinforcementPool() const
 {
     return this->reinforcementPool;
@@ -521,13 +523,18 @@ void Player::removeFromReinforcementPool(int armies){
     }
 }
 
+/***
+ * This is a helper function that will print a list of territories with their respective owners and army counts
+ */
 void Player::printTerritoryList(std::vector<Territory*>* territoryList){
 
     for (Territory *territory : *territoryList){
         cout << "- "<< std::setw(20) << std::left << (territory->getOwner()->getName() + ": ") << territory->getName() << " = "  << territory->getArmies() << endl;
     }
 }
-
+/***
+ * This function will remove a territory from the list of territories to be defended
+ */
 void Player::removeFromDefend(Territory* territory){
     auto it = std::remove(defendCollection->begin(), defendCollection->end(), territory);
     if (it != defendCollection->end()) {
@@ -535,6 +542,9 @@ void Player::removeFromDefend(Territory* territory){
     }
 }
 
+/***
+ * This function will remove a territory from the list of territories to be attacked
+ */
 void Player::removeFromAttack(Territory* territory){
     auto it = std::remove(attackCollection->begin(), attackCollection->end(), territory);
     if (it != attackCollection->end()) {
@@ -542,10 +552,16 @@ void Player::removeFromAttack(Territory* territory){
     }
 }
 
+/***
+ * This function sets the last action performed by the player for logging purposes
+ */
 void Player::setLastAction(const std::string &action) {
     lastAction = action;
 }
 
+/***
+ * This function returns a string representation of the player's last action for logging purposes
+ */
 std::string Player::stringToLog() {
     std::ostringstream logStream;
     logStream << "Player: " << *name << " | Action: " << lastAction;
