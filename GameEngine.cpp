@@ -430,7 +430,7 @@ void GameEngine::setState(Status *otherStatus)
 
 string GameEngine::stringToLog() {
     std::ostringstream oss;
-    oss << "GameEngine state changed to: " << *getState();
+    oss << "GameEngine state has been modified. Current " << *getState();
     return oss.str();
 }
 

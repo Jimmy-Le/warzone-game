@@ -3,6 +3,8 @@
 
 // Header to the GameEngine.cpp file
 #include <iostream>
+
+#include "LoggingObserver.h"
 using std::cout;
 using std::string;
 #include <string>
@@ -180,7 +182,7 @@ public:
 /*
 GAME ENGINE CLASS
 */
-class GameEngine
+class GameEngine : public Subject, public ILoggable
 {
 private:
     Status *state;
@@ -220,6 +222,9 @@ public:
     void reinforcementPhase();
     void issueOrderPhase();
     void executeOrderPhase();
+
+    //Game log
+    std::string stringToLog() override;
 
 
 };

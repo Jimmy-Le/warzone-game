@@ -79,6 +79,7 @@ void Orders::setTargetTerritory(string targetTerritory) {
 
 int Orders::execute(Player& player){
   cout<<"Orders is getting executed" <<endl;
+    notify(this);
   return 0;
 };
 
@@ -97,6 +98,12 @@ bool Orders::validate(Player& player){
         otherOrder.print(os);  // Polymorphic call
         return os;
 };
+
+std::string Orders::stringToLog() {
+    return "Order executed: " + getSourceTerritory() + " -> " +
+        getTargetTerritory() + " | Armies: " + std::to_string(getNumberOfArmyUnits());
+}
+
 
 
 //----------------------------------------------------------------------------
@@ -150,6 +157,7 @@ int DeployOrder::execute(Player& player){
             break;
         }
     }
+     notify(this);
     return 0; // success
 }
 
@@ -299,6 +307,7 @@ int Negotiate::execute(Player& player){
     for(auto* doomed : targetRemovals){
         targetPlayer->getOrderList()->remove(*doomed);
     }
+    notify(this);
     return 0; // success
 }
 
@@ -403,6 +412,7 @@ int Bomb::execute(Player& player){
         << currentArmies << " -> " << targetTerr->getArmies() 
         << "." <<endl;
 
+    notify(this);
     return 0; // success
 
       // Step 3:Remove Bomb card after use
@@ -545,6 +555,7 @@ int Advance::execute(Player& player) {
 
         sourceTerr->setArmies(sourceTerr->getArmies() - this->getNumberOfArmyUnits());
         sameTerr->setArmies(sameTerr->getArmies() + this->getNumberOfArmyUnits());
+        notify(this);
         return 0; // successfully deployed armies to friendly territory
     }
 
@@ -599,6 +610,7 @@ int Advance::execute(Player& player) {
         targetTerr->setArmies(remainingDefenders);
         sourceTerr->setArmies(sourceTerr->getArmies() - attackingUnits);
     }
+    notify(this);
     return 0; // success    
 }
 
@@ -727,6 +739,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
           << ", Target now has " << targetTerr->getArmies() 
           << " armies." << endl;
 
+      notify(this);
       return 0; // success
       // 3️⃣ Optional: Remove Airlift card from hand
       // for (auto it = player.getHand()->hand->begin(); it != player.getHand()->hand->end(); ++it) {
@@ -854,6 +867,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 
     cout << "Territory ownership transferred to Neutral player." << endl;
 
+    notify(this);
     return 0; // success
     //TODO: might implement this in card section do not forget
     // Step 5: Remove Blockade card from player's hand 
@@ -973,6 +987,17 @@ this->orderList.insert(
 
  
 }
+
+std::string Orderlist::stringToLog() {
+    if (!orderList.empty()) {
+        const Orders* lastOrder = orderList.back().get();
+        return "Order added to list: from " + lastOrder->getSourceTerritory() +
+               " to " + lastOrder->getTargetTerritory() +
+               " | Armies: " + std::to_string(lastOrder->getNumberOfArmyUnits());
+    }
+    return "OrderList is empty.";
+}
+
 
 
 

@@ -20,14 +20,16 @@ void testLoggingObserver()
     CommandProcessor* cp = new CommandProcessor();
     GameEngine* ge = new GameEngine();
     Orderlist* ol = new Orderlist();
+    Player* p = new Player();
 
     // Attach observer
     cp->attach(logObs);
     ge->attach(logObs);
     ol->attach(logObs);
+    p->attach(logObs);
 
     // Simulate command
-    Command* cmd = new Command("loadmap");
+    Command* cmd = new Command("Alberta.map");
     cp->saveCommand(cmd);
     cmd->saveEffect("Map loaded successfully.");
 
@@ -39,16 +41,17 @@ void testLoggingObserver()
     deploy->attach(logObs);
 
     // Add to list (triggers log)
-    ol->addOrder(std::move(deploy));
+    p->issueOrder();
 
     // Execute first order (triggers another log)
-    ol->orderList.front()->execute();
+    //ol->orderList.front()->execute();
 
     cout << "\nCheck gamelog.txt for output!\n";
 
     delete cp;
     delete ge;
     delete ol;
+    delete p;
     delete logObs;
 
 }
