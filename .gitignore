@@ -43,6 +43,7 @@
 #IDE files
 .vscode
 .idea
+build
 
 #Debug File
 outDebug
