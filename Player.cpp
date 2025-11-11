@@ -75,8 +75,8 @@ Player::Player(const Player &other)
     orderCollection = new Orderlist();
     for (const auto &order : other.orderCollection->orderList)
     {
-        Orders *newOrder = new Orders(*order); //objects from an abstract class cannot be instantiated
-        orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
+        //Orders *newOrder = new Orders(*order); //objects from an abstract class cannot be instantiated
+        //orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
     }
 }
 
@@ -159,8 +159,8 @@ Player &Player::operator=(const Player &other)
     orderCollection = new Orderlist();
     for (const auto &order : other.orderCollection->orderList)
     {
-        Orders *newOrder = new Orders(*order);
-        orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
+        //Orders *newOrder = new Orders(*order);
+        //orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
     }
 
     return *this;
