@@ -178,7 +178,10 @@ bool DeployOrder::validate(Player& player){
     return false;
 }
 
-
+// This function will create a deep copy of the DeployOrder object
+DeployOrder* DeployOrder::clone() const{
+    return new DeployOrder(*this);
+}
 
 
 //-----------------------------------------------------------------------------
@@ -354,6 +357,10 @@ int Negotiate::execute(Player& player){
         return true;
 }
 
+// This function will create a deep copy of the Negotiate object
+Negotiate* Negotiate::clone() const{ 
+    return new Negotiate(*this);
+}
 
 //-------------------------------------------------------------------------------
 //BOMB SUBCLASS METHOD IMPLEMENTATION
@@ -477,7 +484,10 @@ int Bomb::execute(Player& player){
       return true;
   }
 
-
+// This function will create a deep copy of the Bomb object
+Bomb* Bomb::clone() const{
+    return new Bomb(*this);
+}
 //--------------------------------------------------------------------------------
 //ADVANCE SUBCLASS METHOD IMPLEMENTATION
 
@@ -675,7 +685,10 @@ int Advance::execute(Player& player) {
 
       return true;
   };
-
+  // This function will create a deep copy of the Advance object
+  Advance* Advance::clone() const{
+    return new Advance(*this);
+  }
 
 //--------------------------------------------------------------------------------
 //AIRLIFT SUBCLASS METHOD IMPLEMENTATION
@@ -802,6 +815,10 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
     
   };
 
+// This function will create a deep copy of the Airlift object
+  Airlift* Airlift::clone() const{
+    return new Airlift(*this);
+  }
 //--------------------------------------------------------------------------------
 // BLOCKADE SUBCLASS METHODS IMPLEMENTATION
 
@@ -917,7 +934,10 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
     return true;
   }
 
-  
+// This function will create a deep copy of the Blockade object
+  Blockade* Blockade::clone() const{
+    return new Blockade(*this);
+  }
 
 //-------------------------------------------------------------------------
 //ORDERLIST 

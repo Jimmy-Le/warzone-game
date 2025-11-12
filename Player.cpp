@@ -157,15 +157,13 @@ Player &Player::operator=(const Player &other)
 
     // Deep copy of orderCollection
     orderCollection = new Orderlist();
-    for (const auto &order : other.orderCollection->orderList)
-    {
-        //Orders *newOrder = new Orders(*order);
-        //orderCollection->orderList.push_back(make_unique<Orders>(*newOrder));
-    }
 
+    for (const auto &order : other.orderCollection->orderList) {
+        orderCollection->orderList.push_back(std::unique_ptr<Orders>(order->clone()));
+    }
+    
     return *this;
 }
-
 /***
  * toDefend()
  * Returns a list of territories that are to be defended

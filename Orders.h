@@ -42,7 +42,7 @@ class Orders : public Subject, public ILoggable {
       friend ostream& operator<<(ostream& os , const Orders& otherOrder);
       virtual void print(ostream& os) const;
       std::string stringToLog() override;
-
+      virtual Orders* clone() const = 0;          // pure virtual clone method for deep copying
   
 };
 
@@ -56,8 +56,7 @@ class DeployOrder : public Orders{
       int execute(Player& player);
       bool validate(Player& player);
       void print(ostream& os) const;
-
-   
+      virtual DeployOrder* clone() const override;
  };
 
 
@@ -74,6 +73,7 @@ class Negotiate : public Orders{
     friend ostream& operator<<(ostream& os , const Negotiate& negotiate);
     string getEnemy() const { return enemy ; }; //TODO: I BELIEVE THE GET IS SPECIFIC METHOD FOR THE UNIQUE PTR
     void setEnemy( string enemy){ this->enemy = enemy ; };
+    virtual Negotiate* clone() const override;
     private:
       string enemy;
 
@@ -91,6 +91,7 @@ class Bomb : public Orders{
     int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
+    virtual Bomb* clone() const override;
 
 };
 
@@ -105,6 +106,7 @@ class Airlift : public Orders{
     int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
+    virtual Airlift* clone() const override;
 
 };
 
@@ -119,6 +121,7 @@ class Advance : public Orders{
     int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
+    virtual Advance* clone() const override;
 
 };
 
@@ -132,6 +135,7 @@ class Blockade : public Orders{
     int execute(Player& player);
     bool validate(Player& player);
     void print(ostream& os) const;
+    virtual Blockade* clone() const override;
 
 };
 
