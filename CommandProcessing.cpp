@@ -55,7 +55,7 @@ Command *CommandProcessor::readCommand()
         { // if the command is invalid, it will be saved with an error message as an effect
             // validate will also display an error message
             //  creates a new command object and returns it
-            Command *command = new Command(newCommand);
+            Command *command = new Command("invalid");
             // saves an error message as an effect
             command->saveEffect("Invalid command, no effect.");
             return command;
