@@ -462,18 +462,24 @@ void GameEngine::startupPhase(){
             command = cmdStr;
         }
 
-        if (dynamic_cast<MapLoaded*>(getState())) {
-        loadMap(arg);// load the map
+        if (cmdStr == "invalid") {
+
         }
-        else if (dynamic_cast<MapValidated*>(getState())) {
-            validateMap();// validate the map
-        }
-        else if (dynamic_cast<PlayersAdded*>(getState())) {
-            addPlayers(arg);// add players
-        }
-        else if (dynamic_cast<AssignReinforcement*>(getState())) {
-            startGame();// start the game
-            inStartup = false;// exit startup phase
+        else {
+
+            if (dynamic_cast<MapLoaded*>(getState())) {
+            loadMap(arg);// load the map
+            }
+            else if (dynamic_cast<MapValidated*>(getState())) {
+                validateMap();// validate the map
+            }
+            else if (dynamic_cast<PlayersAdded*>(getState())) {
+                addPlayers(arg);// add players
+            }
+            else if (dynamic_cast<AssignReinforcement*>(getState())) {
+                startGame();// start the game
+                inStartup = false;// exit startup phase
+            }
         }
         
     }
