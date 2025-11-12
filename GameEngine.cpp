@@ -386,6 +386,18 @@ GameEngine::~GameEngine()
     {
         delete gameMap;
     }
+    if (players)
+    {
+        for (Player* p : *players)
+        {
+            delete p;  // delete each player object
+        }
+        delete players;  // then delete the vector itself
+    }
+    if (deck != nullptr)
+    {
+        delete deck;
+    }
 }
 // assignment operator
 GameEngine &GameEngine::operator=(const GameEngine &otherGameEngine)
