@@ -1,5 +1,5 @@
-friend_demo: Cards.cpp CardsDriver.cpp GameEngine.cpp GameEngineDriver.cpp MainDriver.cpp Map.cpp MapDriver.cpp Orders.cpp OrdersDriver.cpp Player.cpp PlayerDriver.cpp
-	g++ Cards.cpp CardsDriver.cpp GameEngine.cpp GameEngineDriver.cpp MainDriver.cpp Map.cpp MapDriver.cpp Orders.cpp OrdersDriver.cpp Player.cpp PlayerDriver.cpp -o friend_demo
+friend_demo: Cards.cpp CardsDriver.cpp CommandProcessing.cpp CommandProcessingDriver.cpp GameEngine.cpp GameEngineDriver.cpp LoggingObserver.cpp MainDriver.cpp Map.cpp MapDriver.cpp Orders.cpp OrdersDriver.cpp Player.cpp PlayerDriver.cpp LoggingObserverDriver.cpp
+	g++ Cards.cpp CardsDriver.cpp CommandProcessing.cpp CommandProcessingDriver.cpp GameEngine.cpp GameEngineDriver.cpp LoggingObserver.cpp MainDriver.cpp Map.cpp MapDriver.cpp Orders.cpp OrdersDriver.cpp Player.cpp PlayerDriver.cpp LoggingObserverDriver.cpp
 
 
 run: friend_demo
