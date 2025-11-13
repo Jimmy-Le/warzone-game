@@ -186,18 +186,18 @@ class GameEngine : public Subject, public ILoggable
 {
 private:
     Status *state;
-    Map* gameMap = nullptr;
-    std::vector<Player*>* players = nullptr;
-    Deck* deck = nullptr;
+    Map *gameMap = nullptr;
+    std::vector<Player *> *players = nullptr;
+    Deck *deck = nullptr;
 
     // Private helper functions
-    bool isGameOver();                      // Checks if a player has no more territories and boot them out, as well as if only one player remains
+    bool isGameOver(); // Checks if a player has no more territories and boot them out, as well as if only one player remains
 public:
     GameEngine();                            // default constructor
     GameEngine(Status *state);               // parameterized
     GameEngine(GameEngine &otherGameEngine); // copy constructor
     ~GameEngine();                           // destructor
-                   //  assignment operator
+                                             //  assignment operator
     GameEngine &operator=(const GameEngine &otherGameEngine);
     // stream insertion operator
     friend std::ostream &operator<<(std::ostream &out, const GameEngine &gameEngineObject);
@@ -206,10 +206,10 @@ public:
     // setter
     void setState(Status *otherStatus);
 
-    //Startup Phase
+    // Startup Phase
     void startupPhase();
 
-    //Helper functions for game setup
+    // Helper functions for game setup
     void loadMap(string filename);
     void validateMap();
     void addPlayers(string playerName);
@@ -223,19 +223,15 @@ public:
     void issueOrderPhase();
     void executeOrderPhase();
 
-    //Game log
+    // Game log
     std::string stringToLog() override;
-
-
 };
 
-//Global game engine pointer
+// Global game engine pointer
 extern GameEngine *theGameEngine;
 
-/*
- --> Takes input from command line
- */
-void listen();
+// changes the game state according to the command given
+void changeState(string input);
 
 Status *switchStatus(int nextStatus, Status *currentStatus);
 #endif

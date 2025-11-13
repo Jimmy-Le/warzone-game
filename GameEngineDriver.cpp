@@ -6,26 +6,26 @@
 
 extern CommandProcessor *theCommandProcessor;
 
-// continuously calls the listen() function
-void testGameStates()
-{
-    cout << "Commands must not be capitalized. You are currently in the Start state." << std::endl;
-    // if its not reading from a file
-    if (dynamic_cast<FileCommandProcessorAdapter *>(theCommandProcessor) == nullptr)
-    {
-        while (true)
-        {
-            listen();
-        }
-    }
-    else
-    {
-        while (!dynamic_cast<FileCommandProcessorAdapter *>(theCommandProcessor)->getFlr()->getReader()->eof())
-        {
-            listen();
-        }
-    }
-}
+// // continuously calls the listen() function
+void testGameStates() {}
+// {
+//     cout << "Commands must not be capitalized. You are currently in the Start state." << std::endl;
+//     // if its not reading from a file
+//     if (dynamic_cast<FileCommandProcessorAdapter *>(theCommandProcessor) == nullptr)
+//     {
+//         while (true)
+//         {
+//             listen();
+//         }
+//     }
+//     else
+//     {
+//         while (!dynamic_cast<FileCommandProcessorAdapter *>(theCommandProcessor)->getFlr()->getReader()->eof())
+//         {
+//             listen();
+//         }
+//     }
+// }
 
 extern GameEngine *theGameEngine;
 
@@ -38,7 +38,8 @@ void testStartupPhase()
     theGameEngine->startupPhase();
 }
 
-void testMainGameLoop(){
+void testMainGameLoop()
+{
     if (!theGameEngine)
     {
         theGameEngine = new GameEngine(); // initialize the global engine
@@ -51,5 +52,4 @@ void testMainGameLoop(){
     // theGameEngine->addPlayers("Dan");
     theGameEngine->startGame();
     theGameEngine->mainGameLoop();
-
 }
