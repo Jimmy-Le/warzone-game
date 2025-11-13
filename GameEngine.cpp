@@ -503,9 +503,16 @@ void GameEngine::startupPhase()
         }
         else if (dynamic_cast<PlayersAdded *>(getState()) && command == "gamestart")
         {
-            startGame();          // start the game
-            changeState(command); // will change state to AssignReinforcements or back to playersaddeds
-            inStartup = false;    // exit startup phase
+            if (players->size() < 2)
+            {
+                cout << "At least two players are requiredto start the game." << endl;
+            }
+            else
+            {
+                startGame();          // start the game
+                changeState(command); // will change state to AssignReinforcements or back to playersaddeds
+                inStartup = false;    // exit startup phase
+            }
         }
     }
 }
@@ -574,12 +581,6 @@ void GameEngine::addPlayers(string playerName)
 
 void GameEngine::startGame()
 {
-    if (players->size() < 2)
-    {
-        cout << "At least two players are requiredto start the game." << endl;
-        return;
-    }
-
     cout << "\nStarting game setup..." << endl;
     // a) fairly distribute all the territories to the players
     cout << "Distributing territories..." << endl;
