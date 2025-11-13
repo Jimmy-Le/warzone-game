@@ -251,7 +251,7 @@ Status *IssueOrders::transition(string input, Status *currentStatus)
     {
         return switchStatus(6, static_cast<IssueOrders *>(currentStatus));
     }
-    else if (input == "endissueorders")
+    else if (input == "issueordersend")
     {
         return switchStatus(7, static_cast<IssueOrders *>(currentStatus));
     }
@@ -503,11 +503,21 @@ void GameEngine::startupPhase()
         }
         else if (dynamic_cast<PlayersAdded *>(getState()) && command == "gamestart")
         {
-            startGame();          // start the game
-            changeState(command); // will change state to AssignReinforcements or back to playersaddeds
-            inStartup = false;    // exit startup phase
+            if (players->size() < 2)
+            {
+                cout << "At least two players are requiredto start the game." << endl;
+            }
+            else
+            {
+                startGame();          // start the game
+                changeState(command); // will change state to AssignReinforcements or back to playersaddeds
+                inStartup = false;    // exit startup phase
+            }
         }
     }
+
+    // when exiting the loop, we go to the main game!
+    mainGameLoop();
 }
 
 //-------------------------HELPER FUNCTIONS FOR GAME SETUP----------------------------
@@ -574,12 +584,6 @@ void GameEngine::addPlayers(string playerName)
 
 void GameEngine::startGame()
 {
-    if (players->size() < 2)
-    {
-        cout << "At least two players are requiredto start the game." << endl;
-        return;
-    }
-
     cout << "\nStarting game setup..." << endl;
     // a) fairly distribute all the territories to the players
     cout << "Distributing territories..." << endl;
@@ -742,7 +746,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to AssignReinforcement
         // create new AssignReinforcement object
         newStatus = new AssignReinforcement();
-        cout << "=======Assign Reinforcement=========" << endl;
+        cout << "\n======================= Reinforcement Phase =======================\n"
+             << endl;
         // now the effect will be saved in the command object
         theCommandProcessor->lastCommand()->saveEffect("Transitions to the assign reinforcement state");
         // return the modified pointer
@@ -752,7 +757,8 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to IssueOrders
         // create new IssueOrders object
         newStatus = new IssueOrders();
-        cout << "Change State to Issue Orders" << endl;
+        cout << "\n======================= Issuing Orders Phase =======================\n"
+             << endl;
         // return the modified pointer
         return newStatus;
         break;
@@ -760,7 +766,7 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to ExecuteOrders
         // create new ExecuteOrders object
         newStatus = new ExecuteOrders();
-        cout << "Change State to Execute Orders" << endl;
+        cout << "\n======================= Execute Orders Phase =======================n" << endl;
         // return the modified pointer
         return newStatus;
         break;
@@ -768,7 +774,7 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to win
         // create new Win object
         newStatus = new Win();
-        cout << "Change State to Win" << endl;
+        cout << "\n======================= End of the Game =======================n" << endl;
         // return the modified pointer
         return newStatus;
         break;
@@ -802,8 +808,14 @@ void GameEngine::mainGameLoop()
         { // Do not distribute reinforcements in the first round
             reinforcementPhase();
         }
+        else
+        {
+            // will immediately switch to issue orders
+            changeState("issueorder");
+        }
 
         issueOrderPhase();
+
         executeOrderPhase();
         gameOver = isGameOver();
         rounds++;
@@ -823,8 +835,6 @@ void GameEngine::reinforcementPhase()
     int reinforcements;
     int continentBonus;
 
-    cout << "\n======================= Reinforcement Phase =======================\n"
-         << endl;
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players)
     {
@@ -857,6 +867,8 @@ void GameEngine::reinforcementPhase()
 
         cout << "Player " << player->getName() << " receives " << reinforcements << " army reinforcement units." << endl;
     }
+    // after the reinforcement phase, we will switch states to issueorders
+    changeState("issueorder");
 }
 
 /***
@@ -866,8 +878,6 @@ void GameEngine::reinforcementPhase()
  */
 void GameEngine::issueOrderPhase()
 {
-    cout << "\n======================= Issuing Orders Phase =======================\n"
-         << endl;
 
     for (auto pIt = players->begin(); pIt != players->end();)
     { // Call the issueOrder method for each player
@@ -876,6 +886,9 @@ void GameEngine::issueOrderPhase()
         player->issueOrder();
         pIt++;
     }
+
+    // after the issueorder phase, we will switch to execute orders
+    changeState("issueordersend");
 }
 
 /***
@@ -886,7 +899,6 @@ void GameEngine::issueOrderPhase()
  */
 void GameEngine::executeOrderPhase()
 {
-    cout << "\n======================= Execute Orders Phase =======================n" << endl;
 
     int status = 0; // Status to track order execution success/failure, will be used to remove a card from the players hand
     bool noMoreOrders = false;
@@ -1003,12 +1015,15 @@ bool GameEngine::isGameOver()
     if (players->size() == 1)
     {
         cout << "Player " << (*players)[0]->getName() << " is the winner!" << endl;
+        // game state will switch to win
+        changeState("win");
         return true; // Game over
     }
     else
     {
         cout << players->size() << " players remain in the game." << endl;
     }
-
+    // game state will go back to assign reinforcements
+    changeState("endexecorders");
     return false; // Game continues
 }
