@@ -520,6 +520,84 @@ void GameEngine::startupPhase()
     mainGameLoop();
 }
 
+//------------------------- TOURNAMENT (Assignment 3)  ----------------------------
+void GameEngine::executeTournament(const string& tournamentCommand){
+    // 1. Parse the command
+    vector<string> mapFiles;
+    vector<string> playerStrategies;
+    int numGames = 1;
+    int maxTurns = 10;
+        
+    // Find positions of each flags
+    size_t mPos = tournamentCommand.find("-M"); 
+    size_t pPos = tournamentCommand.find("-P");
+    size_t gPos = tournamentCommand.find("-G");
+    size_t dPos = tournamentCommand.find("-D");
+
+    // Extract values based on flag positions
+    if (mPos != string::npos && pPos != string::npos && gPos != string::npos && dPos != string::npos)
+    {
+        // Extract substrings
+        string mList = tournamentCommand.substr(mPos + 3, pPos - (mPos + 3));
+        string pList = tournamentCommand.substr(pPos + 3, gPos - (pPos + 3));
+        string gNum = tournamentCommand.substr(gPos + 3, dPos - (gPos + 3));
+        string dNum = tournamentCommand.substr(dPos + 3);
+
+        // Split strings by comma
+        string temp;
+        for (char c : mList) {
+            if (c == ',') { 
+                mapFiles.push_back(temp); // save the current map name to vector
+                temp.clear();             // reset temp to start the next map name
+            }
+            else if (!isspace(c)) temp += c; // add character to temp, ignore spaces
+        }
+        if (!temp.empty()) mapFiles.push_back(temp); // add last map if any
+            temp.clear();
+
+        for (char c : pList) {
+            if (c == ',') { 
+                playerStrategies.push_back(temp); 
+                temp.clear(); }
+            else if (!isspace(c)) temp += c; // add character to temp, ignore spaces
+        }
+        if (!temp.empty()) 
+            playerStrategies.push_back(temp); // add last strategy if any (after last comma)
+
+        numGames = stoi(gNum); // convert to string to int
+        maxTurns = stoi(dNum); // convert to string to int
+    }
+    // 2. Simulate the tournament
+    cout << "Tournament mode:\n";
+    cout << "M: ";
+    for (auto &m : mapFiles) 
+        cout << m << " ";
+
+    cout << "\nP: ";
+    for (auto &p : playerStrategies) 
+        cout << p << " ";
+
+    cout << "\nG: " << numGames << " D: " << maxTurns << endl;
+
+    // Simulate each game on each map
+    for (size_t mapIdx = 0; mapIdx < mapFiles.size(); ++mapIdx)
+    {
+        cout << "Map " << mapIdx+1 << ": ";
+        for (int g = 0; g < numGames; ++g)
+        {
+            //(Assignment 3 note: Here we would set up and run the actual game logic for each game on the map.)
+            // Simulate game (here you could call your actual game loop)
+            // For now, randomly pick a winner or draw
+            int winnerIndex = rand() % (playerStrategies.size() + 1); // last index = draw
+            if (winnerIndex < playerStrategies.size()) 
+                cout << playerStrategies[winnerIndex] << " ";
+            else 
+                cout << "Draw ";
+        }
+        cout << endl;
+    }
+}
+
 //-------------------------HELPER FUNCTIONS FOR GAME SETUP----------------------------
 void GameEngine::loadMap(string filename)
 {
