@@ -766,7 +766,7 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to ExecuteOrders
         // create new ExecuteOrders object
         newStatus = new ExecuteOrders();
-        cout << "\n======================= Execute Orders Phase =======================n" << endl;
+        cout << "\n======================= Execute Orders Phase =======================" << endl;
         // return the modified pointer
         return newStatus;
         break;
@@ -774,7 +774,7 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // switch to win
         // create new Win object
         newStatus = new Win();
-        cout << "\n======================= End of the Game =======================n" << endl;
+        cout << "\n======================= End of the Game =======================" << endl;
         // return the modified pointer
         return newStatus;
         break;
@@ -867,6 +867,10 @@ void GameEngine::reinforcementPhase()
 
         cout << "Player " << player->getName() << " receives " << reinforcements << " army reinforcement units." << endl;
     }
+    // creates new command object heheheheh
+    Command *issueOrderCommand = new Command("issueorder");
+    // saves this new command
+    theCommandProcessor->saveCommand(issueOrderCommand);
     // after the reinforcement phase, we will switch states to issueorders
     changeState("issueorder");
 }
