@@ -341,6 +341,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="D:\warzoneOrderList\warzone-game\Player.h" />
     <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerDriver.cpp" />
     <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerDriver.h" />
+    <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerStrategies.cpp" />
+    <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerStrategies.h" />
+    <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerStrategiesDriver.cpp" />
+    <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerStrategiesDriver.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\warzoneOrderList\warzone-game\build\ZERO_CHECK.vcxproj">

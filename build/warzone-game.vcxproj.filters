@@ -34,6 +34,12 @@
     <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerStrategies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\warzoneOrderList\warzone-game\PlayerStrategiesDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D:\warzoneOrderList\warzone-game\Cards.h">
@@ -64,6 +70,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerStrategies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\warzoneOrderList\warzone-game\PlayerStrategiesDriver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

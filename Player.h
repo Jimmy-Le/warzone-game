@@ -17,13 +17,17 @@ class Orders;
 class Card;
 class Hand;
 class Territory;
-
+class PlayerStrategy;
+//NOTE: I added a few things to satisfy the Strategy design pattern
+//mainly a PlayerStrategy data member and a setStrategy() method;
 class Player : public Subject, public ILoggable{
     private:
         std::string lastAction;
         int reinforcementPool;                                                          // Number of reinforcement armies the player has
         int tentativePool;                                                              // Number of reinforcement armies displayed during the reinforcement phase (Used to show how many armies are left to deploy)
-        Hand* hand;                                                 
+        Hand* hand;    
+        PlayerStrategy* strategy;
+
     public:
         const string BANNER = "========================================";               // Banner for display purposes
         vector<Player*> negotiatedWith;
@@ -36,7 +40,9 @@ class Player : public Subject, public ILoggable{
         void addToDefend(Territory* territory);                                         // Add a territory to the list of territories to be defended
         void addToAttack(Territory* territory);                                         // Add a territory to the list of territories to be attacked
         void removeFromDefend(Territory* territory);                                      // Remove a territory from the list of territories to be defended
-        void removeFromAttack(Territory* territory);                                      // Remove a territory from the list of territories to be attacked
+        void removeFromAttack(Territory* territory); 
+        void setStrategy(PlayerStrategy* strategy);    
+        PlayerStrategy* getStrategy(){ return this->strategy; }                               // Remove a territory from the list of territories to be attacked
 
         Orderlist* getOrderList();                                                      // Returns the player's order list
         Hand* getHand();
