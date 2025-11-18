@@ -21,6 +21,7 @@
 
 
 
+
 Orders::Orders(){
   this->numberOfArmyUnits = make_unique<int>(0);
   this->sourceTerritory = make_unique<string>("");
@@ -333,7 +334,7 @@ int Negotiate::execute(Player& player){
           return false;
       }
 
-      //this is not write toAttack does contain territories belonging to enemy but that could be any 
+      
      Player* targetPlayer = nullptr;
     //  cout<<"Entering the for loop" <<endl;
     for(auto* it : *player.toAttack()){
@@ -408,6 +409,21 @@ int Bomb::execute(Player& player){
         cout << "Target territory not found during execution." <<endl;
         return -1;
     }
+
+    
+    //this part is for the neutral player strategy , if neutral player is being attacked it turns aggressive
+    if(targetTerr->getOwner() != nullptr){
+        Player* defender = targetTerr->getOwner();
+    }
+
+    //switching strategy to aggressive
+    if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
+        cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
+        player.setStrategy(new AggressivePlayerStrategy());
+    }
+
+    //extra print statement 
+    cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
 
     // Step 2: Apply the bomb effect — halve target armies
     int currentArmies = targetTerr->getArmies();
@@ -573,6 +589,20 @@ int Advance::execute(Player& player) {
     //     cout << "Advance error: attack target not found at execution time.\n";
     //     return;
     // }
+
+    //this part is for the neutral player strategy , if neutral player is being attacked it turns aggressive
+    if(targetTerr->getOwner() != nullptr){
+        Player* defender = targetTerr->getOwner();
+    }
+
+    //switching strategy to aggressive
+    if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
+        cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
+        player.setStrategy(new AggressivePlayerStrategy());
+    }
+
+    //extra print statement 
+    cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
 
     cout << "ATTACK from " << sourceTerr->getName()
          << " -> " << targetTerr->getName() << endl;
@@ -753,7 +783,7 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
 
       notify(this);
       return 0; // success
-      // 3️⃣ Optional: Remove Airlift card from hand
+      // 3 Optional: Remove Airlift card from hand
       // for (auto it = player.getHand()->hand->begin(); it != player.getHand()->hand->end(); ++it) {
       //     if (*(it->cardType) == "Airlift") {
       //         player.getHand()->hand->erase(it);

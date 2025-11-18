@@ -1,7 +1,13 @@
 #ifndef PLAYER_STRATEGIES_H
 #define PLAYER_STRATEGIES_H
 #include <string>
-#include "Player.h"
+#include <vector>
+#include <iostream>
+using namespace std;
+
+
+class Player;
+class Territory;
 
 //TODO: Make Constructors and Destructors
 
@@ -11,16 +17,19 @@
  * It holds a pointer to the player it is associated with.
  */
 class PlayerStrategy {
-
-    private:
-        Player* player;
+    //kindof reversed the Strategy pattern by adding a data member Player to the Strategy rather than having the Player hold a pointer to the strategy
+    //Player is context it has a strategy .
+    //PlayerStrategy is suppose to be an abstract class / interface;
+    // private:
+    //     Player* player;
     public:
-        PlayerStrategy(Player* p){};
+
+        // PlayerStrategy(Player* p){};
         virtual void issueOrder() = 0;
         virtual std::vector<Territory*>* toAttack() = 0;
         virtual std::vector<Territory*>* toDefend() = 0;
 
-        virtual ~PlayerStrategy() = 0;
+        virtual ~PlayerStrategy();; 
         
 };
 
@@ -34,8 +43,10 @@ class HumanPlayerStrategy : public PlayerStrategy {
     public:
         HumanPlayerStrategy();
         void issueOrder() override;
+        ~HumanPlayerStrategy();
         std::vector<Territory*>* toAttack() override;
         std::vector<Territory*>* toDefend() override;
+
 
 };
 
@@ -48,8 +59,9 @@ class HumanPlayerStrategy : public PlayerStrategy {
  */
 class AggressivePlayerStrategy : public PlayerStrategy {
     public:
-        AggressivePlayerStrategy();
+        AggressivePlayerStrategy() = default;
         void issueOrder() override;
+        ~AggressivePlayerStrategy();
         std::vector<Territory*>* toAttack() override;
         std::vector<Territory*>* toDefend() override;
 };
@@ -63,8 +75,9 @@ class AggressivePlayerStrategy : public PlayerStrategy {
 class BenevolentPlayerStrategy : public PlayerStrategy {
     public:
         BenevolentPlayerStrategy();
+        ~BenevolentPlayerStrategy();
         void issueOrder() override;
-        std::vector<Territory*>* toAttack() override;
+        std::vector<Territory*>* toAttack() ;
         std::vector<Territory*>* toDefend() override;
 };
 
@@ -75,7 +88,8 @@ class BenevolentPlayerStrategy : public PlayerStrategy {
  */
 class NeutralPlayerStrategy : public PlayerStrategy {
     public:
-        NeutralPlayerStrategy();
+        NeutralPlayerStrategy() = default;
+        ~NeutralPlayerStrategy();
         void issueOrder() override;
         std::vector<Territory*>* toAttack() override;
         std::vector<Territory*>* toDefend() override;
@@ -90,6 +104,7 @@ class CheaterPlayerStrategy : public PlayerStrategy {
     public:
         CheaterPlayerStrategy();
         void issueOrder() override;
+        ~CheaterPlayerStrategy();
         std::vector<Territory*>* toAttack() override;
         std::vector<Territory*>* toDefend() override;
 };

@@ -8,6 +8,7 @@
 #include "CommandProcessingDriver.h"
 #include "CommandProcessing.h"
 #include "LoggingObserverDriver.h"
+#include "PlayerStrategiesDriver.h"
 using namespace std;
 
 // global command processor object:
@@ -29,6 +30,7 @@ int main()
         cout << "8. Part 3: Main Game Loop " << endl;
         cout << "9. Part 4: Orders Execution" << endl;
         cout << "10. Part 5: Game Log" << endl;
+        cout << "11. Player Strategies" << endl;
 
         int input;
         cin >> input;
@@ -64,6 +66,9 @@ int main()
             break;
         case 10:
             testLoggingObserver();
+            break;
+        case 11:
+            testPlayerStrategies();
             break;
         default:
             cout << "Invalid option, try again" << endl;
