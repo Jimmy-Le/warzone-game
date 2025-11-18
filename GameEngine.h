@@ -225,6 +225,9 @@ public:
 
     // Game log
     std::string stringToLog() override;
+
+    //Execution of the tournament (Assignment 3)
+    void executeTournament(const string& tournamentCommand);
 };
 
 // Global game engine pointer

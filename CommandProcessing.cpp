@@ -226,6 +226,24 @@ bool CommandProcessor::validate(string command)
             {
                 return true;
             }
+            // for the tournament command (Assignment 3)
+            else if (cutString == "tournament" && dynamic_cast<Start *>(currentState) != nullptr)
+            {
+                // checks for the required flags in the command
+                if (command.find("-M") != string::npos &&
+                    command.find("-P") != string::npos &&
+                    command.find("-G") != string::npos &&
+                    command.find("-D") != string::npos)
+                {
+                    
+                    return true;
+                }
+                else
+                {
+                    cout << "Invalid tournament command format." << endl;
+                    return false;
+                }
+            }
             else
             {
                 // invalid command
@@ -454,6 +472,11 @@ void FileCommandProcessorAdapter::getCommand()
     {
         // it is saved
         saveCommand(commandRead);
+    }
+    // for the tournament command (Assignment 3)
+    if (commandRead->getCommandString().find("tournament") == 0)
+    {
+        theGameEngine->executeTournament(commandRead->getCommandString());
     }
     // if command is invalid nothing will happen here, the validate method would have displayed the error message
 }
