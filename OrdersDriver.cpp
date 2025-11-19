@@ -117,7 +117,8 @@ int testOrderExecution()
     usa->addAdjacentTerritory(germany);
     france->addAdjacentTerritory(canada);
     germany->addAdjacentTerritory(usa);
-
+    canada->addAdjacentTerritory(germany); // extra adjacency for testing
+    germany->addAdjacentTerritory(canada);
     // Armies
     canada->setArmies(10);
     usa->setArmies(4);

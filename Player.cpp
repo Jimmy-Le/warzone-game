@@ -7,6 +7,7 @@
  */
 Player::Player()
 {
+    this->strategy = nullptr;
     this->name = new string("John Doe");
     // Territory* t = new Territory("Mexico");
     this->defendCollection = new vector<Territory *>();
@@ -23,6 +24,7 @@ Player::Player()
 Player::Player(string name)
 {
     this->name = new string(name);
+    this->strategy = nullptr;
     this->defendCollection = new vector<Territory *>();
     this->attackCollection = new vector<Territory *>();
     this->cardCollection = new Hand();
@@ -55,6 +57,7 @@ Player::~Player()
     delete attackCollection;
     delete cardCollection;
     delete orderCollection;
+    delete strategy;
 }
 /***
  * Player Copy Constructor
@@ -70,6 +73,7 @@ Player::Player(const Player &other)
 
     // Deep copy of cardCollection
     cardCollection = new Hand(*other.cardCollection);
+    
 
     // Deep copy of orderCollection
     orderCollection = new Orderlist();
@@ -565,3 +569,10 @@ std::string Player::stringToLog() {
     logStream << "Player: " << *name << " | Action: " << lastAction;
     return logStream.str();
 }
+
+
+void Player::setStrategy(PlayerStrategy* newStrategy){
+    this->strategy = newStrategy;
+}
+
+//FIXME: I have not changed the copy constructor and Assignment operator 

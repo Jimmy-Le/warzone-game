@@ -23,4 +23,8 @@ add_executable(warzone-game MainDriver.cpp
         Player.cpp
         Player.h
         PlayerDriver.cpp
-        PlayerDriver.h)
+        PlayerDriver.h
+        PlayerStrategies.cpp
+        PlayerStrategies.h
+        PlayerStrategiesDriver.cpp
+        PlayerStrategiesDriver.h)

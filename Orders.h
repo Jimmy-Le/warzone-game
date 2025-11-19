@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "Cards.h"
 #include "LoggingObserver.h"
+#include "PlayerStrategies.h"
 class Player; //forward declaration to avoid circular dependency
 
 using namespace std;
