@@ -3,6 +3,8 @@
 #include "CommandProcessing.h"
 #include "CommandProcessingDriver.h"
 #include "GameEngineDriver.h"
+#include "LoggingObserver.h"
+#include "GameEngine.h"
 
 #include <iostream>
 using std::cin;
@@ -10,10 +12,25 @@ using std::cout;
 using std::endl;
 
 extern CommandProcessor *theCommandProcessor;
+extern GameEngine *theGameEngine;
 
 // tests the command processor
 void testCommandProcessor()
 {
+
+    // Create log observer
+    LogObserver *logObs = new LogObserver();
+    // Create objects
+    CommandProcessor *cp = new CommandProcessor();
+    Orderlist *ol = new Orderlist();
+    Player *p = new Player();
+
+    // Attach observer
+    cp->attach(logObs);
+    theGameEngine->attach(logObs);
+    ol->attach(logObs);
+    p->attach(logObs);
+
     // intro title
     cout << "-----Testing the Command Processor-----" << endl;
     // Present user with choices
@@ -53,6 +70,11 @@ void testCommandProcessor()
         // deletes the object (avoid memory leaks
         delete fileAdapter;
 
+        delete cp;
+        delete theGameEngine;
+        delete ol;
+        delete p;
+        delete logObs;
         cout << "------End of Command Processor testing-------";
     }
 }
