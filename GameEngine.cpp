@@ -887,7 +887,6 @@ Status *switchStatus(int nextStatus, Status *currentStatus)
         // create new Start object
         newStatus = new Start();
         // return a pointer to the new state
-        cout << "==========Game Start===========" << endl;
         // now the effect will be saved in the command object
         theCommandProcessor->lastCommand()->saveEffect("Transitions to the Start state");
         return newStatus;
