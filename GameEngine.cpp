@@ -12,6 +12,7 @@ using std::string;
 #include <random>
 #include "LoggingObserver.h"
 #include "CommandProcessing.h"
+#include <vector>
 
 // forward declaration
 class CommandProcessor;
@@ -534,6 +535,9 @@ std::vector<Player *> *GameEngine::getPlayers()
 //------------------------- TOURNAMENT (Assignment 3)  ----------------------------
 void GameEngine::executeTournament(const string &tournamentCommand)
 {
+    // winners vector to store all the winning players in order
+    vector<Player *> winners;
+
     // 1. Parse the command
     vector<string> mapFiles;
     vector<string> playerStrategies;
@@ -638,7 +642,9 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             // entering the main game loop
             mainGameLoop(maxTurns);
 
-            // here we need to log the winner
+            // the winner will be the only player left in the player vector,
+            // if its a draw, all players are removed and Draw player is added
+            winners.push_back(players->back());
 
             // cleanup before next game (we need to reset all the values)
             if (players)
@@ -661,6 +667,11 @@ void GameEngine::executeTournament(const string &tournamentCommand)
         }
         cout << endl;
         // TODO logging the results!
+        // notify("Tournament mode:\n");
+        // i have to send an object of a class we created that inherits from iloggable
+        // not strings
+        // perhaps I can make a custom command?
+        //
     }
 
     cout << "\n===========End of tournament!============" << endl;
@@ -988,6 +999,17 @@ void GameEngine::mainGameLoop(int maxTurns)
         {
             // end of the game!
             gameOver = true;
+            // remove all players
+            for (Player *p : *players)
+            {
+                delete p;
+            }
+            // create new draw player
+            Player *drawPlayer = new Player("Draw");
+            // add them to the players list
+            //  add player to the vector
+            players->push_back(drawPlayer);
+
             cout << "\n===============DRAW===================" << endl;
             cout << "\n===Maximum turns have been reached.===" << endl;
             break;
