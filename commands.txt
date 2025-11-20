@@ -1,7 +1,1 @@
-loadmap Earth.map
-loadmap Alberta.map
-loadmap Earth.map
-validatemap
-addplayer Alice
-addplayer Bob
-gamestart
+tournament -M  Shorter.map, Short.map -P Benevolent,Aggressive -G 1 -D 3

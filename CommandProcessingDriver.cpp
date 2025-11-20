@@ -36,7 +36,7 @@ void testCommandProcessor()
         string filename;
         cin >> filename;
 
-        cout << "the file name entered is: |" << filename << "|" << endl;
+        // cout << "the file name entered is: |" << filename << "|" << endl;
 
         // creates a filecommandprocessor object
         FileCommandProcessorAdapter *fileAdapter = new FileCommandProcessorAdapter(filename);
@@ -45,8 +45,8 @@ void testCommandProcessor()
         theCommandProcessor = fileAdapter;
 
         // cout << "Before reading" << endl;
-        // // reads all commands
-        // fileAdapter->getCommand();
+        //  reads all commands
+        fileAdapter->getCommand();
 
         testGameStates();
 
