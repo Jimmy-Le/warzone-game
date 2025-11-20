@@ -640,12 +640,30 @@ void GameEngine::executeTournament(const string &tournamentCommand)
 
             // here we need to log the winner
 
+            // cleanup before next game (we need to reset all the values)
+            if (players)
+            {
+                for (Player *p : *players)
+                {
+                    delete p;
+                }
+                delete players;
+                players = nullptr;
+            }
+            if (deck)
+            {
+                delete deck;
+                deck = nullptr;
+            }
+
             // play again! reset gamestate to start
             changeState("replay");
         }
         cout << endl;
         // TODO logging the results!
     }
+
+    cout << "\n===========End of tournament!============" << endl;
 }
 
 //-------------------------HELPER FUNCTIONS FOR GAME SETUP----------------------------
@@ -981,6 +999,8 @@ void GameEngine::mainGameLoop(int maxTurns)
           // game state will go back to assign reinforcements
             changeState("endexecorders");
             reinforcementPhase();
+            // switches to issue orders
+            changeState("issueorder");
         }
         else
         {
