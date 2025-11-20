@@ -1120,8 +1120,8 @@ void GameEngine::executeOrderPhase()
     DeployOrder *checkDeployOrder = nullptr;
 
     // ========== Deploy Orders First For All Players==========
-    cout << "\nExecuting Deploy Orders First...\n"
-         << endl;
+    cout << "\n================ Battle Results ================\n"<< endl;
+    cout << "\nExecuting Deploy Orders First..." << endl;
     for (auto pIt = players->begin(); pIt != players->end();)
     {
         Player *player = *pIt; // Call the Validate and Execute for all orders for each player
@@ -1148,8 +1148,7 @@ void GameEngine::executeOrderPhase()
     }
 
     // ========== Searching For Negotiate Orders ==========
-    cout << "\nExecuting Negotiate Orders...\n"
-         << endl;
+    cout << "\nExecuting Negotiate Orders..."<< endl;
     for (auto pIt = players->begin(); pIt != players->end();)
     {
         Player *player = *pIt; // Call the Validate and Execute for all orders for each player
@@ -1189,8 +1188,7 @@ void GameEngine::executeOrderPhase()
         pIt++; // Move to the next player
     }
 
-    cout << "\nExecuting Remaining Orders...\n"
-         << endl;
+    cout << "\nExecuting Remaining Orders..."<< endl;
     // ========== Then Execute All Other Orders ==========
     while (!noMoreOrders)
     {                        // Continue until all players have no more orders
