@@ -14,13 +14,13 @@ using namespace std;
 /**
  * These are the implementations of the functions which concern the Hand class
  */
-Hand::Hand() : hand(make_shared<vector<Card>>()) {}                     // Default constructor initializes an empty vector
+Hand::Hand() : hand(make_shared<vector<Card*>>()) {}                     // Default constructor initializes an empty vector
 Hand::Hand(const Hand& other) {                                         // A regular deep copy constructor
-    hand = make_shared<vector<Card>>(*other.hand);
+    hand = make_shared<vector<Card*>>(*other.hand);
 }
 Hand& Hand::operator=(const Hand& other) {                              // Assignment operator overloading for the Hand class
     if (this == &other) return * this;
-    hand = make_shared<vector<Card>>(*other.hand);
+    hand = make_shared<vector<Card*>>(*other.hand);
     return * this;
 }
 Hand::~Hand() = default;                                                                // Hand uses the default deconstructor
@@ -31,7 +31,7 @@ ostream& operator<<(ostream& os, const Hand& h) {                               
     }
     os << "The player's Hand contains the following " << h.hand->size() << " Cards [";  // Gives both the amount and the types of Cards in the Hand
     for (size_t i = 0; i < h.hand->size(); i++) {
-        os << *h.hand->at(i).cardType;
+        os << *h.hand->at(i)->cardType;
         if (i != h.hand->size() - 1) os << ", "; 
     }
     os << "].\n" << endl;
@@ -53,6 +53,7 @@ Card& Card::operator=(const Card& other) {                                      
 void Card::play(Hand * specificHand,Deck * specificDeck, Player* player) {                           // This function plays a Card from a specified Hand and then returns it to a specified Deck                   
     int usedCard = findIndexOfCard(specificHand->hand, this->cardType);                             // Finds and save the index of the played Card
     Orderlist* playerOrders = player->getOrderList();
+
     //FIXME: Time to write the implementation for actual returning the card to the deck.
     // The following if/else section is to find the Card type and continue depending on which
     // We are currently removing the functionality of adding to the player's OrderList as we will implement that in the issueOrders
@@ -89,22 +90,22 @@ ostream& operator<<(ostream& os, const Card& c) {                               
 /**
  * These are the implementations of the functions which concern the Deck class
  */
-Deck::Deck() : deck(make_shared<vector<Card>>()) {                                              // The Deck default constructor creates the match Deck 
+Deck::Deck() : deck(make_shared<vector<Card*>>()) {                                              // The Deck default constructor creates the match Deck 
     deckSize = make_shared<int>(0);                                                             // Initializing the Deck size to zero 
     for (int i = 0; i < 10; i++) {                                                              // This is to make sure the Deck always has the same number of each Card type (Modify "i < 10 " to change initial Deck size) 
-        this->deck->push_back(Card("bomb"));
-        this->deck->push_back(Card("reinforcement"));
-        this->deck->push_back(Card("blockade"));
-        this->deck->push_back(Card("airlift"));
-        this->deck->push_back(Card("diplomacy"));
-        (* this->deckSize) += 5;                                                                // Increment Deck size by the amount of Cards added  
+        this->deck->push_back(new Card("bomb"));
+        // this->deck->push_back(new Card("reinforcement"));
+        this->deck->push_back(new Card("blockade"));
+        this->deck->push_back(new Card("airlift"));
+        this->deck->push_back(new Card("diplomacy"));
+        (* this->deckSize) += 4;                                                                // Increment Deck size by the amount of Cards added  
     }
 }
-Deck::Deck(const Deck& other) : deck(std::make_shared<std::vector<Card>>(*other.deck)),         
+Deck::Deck(const Deck& other) : deck(std::make_shared<std::vector<Card*>>(*other.deck)),         
 deckSize(std::make_shared<int>(*other.deckSize)) {}                                             // A regular deep copy constructor                    
 Deck& Deck::operator=(const Deck& other) {                                                      // Assignment operator overloading for the Deck class
     if (this == &other) return * this;
-    deck = make_shared<vector<Card>>(*other.deck);
+    deck = make_shared<vector<Card*>>(*other.deck);
     deckSize = make_shared<int>(*other.deckSize);
     return * this;
 }
@@ -128,11 +129,11 @@ ostream& operator<<(ostream& os, const Deck& d) {                               
     os << "The Deck contains " << *d.deckSize << " Cards. There are ";                                      // Gives the number of Cards remmaining
     int bombCount = 0, reinforcementCount = 0, blockadeCount = 0, airliftCount = 0, diplomacyCount = 0;
     for (auto & i : *d.deck) {                                                                              // Grives the amount of each type of Card                        
-        if (*(i.cardType) == "bomb") bombCount++;
-        else if (*(i.cardType) == "reinforcement") reinforcementCount++;
-        else if (*(i.cardType) == "blockade") blockadeCount++;
-        else if (*(i.cardType) == "airlift") airliftCount++;
-        else if (*(i.cardType) == "diplomacy") diplomacyCount++;
+        if (*(i->cardType) == "bomb") bombCount++;
+        else if (*(i->cardType) == "reinforcement") reinforcementCount++;
+        else if (*(i->cardType) == "blockade") blockadeCount++;
+        else if (*(i->cardType) == "airlift") airliftCount++;
+        else if (*(i->cardType) == "diplomacy") diplomacyCount++;
     }
     os << "" << bombCount << " bomb Cards, " << reinforcementCount << " reinforcement Cards, "
        << blockadeCount << " blockade Cards, " << airliftCount << " airlift Cards, and " 
@@ -146,9 +147,9 @@ ostream& operator<<(ostream& os, const Deck& d) {                               
  * @param CT Is the specified Card type the function is looking for 
  * @return The index of the Card matching the searched Card type
  */
-int findIndexOfCard(std::shared_ptr<vector<Card>> TV, std::shared_ptr<std::string> CT) {
+int findIndexOfCard(std::shared_ptr<vector<Card*>> &TV, std::shared_ptr<std::string> CT) {
     for (int i = 0; i < TV->size(); i++) {
-        if (*(TV->at(i).cardType) == *CT) { return i; }
+        if (*(TV->at(i)->cardType) == *CT) { return i; }
     }
     cout << " There is no Card of this type in this vector." << endl;
     return -1;                                                     // This section should never be reached

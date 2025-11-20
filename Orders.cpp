@@ -320,7 +320,7 @@ int Negotiate::execute(Player& player){
      // Step 1: Check if player owns a Bomb card
       bool hasDiplomacyCard = false;
       for (auto card : *player.getHand()->hand) {
-            string cn = *(card.cardType);
+            string cn = *(card->cardType);
           transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
           if (cn == "diplomacy") { // Compare after transformation
             // cout<<*(card.cardType);
@@ -451,7 +451,7 @@ int Bomb::execute(Player& player){
     // Step 1: Check if player owns a Bomb card
       bool hasBombCard = false;
       for (auto card : *player.getHand()->hand) {
-          string cn = *(card.cardType);
+          string cn = *(card->cardType);
           transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
           if (cn == "bomb") { // Compare after transformation to lowercase
               hasBombCard = true;
@@ -780,24 +780,15 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
           << "Source now has " << sourceTerr->getArmies()
           << ", Target now has " << targetTerr->getArmies() 
           << " armies." << endl;
-
       notify(this);
-      return 0; // success
-      // 3 Optional: Remove Airlift card from hand
-      // for (auto it = player.getHand()->hand->begin(); it != player.getHand()->hand->end(); ++it) {
-      //     if (*(it->cardType) == "Airlift") {
-      //         player.getHand()->hand->erase(it);
-      //         cout << "Airlift card removed from player's hand after use.\n";
-      //         break;
-      //     }
-      // }  //yet to decide if this is something the execute() needs to do 
+      return 0;
 }
 
   bool Airlift::validate(Player& player){
     // Step 1 :Check if player has an Airlift card
     bool hasAirliftCard = false;
     for (auto card : *player.getHand()->hand) {
-        string cn = *(card.cardType);
+        string cn = *(card->cardType);
           transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
           if (cn == "airlift") { // Compare after transformation
             hasAirliftCard = true;
@@ -932,7 +923,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
    // Step 1: Check if player has a Blockade card
     bool hasBlockadeCard = false;
     for (auto card : *player.getHand()->hand) {
-        string cn = *(card.cardType);
+        string cn = *(card->cardType);
           transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
           if (cn == "blockade") { // Compare after transformation
             hasBlockadeCard = true;

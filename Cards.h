@@ -43,7 +43,7 @@ class Card {
  */
 class Hand {
 public:
-    std::shared_ptr<std::vector<Card>> hand;                        // This holds all the Cards that a player has in their Hand 
+    std::shared_ptr<std::vector<Card*>> hand;                        // This holds all the Cards that a player has in their Hand 
 
     Hand();                                                         // This is the default constructor for a Hand                       
     Hand(const Hand& other);                                        // This is the copy constructor for a Hand
@@ -60,7 +60,7 @@ public:
  */
 class Deck{
     public:
-    std::shared_ptr<std::vector<Card>> deck;                        // This holds all the Cards contained within a Deck   
+    std::shared_ptr<std::vector<Card*>> deck;                        // This holds all the Cards contained within a Deck   
     std::shared_ptr<int> deckSize;                                  // This is an attribute of the Deck class
     
     Deck();                                                         // This is the default constructor for a Deck                                        
@@ -76,6 +76,6 @@ class Deck{
 /**
  * This is a helper function used in Cards.cpp to find the index of a selected card in a vector
  */
-int findIndexOfCard(std::shared_ptr<vector<Card>> TV, std::shared_ptr<std::string> CT);
+int findIndexOfCard(std::shared_ptr<vector<Card*>> &TV, std::shared_ptr<std::string> CT);
 
 #endif //COMP345_CARDS_H

@@ -167,7 +167,7 @@ Player &Player::operator=(const Player &other)
  */
 vector<Territory *> *Player::toDefend()
 {
-    strategy->toDefend();                   // The Strategy should modify the DefendCollection of the Player
+    return strategy->toDefend();                   // The Strategy should modify the DefendCollection of the Player
 
     return defendCollection;
 }
