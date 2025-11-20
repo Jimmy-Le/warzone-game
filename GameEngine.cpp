@@ -519,6 +519,12 @@ void GameEngine::startupPhase()
     // when exiting the loop, we go to the main game!
     mainGameLoop();
 }
+// ========================= Temporary Function to get players (for testing purposes) =========================
+std::vector<Player *>* GameEngine::getPlayers() {
+    return players;
+}
+// ========================= End of Temporary Function to get players (for testing purposes) =========================
+
 
 //------------------------- TOURNAMENT (Assignment 3)  ----------------------------
 void GameEngine::executeTournament(const string& tournamentCommand){
@@ -882,18 +888,16 @@ void GameEngine::mainGameLoop()
     {
         cout << "\n================== ROUND " << rounds + 1 << " =================" << endl;
 
+        changeState("assignreinforcement");
         if (rounds != 0)
         { // Do not distribute reinforcements in the first round
             reinforcementPhase();
         }
-        else
-        {
-            // will immediately switch to issue orders
-            changeState("issueorder");
-        }
 
+        changeState("issueorder");
         issueOrderPhase();
 
+        changeState("execorder");
         executeOrderPhase();
         gameOver = isGameOver();
         rounds++;

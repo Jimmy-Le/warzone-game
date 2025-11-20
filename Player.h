@@ -55,7 +55,8 @@ class Player : public Subject, public ILoggable{
         std::vector<Territory*>* toDefend();                                            // Returns a list of territories to be defended
         std::vector<Territory*>* toAttack();                                            // Returns a list of territories to be attacked
 
-
+        std::vector<Territory*>* getDefendCollection();                                 // Getter for defendCollection
+        std::vector<Territory*>* getAttackCollection();                                 // Getter for attackCollection
 
         void issueOrder() ;                                                             // Add a specific Order to the OrderList
 
@@ -66,12 +67,14 @@ class Player : public Subject, public ILoggable{
         void setLastAction(const std::string &action);
         std::string stringToLog() override;
 
+        void getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
+
+
     private:
         bool generateOrder();                                                                   // Helper to generate an order
         void deployReinforcments(string source);                                           // Helper to deploy reinforcements
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
-        void getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
         void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
         std::string* name;

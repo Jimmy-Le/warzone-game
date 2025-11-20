@@ -419,7 +419,7 @@ int Bomb::execute(Player& player){
     //switching strategy to aggressive
     if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
         cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
-        player.setStrategy(new AggressivePlayerStrategy());
+        player.setStrategy(new AggressivePlayerStrategy(&player));
     }
 
     //extra print statement 
@@ -598,7 +598,7 @@ int Advance::execute(Player& player) {
     //switching strategy to aggressive
     if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
         cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
-        player.setStrategy(new AggressivePlayerStrategy());
+        player.setStrategy(new AggressivePlayerStrategy(&player));
     }
 
     //extra print statement 

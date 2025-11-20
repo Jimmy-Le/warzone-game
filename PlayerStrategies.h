@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Player.h"
+#include <cmath>
 using namespace std;
 
 
@@ -20,11 +22,11 @@ class PlayerStrategy {
     //kindof reversed the Strategy pattern by adding a data member Player to the Strategy rather than having the Player hold a pointer to the strategy
     //Player is context it has a strategy .
     //PlayerStrategy is suppose to be an abstract class / interface;
-    // private:
-    //     Player* player;
+    protected:
+        Player* player;
     public:
 
-        // PlayerStrategy(Player* p){};
+        PlayerStrategy(Player* p);
         virtual void issueOrder() = 0;
         virtual std::vector<Territory*>* toAttack() = 0;
         virtual std::vector<Territory*>* toDefend() = 0;
@@ -41,7 +43,7 @@ class PlayerStrategy {
  */
 class HumanPlayerStrategy : public PlayerStrategy {
     public:
-        HumanPlayerStrategy();
+        HumanPlayerStrategy(Player* p);
         void issueOrder() override;
         ~HumanPlayerStrategy();
         std::vector<Territory*>* toAttack() override;
@@ -59,7 +61,7 @@ class HumanPlayerStrategy : public PlayerStrategy {
  */
 class AggressivePlayerStrategy : public PlayerStrategy {
     public:
-        AggressivePlayerStrategy() = default;
+        AggressivePlayerStrategy(Player* p);
         void issueOrder() override;
         ~AggressivePlayerStrategy();
         std::vector<Territory*>* toAttack() override;
@@ -74,7 +76,7 @@ class AggressivePlayerStrategy : public PlayerStrategy {
  */
 class BenevolentPlayerStrategy : public PlayerStrategy {
     public:
-        BenevolentPlayerStrategy();
+        BenevolentPlayerStrategy(Player *p);
         ~BenevolentPlayerStrategy();
         void issueOrder() override;
         std::vector<Territory*>* toAttack() ;
@@ -88,7 +90,7 @@ class BenevolentPlayerStrategy : public PlayerStrategy {
  */
 class NeutralPlayerStrategy : public PlayerStrategy {
     public:
-        NeutralPlayerStrategy() = default;
+        NeutralPlayerStrategy(Player* p);
         ~NeutralPlayerStrategy();
         void issueOrder() override;
         std::vector<Territory*>* toAttack() override;
@@ -102,7 +104,7 @@ class NeutralPlayerStrategy : public PlayerStrategy {
  */
 class CheaterPlayerStrategy : public PlayerStrategy {
     public:
-        CheaterPlayerStrategy();
+        CheaterPlayerStrategy(Player* p);
         void issueOrder() override;
         ~CheaterPlayerStrategy();
         std::vector<Territory*>* toAttack() override;
