@@ -2,7 +2,6 @@
 #include "CommandProcessing.h"
 #include "GameEngine.h"
 
-
 extern GameEngine *theGameEngine;
 
 void testTournament()
@@ -10,9 +9,9 @@ void testTournament()
     cout << "=== Running Tournament Test ===\n";
 
     CommandProcessor cp;
-    
+
     // Example tournament command
-    string tournamentCmd = "tournament -M Map1,Map2 -P Aggressive,Benevolent -G 3 -D 20";
+    string tournamentCmd = "tournament -M Short.map, Shorter.map -P Aggressive,Benevolent -G 3 -D 20";
 
     // Validate and save command
     if (cp.validate(tournamentCmd))
