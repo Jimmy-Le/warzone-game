@@ -20,7 +20,6 @@ void testCommandProcessor()
 
     // Create log observer
     LogObserver *logObs = new LogObserver();
-
     // Create objects
     CommandProcessor *cp = new CommandProcessor();
     Orderlist *ol = new Orderlist();
