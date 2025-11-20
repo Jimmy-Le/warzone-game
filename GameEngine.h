@@ -216,7 +216,7 @@ public:
     void startGame();
 
     // Main Game Loop
-    void mainGameLoop();
+    void mainGameLoop(int maxTurns = 5);
 
     // Game Phases
     void reinforcementPhase();
@@ -226,11 +226,11 @@ public:
     // Game log
     std::string stringToLog() override;
 
-    //Execution of the tournament (Assignment 3)
-    void executeTournament(const string& tournamentCommand);
+    // Execution of the tournament (Assignment 3)
+    void executeTournament(const string &tournamentCommand);
 
     // Temporary function to get players (for testing purposes)
-    std::vector<Player *>* getPlayers();
+    std::vector<Player *> *getPlayers();
 };
 
 // Global game engine pointer

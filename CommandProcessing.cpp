@@ -235,7 +235,7 @@ bool CommandProcessor::validate(string command)
                     command.find("-G") != string::npos &&
                     command.find("-D") != string::npos)
                 {
-                    
+
                     return true;
                 }
                 else
@@ -379,7 +379,6 @@ void Command::saveEffect(string effectString)
 {
     this->effect = new string(effectString);
     notify(this); // Notify LogObserver when effect is saved
-    cout << *this << endl;
 }
 
 // gets the command string
