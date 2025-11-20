@@ -228,6 +228,9 @@ public:
 
     //Execution of the tournament (Assignment 3)
     void executeTournament(const string& tournamentCommand);
+
+    // Temporary function to get players (for testing purposes)
+    std::vector<Player *>* getPlayers();
 };
 
 // Global game engine pointer

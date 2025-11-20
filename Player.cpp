@@ -38,19 +38,6 @@ Player::Player(string name)
 Player::~Player()
 {
     delete name;
-
-    // // Free each Territory pointer in the territories to defend collection
-    // for (Territory *territory : *defendCollection)
-    // {
-    //     delete territory;
-    // }
-
-    // // Free each Territory pointer in the territories to attack collection
-    // for (Territory *territory : *attackCollection)
-    // {
-    //     delete territory;
-    // }
-
     defendCollection->clear();
     attackCollection->clear();
     delete defendCollection;
@@ -65,6 +52,9 @@ Player::~Player()
  */
 Player::Player(const Player &other)
 {
+
+    strategy = other.strategy; // Shallow copy of strategy pointer
+
     // Deep copy of defendCollection
     defendCollection = new vector<Territory *>(*other.defendCollection);
 
@@ -171,10 +161,14 @@ Player &Player::operator=(const Player &other)
 /***
  * toDefend()
  * Returns a list of territories that are to be defended
- * TODO Arbitrarily choose which territory to be defended
+ * TODO: Use Strategies
+ * ISSUES: we currently use defendCollection as a list of owned territories, it might be wiser to return a new list instead?
+ * 
  */
 vector<Territory *> *Player::toDefend()
 {
+    strategy->toDefend();                   // The Strategy should modify the DefendCollection of the Player
+
     return defendCollection;
 }
 
@@ -185,6 +179,13 @@ vector<Territory *> *Player::toDefend()
  */
 vector<Territory *> *Player::toAttack()
 {
+
+    strategy->toAttack();                           // The Strategy should modify the AttackCollection of the Player
+    return attackCollection;
+    
+
+    // =========================== Migrate to Human Player Stategy  ===========================
+
     attackCollection->clear();                                  //IMPORTANT: Clear previous entries to avoid duplicates
     for (Territory *territory : *defendCollection)              // Loop through each territory the player owns and find adjacent enemy territories
     {
@@ -192,6 +193,8 @@ vector<Territory *> *Player::toAttack()
     }
 
     return attackCollection;
+
+    // ========================================================================================
 
 }
 
@@ -218,7 +221,12 @@ void Player::getEnemyTerritories(Territory *source){
  */
 void Player::issueOrder()
 {   
+    // Delegating order issuance to the player's strategy
+    strategy->issueOrder();
+    return;
 
+
+    //========================= TODO Migrate this to HumanPlayerStrategy class ============================
     bool finished = false;
     tentativePool = reinforcementPool;                          // Initialize tentative pool at the start of issuing orders
     while (!finished)
@@ -238,6 +246,7 @@ void Player::issueOrder()
 
         finished = generateOrder();
     }
+    //=====================================================================================================
 }
 
 /***
@@ -361,7 +370,7 @@ bool Player::generateOrder()
         cout << "Please enter the source territory you would like your army to advance from: " << endl; // Get the source territory
         cin >> source;
 
-        sourceTerritory = findTerritory(defendCollection, source);
+        sourceTerritory = findTerritory(toDefend(), source);
         if(sourceTerritory != nullptr){
             cout << BANNER << endl;
             printTerritoryList(sourceTerritory->getAdjacentTerritories());
@@ -386,7 +395,7 @@ bool Player::generateOrder()
         cout << "Please enter the source territory you would like to bomb from: " << endl; // Get the source territory
         cin >> source;
 
-        sourceTerritory = findTerritory(defendCollection, source);
+        sourceTerritory = findTerritory(toDefend(), source);
         if(sourceTerritory != nullptr){
             cout << BANNER << endl;
             printTerritoryList(sourceTerritory->getAdjacentTerritories());
@@ -439,7 +448,7 @@ bool Player::generateOrder()
     case 6:
     {
         cout << BANNER << endl;
-        printTerritoryList(defendCollection);
+        printTerritoryList(toDefend());
         cout << BANNER << endl;
         cout << "Please enter the territory you would like form a blockade: " << endl; // Get the source territory
         cin >> source;
@@ -570,6 +579,19 @@ std::string Player::stringToLog() {
     return logStream.str();
 }
 
+/***
+ * This function returns the player's defend collection
+ */
+std::vector<Territory*>* Player::getDefendCollection(){
+    return this->defendCollection;
+}
+
+/***
+ * This function returns the player's attack collection
+ */
+std::vector<Territory*>* Player::getAttackCollection(){
+    return this->attackCollection;
+}
 
 void Player::setStrategy(PlayerStrategy* newStrategy){
     this->strategy = newStrategy;

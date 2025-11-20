@@ -3,7 +3,22 @@
 //even if i did not explcitly called the default constructor no problem in this case
 //why exactly as the Parent class PlayerStrategy does not have any user defined constructors
 
-HumanPlayerStrategy::HumanPlayerStrategy() = default;
+// ========================================== Base Player Strategy ===========================
+PlayerStrategy::PlayerStrategy(Player* p): player(p){
+    player = p;
+}
+
+
+
+
+
+
+
+// =========================================== Human Player Strategy ===========================
+
+HumanPlayerStrategy::HumanPlayerStrategy(Player* p): PlayerStrategy(p) {
+
+};
 
 void HumanPlayerStrategy::issueOrder() {
     cout << "Human Player Strategy: prompt user for commands." << endl;
@@ -18,20 +33,139 @@ std::vector<Territory*>* HumanPlayerStrategy::toDefend() {
     return new vector<Territory*>();
 }
 
-void AggressivePlayerStrategy::issueOrder(){
-  cout<<"Aggressive Player Strategy: Issuing aggressive orders. " <<endl;
+
+// =========================================== Aggressive Player Strategy =========================== 
+
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* p): PlayerStrategy(p) {
+    
+
 }
 
+
+void AggressivePlayerStrategy::issueOrder(){
+    cout<<"Aggressive Player Strategy: Issuing aggressive orders. " <<endl;
+
+
+    std::vector<Territory*>* defendList = toDefend();
+    Territory* strongestTerritory = (*defendList)[0];
+
+    // =========================================== Deployment Phase ===========================================
+    // Add all the new reinforcments to the territory with the highest number of armies
+
+    // Create a Deploy order and add it to the order list
+    std::unique_ptr<Orders> deployOrder;
+    
+    deployOrder = std::make_unique<DeployOrder>(player->getReinforcementPool(), strongestTerritory->getName(), strongestTerritory->getName()); // maybe change the source
+    player->setLastAction("Deployed " + std::to_string(player->getReinforcementPool()) + " units to " + strongestTerritory->getName());
+    player->notify(player);
+    player->getOrderList()->orderList.push_back(std::move(deployOrder));
+    cout << strongestTerritory->getName() << " has tentatively increased army units by " << player->getReinforcementPool() << endl;
+
+
+
+    // =========================================== Order Phase ===========================================
+    // Advance all armies from weaker territories to strongest territory
+    // We assume that the bot will deploy all its reinforcments to 1 territory and conquer neighboring territories, allowing for them to easily advance back to the main colony
+    if(defendList->size() > 1){
+        for(int i = 1; i < defendList->size();i++){
+            std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), (*defendList)[i]->getName(), strongestTerritory->getName());
+            player->setLastAction("Issued Advance order: " + std::to_string((*defendList)[i]->getArmies()) + " units from " + (*defendList)[i]->getName()+ " to " + strongestTerritory->getName());
+            player->notify(player);
+            player->getOrderList()->orderList.push_back(std::move(order));
+            cout << "New Advance Order created." << endl;
+        }
+    }
+
+    int attackableTerritories = player->getAttackCollection()->size();
+
+    // If there are no attackable territories adjacent to the strongest territory, attempt to advance to an adjacent territory
+    // This will however, skip the player's turn
+    if(attackableTerritories == 0){
+        // Hopefully this does not result in an infinite loop
+        Territory* targetTerritory = strongestTerritory->getAdjacentTerritories()->at(0);
+
+        std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), strongestTerritory->getName(), targetTerritory->getName());
+        player->setLastAction("Issued Advance order: " + std::to_string(strongestTerritory->getArmies()) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(order));
+        cout << "New Advance Order created." << endl;
+
+
+    } else { // There are attackable territories adjacent to the strongest territory
+        for(int i = 0; i < attackableTerritories; i++){                                     // Loop through all attackable territories and attempt to bomb and advance on them by splitting the armies equally
+            Territory* targetTerritory = player->getAttackCollection()->at(i);
+
+            // Attempt to bomb every territory (the validate function will prevent invalid bombs)
+            std::unique_ptr<Orders> bombOrder = std::make_unique<Bomb>(0, strongestTerritory->getName(), targetTerritory->getName());
+            player->setLastAction("Issued Bomb order: " + player->getName() + " bombed " + targetTerritory->getName());
+            player->notify(player);
+            player->getOrderList()->orderList.push_back(std::move(bombOrder));
+            cout << "New Bomb Order created." << endl;
+
+            // Split the army equally among all attackable territories of the player's Strongest Territory
+            // The Floor will ensure that all the deployed armies will be valid
+            std::unique_ptr<Orders> order = std::make_unique<Advance>(floor(strongestTerritory->getArmies()/attackableTerritories), strongestTerritory->getName(), targetTerritory->getName());
+            player->setLastAction("Issued Advance order: " + std::to_string(floor(strongestTerritory->getArmies()/attackableTerritories)) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
+            player->notify(player);
+            player->getOrderList()->orderList.push_back(std::move(order));
+            cout << "New Advance Order created." << endl;
+        }
+    }
+    delete defendList;
+}
+
+
+/***
+ * This function will return a list of enemy territories 
+ */
 std::vector<Territory*>* AggressivePlayerStrategy::toAttack() {
     // Would normally prioritize strongest territories, placeholder for now
-    return new vector<Territory*>();
+    player->getAttackCollection()->clear();   
+    std::vector<Territory*>* defendList = toDefend();
+
+    //IMPORTANT: Clear previous entries to avoid duplicates
+
+    player->getEnemyTerritories((*defendList)[0]);
+
+    return player->getAttackCollection();
+    // return new vector<Territory*>();
 }
 
+// Make sure to delete defendList after use to avoid memory leaks (in issueOrder)
 std::vector<Territory*>* AggressivePlayerStrategy::toDefend() {
-    return new vector<Territory*>();
+
+    std::vector<Territory*>* defendList = new std::vector<Territory*>();
+
+    if(player->getDefendCollection()->size() == 0){
+        return defendList;
+    }
+
+    for (Territory* terr : *(player->getDefendCollection())) {
+        if(terr->getArmies() > 0 ){         // add all the territories with armies to defend list
+            defendList->push_back(terr);
+        }
+    }
+
+    // If no territories have armies, at least return one to avoid empty list
+    
+    // Assuming that a player always has at least one territory (or else they are out of the game)
+    if(defendList->empty()) {
+        Territory* terr = player->getDefendCollection()->at(0);
+        defendList->push_back(terr); // Return empty list if no territories to defend
+    } else {
+        std::sort(defendList->begin(), defendList->end(), [](Territory* a, Territory* b) {
+            return a->getArmies() > b->getArmies();             // Sort in descending order of armies, ensuring strongest territories come first
+        });
+    }
+
+    return defendList;
 }
 
-BenevolentPlayerStrategy::BenevolentPlayerStrategy() = default;
+
+// =========================================== Benevolent Player Strategy ===========================
+
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* p): PlayerStrategy(p) {
+}
 
 void BenevolentPlayerStrategy::issueOrder() {
     cout << "Benevolent Player Strategy: reinforcing weak territories." << endl;
@@ -46,7 +180,10 @@ std::vector<Territory*>* BenevolentPlayerStrategy::toDefend() {
     return new vector<Territory*>();
 }
 
-CheaterPlayerStrategy::CheaterPlayerStrategy() = default;
+// =========================================== Cheater Player Strategy ===========================
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player * p):PlayerStrategy(p){
+
+}
 
 void CheaterPlayerStrategy::issueOrder() {
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
@@ -58,6 +195,11 @@ std::vector<Territory*>* CheaterPlayerStrategy::toAttack() {
 
 std::vector<Territory*>* CheaterPlayerStrategy::toDefend() {
     return new vector<Territory*>();
+}
+
+// =========================================== Neutral Player Strategy ===========================
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* p): PlayerStrategy(p) {
+
 }
 
 void NeutralPlayerStrategy::issueOrder(){
