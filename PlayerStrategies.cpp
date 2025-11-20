@@ -169,15 +169,71 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* p): PlayerStrategy(p)
 
 void BenevolentPlayerStrategy::issueOrder() {
     cout << "Benevolent Player Strategy: reinforcing weak territories." << endl;
+
+    // =========================================== Deployment Phase ===========================================
+    // The player will spread out reinforcements equally among their weakest territories
+    std::vector<Territory*>* defendList = toDefend();
+    Territory* weakestTerritory = (*defendList)[0];
+    int numTerritories = defendList->size();
+    int tentativeReinforcements = player->getReinforcementPool();
+    int armiesPerTerritory = floor(player->getReinforcementPool()/numTerritories);
+
+    std::unique_ptr<Orders> deployOrder;
+
+    //Attempt to deploy an equal amount of reinforcements to each territory
+    // This is mostly useful at the start of the game or when the player has a low amount of territories
+    for (int i = 0; i < numTerritories; i++){   
+
+        if(tentativeReinforcements <= 0 || armiesPerTerritory <= 0){   // If there are no more reinforcement left or the armies per territory is 0, break
+            break;
+        }
+
+        deployOrder = std::make_unique<DeployOrder>(armiesPerTerritory, (*defendList)[i]->getName(), (*defendList)[i]->getName());
+        player->setLastAction("Deployed " + std::to_string(armiesPerTerritory) + " units to " + (*defendList)[i]->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(deployOrder));
+        cout << (*defendList)[i]->getName() << " has tentatively increased army units by " << armiesPerTerritory << endl;
+        tentativeReinforcements -= armiesPerTerritory;
+    }
+
+    // If there are leftover reinforcements, add them to the weakest territory
+    if(tentativeReinforcements > 0){ 
+        deployOrder = std::make_unique<DeployOrder>(tentativeReinforcements, weakestTerritory->getName(), weakestTerritory->getName()); 
+        player->setLastAction("Deployed " + std::to_string(tentativeReinforcements) + " units to " + weakestTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(deployOrder));
+        cout << weakestTerritory->getName() << " has tentatively increased army units by " << tentativeReinforcements << endl;
+    }
+
+    // ============================================ Order Phase ===========================================
+
+    
+
+
+
 }
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
-    // Benevolent never attacks
-    return new vector<Territory*>();
+        
+    player->getAttackCollection()->clear();
+
+    return player->getAttackCollection();
 }
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toDefend() {
-    return new vector<Territory*>();
+    std::vector<Territory*>* defendList = new std::vector<Territory*>();
+    if(player->getDefendCollection()->size() == 0){
+        return defendList;
+    }
+
+    for (Territory* terr : *(player->getDefendCollection())) {
+        defendList->push_back(terr);   
+    }
+
+    std::sort(defendList->begin(), defendList->end(), [](Territory* a, Territory* b) {
+        return a->getArmies() < b->getArmies();             // Sort in ascending order of armies, ensuring weakest territories come first
+    });
+    return defendList;
 }
 
 // =========================================== Cheater Player Strategy ===========================

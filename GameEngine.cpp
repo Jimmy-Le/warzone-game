@@ -1143,6 +1143,20 @@ void GameEngine::executeOrderPhase()
             if (checkNegotiateOrder != nullptr)
             {                                                   // If it is not a negotiate order, check the next ordeer
                 status = order->execute(*player);               // Execute the negotiate order
+
+
+                // Search through a players hand for a specific card type (negotiate) to remove after execution if the status is 0
+                if (status == 0){
+                    for (auto card : *player->getHand()->hand) {
+                        string cn = *(card->cardType);
+                        transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+                        if (cn == "diplomacy") { // Compare after transformation
+                            card->play(player->getHand(), deck, player); // Remove the card from the player's hand after execution
+                            break;
+                        }
+                    }
+                }
+                
                 player->getOrderList()->remove(*(order.get())); // Remove the executed order from the list
             }
             else
@@ -1167,14 +1181,52 @@ void GameEngine::executeOrderPhase()
             {                                                          // If the player has orders left to execute
                 noMoreOrders = false;                                  // At least one player has orders left
                 std::unique_ptr<Orders> &order = listOfOrders.front(); // Get the first order in the list
-                order->execute(*player);                               // Execute the order
-                // TODO: Remove Card from hand
+                status = order->execute(*player);                               // Execute the order
+
+
+                if (status == 0){
+                    findAndPlayCard(&order, player); // Remove the corresponding card from the player's hand after execution
+                }
 
                 player->getOrderList()->remove(*(order.get())); // Remove the executed order from the list
             }
         }
     }
 }
+
+void GameEngine::findAndPlayCard(std::unique_ptr<Orders> *order, Player *player)
+{
+    // Search through a players hand for a specific card type to remove after execution if the status is 0
+
+    for (auto card : *player->getHand()->hand)
+    {
+        string cn = *(card->cardType);
+        transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
+
+        if (cn == "bomb" && dynamic_cast<Bomb*>(order->get()) != nullptr)
+        { // Compare after transformation
+            card->play(player->getHand(), deck, player); // Remove the card from the player's hand after execution
+            break;
+        }
+        else if (cn == "airlift" && dynamic_cast<Airlift*>(order->get()) != nullptr)
+        {
+            card->play(player->getHand(), deck, player);
+            break;
+        }
+        else if (cn == "blockade" && dynamic_cast<Blockade*>(order->get()) != nullptr)
+        {
+            card->play(player->getHand(), deck, player);
+            break;
+        }
+        // else if (cn == "reinforcement" && dynamic_cast<Reinforcement*>(order->get()) != nullptr)
+        // {
+        //     card->play(player->getHand(), deck, player);
+        //     break;
+        // }
+    }
+
+}
+
 
 /***
  * ------------------------- Check for Game Over -------------------------------

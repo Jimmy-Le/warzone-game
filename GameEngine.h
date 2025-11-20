@@ -231,6 +231,8 @@ public:
 
     // Temporary function to get players (for testing purposes)
     std::vector<Player *> *getPlayers();
+
+    void findAndPlayCard(std::unique_ptr<Orders> *order, Player *player);
 };
 
 // Global game engine pointer

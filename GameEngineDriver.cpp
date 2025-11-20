@@ -49,6 +49,13 @@ void testMainGameLoop()
     theGameEngine->addPlayers("Alice");
     theGameEngine->addPlayers("Bob");
     theGameEngine->addPlayers("Charlie");
+
+    std::vector<Player *>* players = theGameEngine->getPlayers();
+
+    for(Player* p: *players){
+        p->setStrategy(new AggressivePlayerStrategy(p));
+    }
+    
     // theGameEngine->addPlayers("Dan");
     theGameEngine->startGame();
     theGameEngine->mainGameLoop();

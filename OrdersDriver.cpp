@@ -140,17 +140,17 @@ int testOrderExecution()
 
     // -------------------- Prepare cards in hands (so card-based orders can validate) --------------------
     // Use same card type names as your Card class expects ("bomb","airlift","blockade","diplomacy", etc.)
-    Card bombCard("bomb");
-    Card airliftCard("airlift");
-    Card blockadeCard("blockade");
-    Card diplomacyCard("diplomacy");
+    // Card bombCard("bomb");
+    // Card airliftCard("airlift");
+    // Card blockadeCard("blockade");
+    // Card diplomacyCard("diplomacy");
 
     // Give Player A cards needed for tests; Player B gets diplomacy for negotiate test
-    playerA.getHand()->hand->push_back(airliftCard);
-    playerA.getHand()->hand->push_back(bombCard);
-    playerA.getHand()->hand->push_back(blockadeCard);
-    playerA.getHand()->hand->push_back(diplomacyCard);
-    playerB.getHand()->hand->push_back(diplomacyCard);
+    playerA.getHand()->hand->push_back(new Card("airlift"));
+    playerA.getHand()->hand->push_back(new Card("bomb"));
+    playerA.getHand()->hand->push_back(new Card("blockade"));
+    playerA.getHand()->hand->push_back(new Card("reinforcement")); // extra card
+    playerB.getHand()->hand->push_back(new Card("diplomacy"));
 
     cout << "Initial state:\n";
     cout << "  Canada(owner=" << canada->getOwner()->getName() << ", armies=" << canada->getArmies() << ")\n";
