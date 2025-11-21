@@ -536,7 +536,7 @@ std::vector<Player *> *GameEngine::getPlayers()
 void GameEngine::executeTournament(const string &tournamentCommand)
 {
     // winners vector to store all the winning players in order
-    vector<Player *> winners;
+    vector<std::string> winners;
 
     // 1. Parse the command
     vector<string> mapFiles;
@@ -644,7 +644,14 @@ void GameEngine::executeTournament(const string &tournamentCommand)
 
             // the winner will be the only player left in the player vector,
             // if its a draw, all players are removed and Draw player is added
-            winners.push_back(players->back());
+            if (players && !players->empty())
+            {
+                winners.push_back(players->back()->getName());
+            }
+            else
+            {
+                winners.push_back("N/A");
+            }
 
             // cleanup before next game (we need to reset all the values)
             if (players)
@@ -666,13 +673,75 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             changeState("replay");
         }
         cout << endl;
-        // TODO logging the results!
-        // notify("Tournament mode:\n");
-        // i have to send an object of a class we created that inherits from iloggable
-        // not strings
-        // perhaps I can make a custom command?
-        //
     }
+
+    // creating the tournament result table
+    // header
+    string results = "Tournament mode:\n";
+    // maps
+    results += "M: ";
+    for (auto &m : mapFiles)
+    {
+        results += m + " ";
+        cout << m << endl;
+    }
+    // players
+    results += "\nP: ";
+    for (auto &p : playerStrategies)
+    {
+        results += p + " ";
+        cout << p << endl;
+    }
+
+    // games
+    results += "\nG: " + std::to_string(numGames);
+    // turns
+    results += "\nD: " + std::to_string(maxTurns);
+    // results header
+    results += "\n\nResults:\n";
+
+    // table headers
+    results += "\t\t\t";
+    for (int i = 1; i <= numGames; i++)
+    {
+        results += "Game ";
+        results += std::to_string(i);
+        results += '\t';
+        cout << i << endl;
+    }
+    // results for each map
+    int winnerIndex = 0;
+    for (int i = 0; i < mapFiles.size(); i++)
+    {
+        results += "\n";
+        results += mapFiles[i];
+        results += "\t";
+
+        cout << "results each map" << mapFiles[i] << endl;
+
+        for (int j = 0; j < numGames; j++)
+        {
+            if (winnerIndex < (int)winners.size())
+            {
+                results += winners[winnerIndex];
+            }
+            else
+            {
+                results += "N/A";
+            }
+            results += "\t";
+            winnerIndex++;
+            cout << j << endl;
+        }
+    }
+    cout << results << endl;
+
+    // new custom command
+    Command *tournamentResultsCommand = new Command("Tournament Results");
+    // change the effect!
+    tournamentResultsCommand->saveEffect(results);
+    // save it
+    theCommandProcessor->saveCommand(tournamentResultsCommand);
 
     cout << "\n===========End of tournament!============" << endl;
 }
@@ -1005,10 +1074,16 @@ void GameEngine::mainGameLoop(int maxTurns)
                 players->erase(std::remove(players->begin(), players->end(), p), players->end()); // Remove player from the game (game engine's player list)
                 delete p;
             }
+            // clearing the vector
+            players->clear();
             // create new draw player
             Player *drawPlayer = new Player("Draw");
             // add them to the players list
             //  add player to the vector
+            if (!players)
+            {
+                players = new std::vector<Player *>();
+            }
             players->push_back(drawPlayer);
 
             cout << "\n===============DRAW===================" << endl;
@@ -1121,7 +1196,8 @@ void GameEngine::executeOrderPhase()
     DeployOrder *checkDeployOrder = nullptr;
 
     // ========== Deploy Orders First For All Players==========
-    cout << "\n================ Battle Results ================\n"<< endl;
+    cout << "\n================ Battle Results ================\n"
+         << endl;
     cout << "\nExecuting Deploy Orders First..." << endl;
     for (auto pIt = players->begin(); pIt != players->end();)
     {
@@ -1149,7 +1225,7 @@ void GameEngine::executeOrderPhase()
     }
 
     // ========== Searching For Negotiate Orders ==========
-    cout << "\nExecuting Negotiate Orders..."<< endl;
+    cout << "\nExecuting Negotiate Orders..." << endl;
     for (auto pIt = players->begin(); pIt != players->end();)
     {
         Player *player = *pIt; // Call the Validate and Execute for all orders for each player
@@ -1163,22 +1239,24 @@ void GameEngine::executeOrderPhase()
 
             Negotiate *checkNegotiateOrder = dynamic_cast<Negotiate *>(order.get()); // Check if the order is a negotiate order
             if (checkNegotiateOrder != nullptr)
-            {                                                   // If it is not a negotiate order, check the next ordeer
-                status = order->execute(*player);               // Execute the negotiate order
-
+            {                                     // If it is not a negotiate order, check the next ordeer
+                status = order->execute(*player); // Execute the negotiate order
 
                 // Search through a players hand for a specific card type (negotiate) to remove after execution if the status is 0
-                if (status == 0){
-                    for (auto card : *player->getHand()->hand) {
+                if (status == 0)
+                {
+                    for (auto card : *player->getHand()->hand)
+                    {
                         string cn = *(card->cardType);
                         transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
-                        if (cn == "diplomacy") { // Compare after transformation
+                        if (cn == "diplomacy")
+                        {                                                // Compare after transformation
                             card->play(player->getHand(), deck, player); // Remove the card from the player's hand after execution
                             break;
                         }
                     }
                 }
-                
+
                 player->getOrderList()->remove(*(order.get())); // Remove the executed order from the list
             }
             else
@@ -1189,7 +1267,7 @@ void GameEngine::executeOrderPhase()
         pIt++; // Move to the next player
     }
 
-    cout << "\nExecuting Remaining Orders..."<< endl;
+    cout << "\nExecuting Remaining Orders..." << endl;
     // ========== Then Execute All Other Orders ==========
     while (!noMoreOrders)
     {                        // Continue until all players have no more orders
@@ -1202,10 +1280,10 @@ void GameEngine::executeOrderPhase()
             {                                                          // If the player has orders left to execute
                 noMoreOrders = false;                                  // At least one player has orders left
                 std::unique_ptr<Orders> &order = listOfOrders.front(); // Get the first order in the list
-                status = order->execute(*player);                               // Execute the order
+                status = order->execute(*player);                      // Execute the order
 
-
-                if (status == 0){
+                if (status == 0)
+                {
                     findAndPlayCard(&order, player); // Remove the corresponding card from the player's hand after execution
                 }
 
@@ -1224,17 +1302,17 @@ void GameEngine::findAndPlayCard(std::unique_ptr<Orders> *order, Player *player)
         string cn = *(card->cardType);
         transform(cn.begin(), cn.end(), cn.begin(), ::tolower);
 
-        if (cn == "bomb" && dynamic_cast<Bomb*>(order->get()) != nullptr)
-        { // Compare after transformation
+        if (cn == "bomb" && dynamic_cast<Bomb *>(order->get()) != nullptr)
+        {                                                // Compare after transformation
             card->play(player->getHand(), deck, player); // Remove the card from the player's hand after execution
             break;
         }
-        else if (cn == "airlift" && dynamic_cast<Airlift*>(order->get()) != nullptr)
+        else if (cn == "airlift" && dynamic_cast<Airlift *>(order->get()) != nullptr)
         {
             card->play(player->getHand(), deck, player);
             break;
         }
-        else if (cn == "blockade" && dynamic_cast<Blockade*>(order->get()) != nullptr)
+        else if (cn == "blockade" && dynamic_cast<Blockade *>(order->get()) != nullptr)
         {
             card->play(player->getHand(), deck, player);
             break;
@@ -1245,9 +1323,7 @@ void GameEngine::findAndPlayCard(std::unique_ptr<Orders> *order, Player *player)
         //     break;
         // }
     }
-
 }
-
 
 /***
  * ------------------------- Check for Game Over -------------------------------
