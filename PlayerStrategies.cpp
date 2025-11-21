@@ -26,11 +26,11 @@ void HumanPlayerStrategy::issueOrder() {
 
 std::vector<Territory*>* HumanPlayerStrategy::toAttack() {
     // Human player decides via UI, return new list that engine can fill in
-    return new vector<Territory*>();
+    return player->getAttackCollection();
 }
 
 std::vector<Territory*>* HumanPlayerStrategy::toDefend() {
-    return new vector<Territory*>();
+    return player->getDefendCollection();
 }
 
 
@@ -267,11 +267,11 @@ void CheaterPlayerStrategy::issueOrder() {
 }
 
 std::vector<Territory*>* CheaterPlayerStrategy::toAttack() {
-    return new vector<Territory*>();
+    return player->getAttackCollection();
 }
 
 std::vector<Territory*>* CheaterPlayerStrategy::toDefend() {
-    return new vector<Territory*>();
+    return player->getDefendCollection();
 }
 
 // =========================================== Neutral Player Strategy ===========================
@@ -292,7 +292,7 @@ vector<Territory*>* NeutralPlayerStrategy::toAttack(){
 
 vector<Territory*>* NeutralPlayerStrategy::toDefend(){
   //returns an empty vector as a neutral player has no territory to defend 
-  return new vector<Territory*>();
+  return player->getDefendCollection();
 }
 
 
