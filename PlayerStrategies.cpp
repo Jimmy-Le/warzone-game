@@ -47,6 +47,11 @@ void AggressivePlayerStrategy::issueOrder(){
 
 
     std::vector<Territory*>* defendList = toDefend();
+    if(defendList->empty()){
+        cout << "Aggressive Player Strategy: No territories available to defend or attack." << endl;
+        delete defendList;
+        return;
+    }
     Territory* strongestTerritory = (*defendList)[0];
 
     // =========================================== Deployment Phase ===========================================
@@ -121,11 +126,13 @@ void AggressivePlayerStrategy::issueOrder(){
 std::vector<Territory*>* AggressivePlayerStrategy::toAttack() {
     // Would normally prioritize strongest territories, placeholder for now
     player->getAttackCollection()->clear();   
-    std::vector<Territory*>* defendList = toDefend();
+    std::unique_ptr<std::vector<Territory*>> defendList(toDefend());
 
     //IMPORTANT: Clear previous entries to avoid duplicates
 
-    player->getEnemyTerritories((*defendList)[0]);
+    if(!defendList->empty()){
+        player->getEnemyTerritories(defendList->at(0));
+    }
 
     return player->getAttackCollection();
     // return new vector<Territory*>();

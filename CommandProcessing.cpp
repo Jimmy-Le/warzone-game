@@ -244,6 +244,11 @@ bool CommandProcessor::validate(string command)
                     return false;
                 }
             }
+            else if (cutString == "Tournament")
+            {
+                // for the results
+                return true;
+            }
             else
             {
                 // invalid command
@@ -270,7 +275,16 @@ std::string CommandProcessor::stringToLog() // stringToLog override for the Comm
     if (!allCommands->empty())
     {
         Command *lastCmd = allCommands->back();
-        return "CommandProcessor saved command: " + lastCmd->getCommandString();
+        // special tournament results
+        if (lastCmd->getCommandString() == "Tournament Results")
+        {
+            return lastCmd->getEffectString();
+        }
+        else
+        {
+
+            return "CommandProcessor saved command: " + lastCmd->getCommandString();
+        }
     }
     return "CommandProcessor: no commands logged.";
 }
@@ -387,8 +401,21 @@ string Command::getCommandString()
     return *(this->command);
 }
 
+string Command::getEffectString()
+{
+    return *(this->effect);
+}
+
 std::string Command::stringToLog() // stringToLog override for the Command class
 {
+
+    // special tournament results
+    if (*command == "Tournament Results")
+    {
+        return *effect;
+    }
+
+    // normal commands
     std::string cmd = (command != nullptr) ? *command : "NULL";
     std::string eff = (effect != nullptr) ? *effect : "No effect";
     return "Command: " + cmd + " | Effect: " + eff;
