@@ -632,7 +632,7 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             changeState("addplayer");
             for (int i = 0; i < playerStrategies.size(); i++)
             {
-                addPlayers(playerStrategies[i]);
+                addPlayers(playerStrategies[i]+" "+to_string(i+1)); // to make sure each player has a unique name
             }
 
             // starting the game
@@ -805,26 +805,28 @@ void GameEngine::addPlayers(string playerName)
     Player *newPlayer = new Player(playerName);
 
     // checking the player strategy to assign
-    // if a special strategy is used,that's their player name
-    if (playerName == "Aggressive")
+    // if a special strategy is 
+    string baseName = playerName.substr(0, playerName.find(' '));
+
+    if (baseName == "Aggressive")
     {
         // assign aggressive player strategy
         PlayerStrategy *newStrategy = new AggressivePlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Benevolent")
+    else if (baseName == "Benevolent")
     {
         // assign benevolent player strategy
         PlayerStrategy *newStrategy = new BenevolentPlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Neutral")
+    else if (baseName == "Neutral")
     {
         // assign neutral player strategy
         PlayerStrategy *newStrategy = new NeutralPlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Cheater")
+    else if (baseName == "Cheater")
     {
         // assign cheater player strategy
         PlayerStrategy *newStrategy = new CheaterPlayerStrategy(newPlayer);
@@ -1094,6 +1096,10 @@ void GameEngine::mainGameLoop(int maxTurns)
             break;
         }
         cout << "\n================== ROUND " << rounds + 1 << " =================" << endl;
+        for(int i =0 ; i<players->size(); i++){
+            cout<<players->at(i)->getDefendCollection()->size()<<" ";
+            cout << endl;
+        }
         if (rounds != 0)
         { // Do not distribute reinforcements in the first round
           // game state will go back to assign reinforcements
@@ -1132,7 +1138,7 @@ void GameEngine::reinforcementPhase()
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players)
     {
-        ownedTerritories = player->toDefend()->size();      // Number of territories owned by the player
+        ownedTerritories = player->getDefendCollection()->size();      // Number of territories owned by the player
         reinforcements = std::max(3, ownedTerritories / 3); // Minimum of 3 armies per turn or # of territories / 3
 
         continentBonus = 0; // Continent bonus for players that own all territories in a continent
@@ -1341,7 +1347,7 @@ bool GameEngine::isGameOver()
     {
         Player *player = *it;
 
-        if (player->toDefend()->empty())
+        if (player->getDefendCollection()->empty())
         { // Would need to make sure that this list is updated properly
             cout << "Player " << player->getName() << " has been eliminated!" << endl;
 

@@ -142,7 +142,7 @@ int DeployOrder::execute(Player& player){
     }
 
     // find target again to apply the effect
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory()) {
             int currentArmies = terr->getArmies();
             terr->setArmies(currentArmies + this->getNumberOfArmyUnits());
@@ -164,7 +164,7 @@ int DeployOrder::execute(Player& player){
 
 bool DeployOrder::validate(Player& player){
       // check if target territory belongs to this player
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory()) {
             // check reinforcement availability
             if (this->getNumberOfArmyUnits() <= player.getReinforcementPool())
@@ -459,7 +459,7 @@ int Bomb::execute(Player& player){
       }
 
       // Step 2: Ensure target territory is NOT owned by the issuing player
-      for (auto* terr : *player.toDefend()) {
+      for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getTargetTerritory()) {
               cout << "BOMB ORDER INVALID: Target territory is owned by the player." <<endl;
               return false;
@@ -470,7 +470,7 @@ int Bomb::execute(Player& player){
       Territory* sourceTerr = nullptr;
       Territory* targetTerr = nullptr;
 
-      for (auto* terr : *player.toDefend()) {
+      for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getSourceTerritory())
               sourceTerr = terr;
       }
@@ -537,7 +537,7 @@ int Advance::execute(Player& player) {
     Territory* targetTerr = nullptr;
     Territory* sameTerr   = nullptr;
 
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getSourceTerritory()) {
             sourceTerr = terr;
             break;
@@ -549,7 +549,7 @@ int Advance::execute(Player& player) {
             break;
         }
     }
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory()) {
             sameTerr = terr;
             break;
@@ -620,7 +620,7 @@ int Advance::execute(Player& player) {
         targetTerr->setOwner(&player);
 
         // Move conquered territory to player's defend list (push existing pointer)
-        player.toDefend()->push_back(targetTerr);
+        player.getDefendCollection()->push_back(targetTerr);
         // Remove conquered territory from the defendants's list
 
         // Remove from attack list (erase by pointer)
@@ -652,7 +652,7 @@ int Advance::execute(Player& player) {
       Territory* sameTerr = nullptr;
 
       // Find source and target territories
-      for (auto* terr : *player.toDefend()) {
+      for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getSourceTerritory())
               sourceTerr = terr;
       }
@@ -660,7 +660,7 @@ int Advance::execute(Player& player) {
           if (terr->getName() == this->getTargetTerritory())
               targetTerr = terr;
       }
-       for (auto* terr : *player.toDefend()) {
+       for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getTargetTerritory())
               sameTerr = terr;
       }
@@ -748,12 +748,12 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
       Territory* sourceTerr = nullptr;
       Territory* targetTerr = nullptr;
 
-      for (auto* terr : *player.toDefend()) {
+      for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getSourceTerritory())
               sourceTerr = terr;
       }
 
-      for (auto* terr : *player.toDefend()) {
+      for (auto* terr : *player.getDefendCollection()) {
           if (terr->getName() == this->getTargetTerritory())
               targetTerr = terr;
       }
@@ -794,12 +794,12 @@ ostream& operator<<(ostream& os, const Airlift& airlift) {
     Territory* sourceTerr = nullptr;
     Territory* targetTerr = nullptr;
 
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getSourceTerritory())
             sourceTerr = terr;
     }
 
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory())
             targetTerr = terr;
     }
@@ -865,7 +865,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 
     // Step 1: Find the target territory
     Territory* target = nullptr;
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory()) {
             target = terr;
             break;
@@ -887,7 +887,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
     target->setOwner(&neutralPlayer);
 
     // Step 4: Remove from player’s defend list
-    auto& defendList = *player.toDefend();
+    auto& defendList = *player.getDefendCollection();
     auto it = find(defendList.begin(), defendList.end(), target);
     if (it != defendList.end())
         defendList.erase(it);
@@ -928,7 +928,7 @@ ostream& operator<<(ostream& os, const Blockade& blockade) {
 
     // Step 2: Check if target territory belongs to player
     bool ownsTarget = false;
-    for (auto* terr : *player.toDefend()) {
+    for (auto* terr : *player.getDefendCollection()) {
         if (terr->getName() == this->getTargetTerritory()) {
             ownsTarget = true;
             break;

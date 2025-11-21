@@ -121,17 +121,10 @@ Player &Player::operator=(const Player &other)
 {
     if (this == &other)
         return *this; // self-assignment check
-
+    defendCollection->clear();
+    attackCollection->clear();
     // Clean up existing resources
     delete name;
-    for (Territory *territory : *defendCollection)
-    {
-        delete territory;
-    }
-    for (Territory *territory : *attackCollection)
-    {
-        delete territory;
-    }
     delete defendCollection;
     delete attackCollection;
     delete cardCollection;
