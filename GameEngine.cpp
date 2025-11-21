@@ -639,11 +639,6 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             changeState("gamestart");
             startGame();
 
-            for (int i = 0; i < players->size(); i++)
-            {
-                cout << "after startGame()" << endl;
-                cout << (*players)[i]->getDefendCollection()->size() << endl;
-            }
             // entering the main game loop
             mainGameLoop(maxTurns);
 
@@ -1074,13 +1069,16 @@ void GameEngine::mainGameLoop(int maxTurns)
             // end of the game!
             gameOver = true;
             // remove all players
-            for (Player *p : *players)
-            {
-                players->erase(std::remove(players->begin(), players->end(), p), players->end()); // Remove player from the game (game engine's player list)
-                delete p;
-            }
-            // clearing the vector
-            players->clear();
+                    // ...existing code...
+        // end-of-game: delete all players safely
+        while (!players->empty()) {
+            Player* p = players->back();
+            players->pop_back(); // safe: no iterator invalidation for other elements
+            delete p;            // call destructor after removal from container
+        }
+        players->clear(); // container is already empty, harmless
+        // ...existing code.
+
             // create new draw player
             Player *drawPlayer = new Player("Draw");
             // add them to the players list
@@ -1134,8 +1132,8 @@ void GameEngine::reinforcementPhase()
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players)
     {
-        ownedTerritories = player->getDefendCollection()->size(); // Number of territories owned by the player
-        reinforcements = std::max(3, ownedTerritories / 3);       // Minimum of 3 armies per turn or # of territories / 3
+        ownedTerritories = player->toDefend()->size();      // Number of territories owned by the player
+        reinforcements = std::max(3, ownedTerritories / 3); // Minimum of 3 armies per turn or # of territories / 3
 
         continentBonus = 0; // Continent bonus for players that own all territories in a continent
         std::vector<Continent *> *continents = gameMap->getContinents();
@@ -1343,7 +1341,7 @@ bool GameEngine::isGameOver()
     {
         Player *player = *it;
 
-        if (player->getDefendCollection()->empty())
+        if (player->toDefend()->empty())
         { // Would need to make sure that this list is updated properly
             cout << "Player " << player->getName() << " has been eliminated!" << endl;
 
