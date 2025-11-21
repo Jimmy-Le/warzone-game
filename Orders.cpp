@@ -257,28 +257,28 @@ int Negotiate::execute(Player& player){
 
 
     //Handling the attack orders in Players orderlist oki buddy
-    vector<Orders*> issuerRemovals;
+   
+   vector<Orders*> issuerRemovals;
+
     for (auto& uptr : player.getOrderList()->orderList) {
-        Orders* it = uptr.get();
-        if(!it){
-            continue;
-        }
-        if(typeid(*it) == typeid(Bomb)){
-            issuerRemovals.push_back(it);
-            continue;
-        }
+        Orders* ord = uptr.get();
+        if (!ord) continue;
 
-        if(typeid(*it) == typeid(Advance)){
-            for(auto in : *player.toDefend()){
-                //this means the advance is probably attacking 
-                if(in->getName() != it->getTargetTerritory()){
-                    issuerRemovals.push_back(it);
-                    break;
+        // Only attack-capable orders
+        if (!(typeid(*ord) == typeid(Bomb) || typeid(*ord) == typeid(Advance)))
+            continue;
 
-                }
-            } 
+        // Check if this order attacks a territory owned by targetPlayer
+        for (auto* terr : *player.toAttack()) {
+            if (terr->getName() == ord->getTargetTerritory() &&
+                terr->getOwner() == targetPlayer) {
+
+                issuerRemovals.push_back(ord);
+                break;
+            }
         }
     }
+
 
     for(auto* doomed : issuerRemovals){
         player.getOrderList()->remove(*doomed);
@@ -287,26 +287,24 @@ int Negotiate::execute(Player& player){
 
     //the same process of eviction of the attack orders but for enemy players 
     vector<Orders*> targetRemovals;
-    for (auto& uptr2 : targetPlayer->getOrderList()->orderList) {
-        Orders* it = uptr2.get();
-        if(!it){
-            continue;
-        }
-        if(typeid(*it) == typeid(Bomb)){
-            targetRemovals.push_back(it);
-            continue;
-        }
 
-        if(typeid(*it) == typeid(Advance)){
-            for(auto in : *targetPlayer->toDefend()){
-                //this means the advance is probably attacking 
-                if(in->getName() != it->getTargetTerritory()){
-                    targetRemovals.push_back(it);
-                    break;
-                }
-            } 
+    for (auto& uptr : targetPlayer->getOrderList()->orderList) {
+        Orders* ord = uptr.get();
+        if (!ord) continue;
+
+        if (!(typeid(*ord) == typeid(Bomb) || typeid(*ord) == typeid(Advance)))
+            continue;
+
+        for (auto* terr : *targetPlayer->toAttack()) {
+            if (terr->getName() == ord->getTargetTerritory() &&
+                terr->getOwner() == &player) { //
+
+                targetRemovals.push_back(ord);
+                break;
+            }
         }
     }
+
 
     for(auto* doomed : targetRemovals){
         targetPlayer->getOrderList()->remove(*doomed);
@@ -412,15 +410,11 @@ int Bomb::execute(Player& player){
 
     
     //this part is for the neutral player strategy , if neutral player is being attacked it turns aggressive
-    if(targetTerr->getOwner() != nullptr){
-        Player* defender = targetTerr->getOwner();
+    //switching strategy to aggressive
+    if (targetTerr->getOwner() != nullptr) {
+    targetTerr->getOwner()->onAttacked();
     }
 
-    //switching strategy to aggressive
-    if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
-        cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
-        player.setStrategy(new AggressivePlayerStrategy(&player));
-    }
 
     //extra print statement 
     cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
@@ -591,18 +585,14 @@ int Advance::execute(Player& player) {
     // }
 
     //this part is for the neutral player strategy , if neutral player is being attacked it turns aggressive
-    if(targetTerr->getOwner() != nullptr){
-        Player* defender = targetTerr->getOwner();
-    }
-
     //switching strategy to aggressive
-    if(dynamic_cast<NeutralPlayerStrategy* >(player.getStrategy())){
-        cout<<"Neutral Player "<< player.getName() <<" is being attacked and is switching to Aggressive Strategy!" <<endl;
-        player.setStrategy(new AggressivePlayerStrategy(&player));
+    if (targetTerr->getOwner() != nullptr) {
+    targetTerr->getOwner()->onAttacked();
     }
 
-    //extra print statement 
-    cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
+
+    // //extra print statement 
+    // cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
 
     cout << "ATTACK from " << sourceTerr->getName()
          << " -> " << targetTerr->getName() << endl;

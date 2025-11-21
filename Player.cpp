@@ -597,4 +597,14 @@ void Player::setStrategy(PlayerStrategy* newStrategy){
     this->strategy = newStrategy;
 }
 
+
+void Player::onAttacked() {
+    if (dynamic_cast<NeutralPlayerStrategy*>(strategy) != nullptr) {
+        cout << "\n>>> " << *name << " was Neutral and got attacked --> switching to Aggressive!" << endl;
+
+        setStrategy(new AggressivePlayerStrategy(this));
+    }
+}
+
+
 //FIXME: I have not changed the copy constructor and Assignment operator 

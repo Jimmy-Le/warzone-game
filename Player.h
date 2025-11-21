@@ -37,6 +37,7 @@ class Player : public Subject, public ILoggable{
         Player& operator=(const Player& other);                                         // Player Copy Assignment Operator
         ~Player();                                                                      // Player Destructor
         
+        void onAttacked();
         void addToDefend(Territory* territory);                                         // Add a territory to the list of territories to be defended
         void addToAttack(Territory* territory);                                         // Add a territory to the list of territories to be attacked
         void removeFromDefend(Territory* territory);                                      // Remove a territory from the list of territories to be defended
