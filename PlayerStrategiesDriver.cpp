@@ -76,26 +76,35 @@ namespace
 
     void testAggressivePlayerStrategy()
     {
+
         cout << "\n-- Aggressive Player Strategy --" << endl;
         if (!theGameEngine){
             theGameEngine = new GameEngine(); // initialize the global engine
         }
-        theGameEngine->loadMap("Shorter.map");
+        theGameEngine->loadMap("Short.map");
         theGameEngine->validateMap();
         theGameEngine->addPlayers("Alice");
         theGameEngine->addPlayers("Bob");
+
+        LogObserver* logObserver = new LogObserver();
+    
+
 
         std::vector<Player *>* players = theGameEngine->getPlayers();
 
         for(Player* p: *players){
             p->setStrategy(new AggressivePlayerStrategy(p));
+            p->attach(logObserver);
+            p->getOrderList()->attach(logObserver);
         }
 
         theGameEngine->startGame();
         theGameEngine->mainGameLoop();
         
         delete theGameEngine;
+        delete logObserver;
         theGameEngine = nullptr;
+        logObserver = nullptr;
         // cout << "\n-- Aggressive Player Strategy --" << endl;
         // Player aggressivePlayer("Aggressive Strategist");
         // aggressivePlayer.setStrategy(new AggressivePlayerStrategy(&aggressivePlayer));
