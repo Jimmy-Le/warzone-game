@@ -93,7 +93,7 @@ namespace
         std::vector<Player *>* players = theGameEngine->getPlayers();
 
         for(Player* p: *players){
-            p->setStrategy(new AggressivePlayerStrategy(p));
+            p->setStrategy(new BenevolentPlayerStrategy(p));
             p->attach(logObserver);
             p->getOrderList()->attach(logObserver);
         }
@@ -105,28 +105,10 @@ namespace
         delete logObserver;
         theGameEngine = nullptr;
         logObserver = nullptr;
-        // cout << "\n-- Aggressive Player Strategy --" << endl;
-        // Player aggressivePlayer("Aggressive Strategist");
-        // aggressivePlayer.setStrategy(new AggressivePlayerStrategy(&aggressivePlayer));
-
-        // PlayerStrategy *strategy = aggressivePlayer.getStrategy();
-
-        // const size_t ordersBefore = aggressivePlayer.getOrderList()->orderList.size();
-        // cout << "Invoking issueOrder()..." << endl;
-        // strategy->issueOrder();
-        // const size_t ordersAfter = aggressivePlayer.getOrderList()->orderList.size();
-
-        // if (ordersAfter > ordersBefore)
-        // {
-        //     cout << "Order list increased from " << ordersBefore << " to " << ordersAfter << " as expected for an aggressive player." << endl;
-        // }
-        // else
-        // {
-        //     cout << "Order list size did not increase as expected for an aggressive player." << endl;
-        // }
-
-        // cout << "Aggressive player strategy test completed.\n" << endl;
+        cout << "Aggressive player strategy test completed.\n" << endl;
     }
+
+
 }
 
 void testPlayerStrategies()

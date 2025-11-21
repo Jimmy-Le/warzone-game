@@ -207,9 +207,31 @@ void BenevolentPlayerStrategy::issueOrder() {
 
     // ============================================ Order Phase ===========================================
 
+    // Attempt to negotiate with enemies adjacent to weakest territory
+    for(Territory* terr: *(toAttack())){
+
+        std::unique_ptr<Orders> order = std::make_unique<Negotiate>(0, weakestTerritory->getName(), terr->getName(), terr->getOwner()->getName());
+        player->setLastAction("Issued Negotiate order with " + terr->getOwner()->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(order));
+        cout << "New Negotiate Order created." << endl;
+    }
+
+
     // Advances armies from adjacent ally territories to weakest territory
     // Currently sending 1/3 of armies from each adjacent territory
     if(numTerritories > 1){
+        // Attempt to airlift armies from the strongest territory to the weakest territory
+        Territory* strongestTerritory = (*defendList)[numTerritories - 1];
+        std::unique_ptr<Orders> airliftOrder = std::make_unique<Airlift>(floor(strongestTerritory->getArmies()/3), strongestTerritory->getName(), weakestTerritory->getName());
+        player->setLastAction("Issued Airlift order: " + std::to_string(floor(strongestTerritory->getArmies()/3)) + " units from " + strongestTerritory->getName()+ " to " + weakestTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(airliftOrder));
+        cout << "New Airlift Order created." << endl;
+
+
+
+        // Advance armies from allied adjacent territories to weakest territory
         for(Territory* terr: *(weakestTerritory->getAdjacentTerritories()) ){
             // Check if the adjacent territory is owned by an enemy player
             if(terr->getOwner() == player){
@@ -229,7 +251,12 @@ void BenevolentPlayerStrategy::issueOrder() {
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
         
+    // Clear
     player->getAttackCollection()->clear();
+
+    // Get enemy territories adjacent to weakest territory
+    // This will be used to get players to negotiate with
+    player->getEnemyTerritories((*toDefend())[0]);
 
     return player->getAttackCollection();
 }
