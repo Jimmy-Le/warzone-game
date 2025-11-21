@@ -25,8 +25,6 @@ private:
     Command *readCommand();
 
 protected:
-
-
 public:
     CommandProcessor(); // default constructor
     // CommandProcessor();               // parameterized
@@ -61,6 +59,7 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const Command &commandObject); // stream insertion operator
     void saveEffect(string effectString);
     string getCommandString(); // getter for commandString
+    string getEffectString();
     std::string stringToLog();
 };
 
