@@ -21,12 +21,11 @@ void testCommandProcessor()
     // Create log observer
     LogObserver *logObs = new LogObserver();
     // Create objects
-    CommandProcessor *cp = new CommandProcessor();
     Orderlist *ol = new Orderlist();
     Player *p = new Player();
 
     // Attach observer
-    cp->attach(logObs);
+
     theGameEngine->attach(logObs);
     ol->attach(logObs);
     p->attach(logObs);
@@ -41,8 +40,10 @@ void testCommandProcessor()
     // take commands from the console
     if (input == 1)
     {
-        // calls the GameEngineDriver method
-        testGameStates();
+        // attach observer
+        theCommandProcessor->attach(logObs);
+        // calls Fayfay's stuff!
+        testStartupPhase();
     }
     // take commmands from a file
     else if (input == 2)
@@ -61,6 +62,9 @@ void testCommandProcessor()
         // sets the global variable theCommandProcessor to fileAdapter (a subclass object)
         theCommandProcessor = fileAdapter;
 
+        // attach observer
+        theCommandProcessor->attach(logObs);
+
         // cout << "Before reading" << endl;
         //  reads all commands
         fileAdapter->getCommand();
@@ -70,7 +74,7 @@ void testCommandProcessor()
         // deletes the object (avoid memory leaks
         delete fileAdapter;
 
-        delete cp;
+        delete theCommandProcessor;
         delete theGameEngine;
         delete ol;
         delete p;
