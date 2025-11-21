@@ -1002,7 +1002,7 @@ void GameEngine::mainGameLoop(int maxTurns)
             // remove all players
             for (Player *p : *players)
             {
-                players->erase(std::remove(players->begin(), players->end(), p), players->end()); // Remove player from the game
+                players->erase(std::remove(players->begin(), players->end(), p), players->end()); // Remove player from the game (game engine's player list)
                 delete p;
             }
             // create new draw player

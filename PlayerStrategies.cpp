@@ -207,10 +207,24 @@ void BenevolentPlayerStrategy::issueOrder() {
 
     // ============================================ Order Phase ===========================================
 
+    // Advances armies from adjacent ally territories to weakest territory
+    // Currently sending 1/3 of armies from each adjacent territory
+    if(numTerritories > 1){
+        for(Territory* terr: *(weakestTerritory->getAdjacentTerritories()) ){
+            // Check if the adjacent territory is owned by an enemy player
+            if(terr->getOwner() == player){
+                int sendArmies = floor(terr->getArmies()/3); // Send a third of the armies to the weakest territory
+
+                std::unique_ptr<Orders> order = std::make_unique<Advance>(sendArmies, terr->getName(), weakestTerritory->getName());
+                player->setLastAction("Issued Advance order: " + std::to_string(terr->getArmies()) + " units from " + terr->getName()+ " to " + weakestTerritory->getName());
+                player->notify(player);
+                player->getOrderList()->orderList.push_back(std::move(order));
+                cout << "New Advance Order created." << endl;
+            }
+        }
+
+    }
     
-
-
-
 }
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
