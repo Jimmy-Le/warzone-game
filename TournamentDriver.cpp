@@ -73,11 +73,17 @@ void testTournament()
         // deletes the object (avoid memory leaks
         delete fileAdapter;
 
-        delete theCommandProcessor;
-        delete theGameEngine;
+        
+      
         delete ol;
         delete p;
         delete logObs;
+        // delete theGameEngine;
+        ol = nullptr;
+        p = nullptr;
+        logObs = nullptr;
+        // theGameEngine = nullptr;
+        // delete theCommandProcessor;
         cout << "------End of Tournament testing-------";
     }
 }
