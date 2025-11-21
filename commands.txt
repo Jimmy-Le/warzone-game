@@ -1,1 +1,1 @@
-tournament -M Shorter.map -P Aggressive, Aggressive -G 1 -D 100
+tournament -M Earth.map -P Aggressive, Benevolent, Neutral -G 1 -D 10
