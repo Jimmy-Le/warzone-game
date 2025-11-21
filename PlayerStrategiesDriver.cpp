@@ -150,5 +150,5 @@ void testPlayerStrategies()
 {
     cout << "========== Testing Player Strategies ==========" << endl;
     testNeutralPlayerStrategy();
-    //testAggressivePlayerStrategy();
+    testAggressivePlayerStrategy();
 }
