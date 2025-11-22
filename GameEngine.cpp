@@ -609,14 +609,6 @@ void GameEngine::executeTournament(const string &tournamentCommand)
         cout << "Map " << mapIdx + 1 << ": " << endl;
         for (int g = 0; g < numGames; ++g)
         {
-            // //(Assignment 3 note: Here we would set up and run the actual game logic for each game on the map.)
-            // // Simulate game (here you could call your actual game loop)
-            // // For now, randomly pick a winner or draw
-            // int winnerIndex = rand() % (playerStrategies.size() + 1); // last index = draw
-            // if (winnerIndex < playerStrategies.size())
-            //     cout << playerStrategies[winnerIndex] << " ";
-            // else
-            //     cout << "Draw ";
 
             // gameloop!
             changeState("loadmap");
@@ -628,11 +620,12 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             validateMap();
 
             // now we add the players
-            // the player name will be the same as its strategy:)
+            // the player name will be the same as its strategy:),
+            // and the players are numbered to tell them apart
             changeState("addplayer");
             for (int i = 0; i < playerStrategies.size(); i++)
             {
-                addPlayers(playerStrategies[i]);
+                addPlayers(playerStrategies[i] + " " + to_string(i + 1)); // to make sure each player has a unique name
             }
 
             // starting the game
@@ -683,14 +676,12 @@ void GameEngine::executeTournament(const string &tournamentCommand)
     for (auto &m : mapFiles)
     {
         results += m + " ";
-        cout << m << endl;
     }
     // players
     results += "\nP: ";
     for (auto &p : playerStrategies)
     {
         results += p + " ";
-        cout << p << endl;
     }
 
     // games
@@ -707,7 +698,6 @@ void GameEngine::executeTournament(const string &tournamentCommand)
         results += "Game ";
         results += std::to_string(i);
         results += '\t';
-        cout << i << endl;
     }
     // results for each map
     int winnerIndex = 0;
@@ -731,10 +721,8 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             }
             results += "\t";
             winnerIndex++;
-            cout << j << endl;
         }
     }
-    cout << results << endl;
 
     // new custom command
     Command *tournamentResultsCommand = new Command("Tournament Results");
@@ -805,26 +793,28 @@ void GameEngine::addPlayers(string playerName)
     Player *newPlayer = new Player(playerName);
 
     // checking the player strategy to assign
-    // if a special strategy is used,that's their player name
-    if (playerName == "Aggressive")
+    // if a special strategy is
+    string baseName = playerName.substr(0, playerName.find(' '));
+
+    if (baseName == "Aggressive")
     {
         // assign aggressive player strategy
         PlayerStrategy *newStrategy = new AggressivePlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Benevolent")
+    else if (baseName == "Benevolent")
     {
         // assign benevolent player strategy
         PlayerStrategy *newStrategy = new BenevolentPlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Neutral")
+    else if (baseName == "Neutral")
     {
         // assign neutral player strategy
         PlayerStrategy *newStrategy = new NeutralPlayerStrategy(newPlayer);
         newPlayer->setStrategy(newStrategy);
     }
-    else if (playerName == "Cheater")
+    else if (baseName == "Cheater")
     {
         // assign cheater player strategy
         PlayerStrategy *newStrategy = new CheaterPlayerStrategy(newPlayer);
@@ -888,52 +878,6 @@ void GameEngine::startGame()
 // global variable to keep track of the status
 // very important
 GameEngine *theGameEngine = new GameEngine(new Start());
-
-// listen has been replaced by getCommand and changeState
-//-------------LISTEN-------------//
-//  Takes user input
-//  takes care of transitions
-//  this is the method that controls everything in a way
-//  void listen()
-//  {
-//      // Now, we will get commands from the commandProcessor!
-//      // prompt user for command
-//      theCommandProcessor->getCommand();
-//      // now we can go check the vector of commands to get that command (if it is valid)
-//      Command *command = theCommandProcessor->lastCommand();
-
-//     string fullCmd = command->getCommandString();
-//     string input;
-//     string arg;
-
-//     int indexOfSpace = fullCmd.find(' ');
-//     if (indexOfSpace != string::npos)
-//     {
-//         input = fullCmd.substr(0, indexOfSpace);
-//         arg = fullCmd.substr(indexOfSpace + 1);
-//     }
-//     else
-//     {
-//         input = fullCmd;
-//         arg = "";
-//     }
-
-//     // essentially, now only some state changes will be triggered by the user/command line
-//     // the other state changes will be done through other classes (i think, this is Jimmy's part)
-
-//     // keep track of previous state
-//     Status *oldStatus = theGameEngine->getState();
-//     // gets the next state
-//     Status *nextStatus = theGameEngine->getState()->transition(input, theGameEngine->getState());
-//     // in this case, either the user gave a correct command and we switch to a new state
-//     // or they gave an invalid command and we stay in the old state
-//     // so we check to see if we stay in the old state:
-//     if (nextStatus != oldStatus)
-//     {
-//         // if we don't, then we switch the state in GameEngine
-//         theGameEngine->setState(nextStatus);
-//     }
-// };
 
 // new function to handle state changes
 // takes a string as input (state transition command) and then switches states accordingly.
@@ -1069,15 +1013,16 @@ void GameEngine::mainGameLoop(int maxTurns)
             // end of the game!
             gameOver = true;
             // remove all players
-                    // ...existing code...
-        // end-of-game: delete all players safely
-        while (!players->empty()) {
-            Player* p = players->back();
-            players->pop_back(); // safe: no iterator invalidation for other elements
-            delete p;            // call destructor after removal from container
-        }
-        players->clear(); // container is already empty, harmless
-        // ...existing code.
+            // ...existing code...
+            // end-of-game: delete all players safely
+            while (!players->empty())
+            {
+                Player *p = players->back();
+                players->pop_back(); // safe: no iterator invalidation for other elements
+                delete p;            // call destructor after removal from container
+            }
+            players->clear(); // container is already empty, harmless
+                              // ...existing code.
 
             // create new draw player
             Player *drawPlayer = new Player("Draw");
@@ -1094,6 +1039,11 @@ void GameEngine::mainGameLoop(int maxTurns)
             break;
         }
         cout << "\n================== ROUND " << rounds + 1 << " =================" << endl;
+        for (int i = 0; i < players->size(); i++)
+        {
+            cout << players->at(i)->getDefendCollection()->size() << " ";
+            cout << endl;
+        }
         if (rounds != 0)
         { // Do not distribute reinforcements in the first round
           // game state will go back to assign reinforcements
@@ -1132,8 +1082,8 @@ void GameEngine::reinforcementPhase()
     // Loop through each player and calculate the reinforcements they will receive
     for (Player *player : *players)
     {
-        ownedTerritories = player->toDefend()->size();      // Number of territories owned by the player
-        reinforcements = std::max(3, ownedTerritories / 3); // Minimum of 3 armies per turn or # of territories / 3
+        ownedTerritories = player->getDefendCollection()->size(); // Number of territories owned by the player
+        reinforcements = std::max(3, ownedTerritories / 3);       // Minimum of 3 armies per turn or # of territories / 3
 
         continentBonus = 0; // Continent bonus for players that own all territories in a continent
         std::vector<Continent *> *continents = gameMap->getContinents();
@@ -1341,7 +1291,7 @@ bool GameEngine::isGameOver()
     {
         Player *player = *it;
 
-        if (player->toDefend()->empty())
+        if (player->getDefendCollection()->empty())
         { // Would need to make sure that this list is updated properly
             cout << "Player " << player->getName() << " has been eliminated!" << endl;
 
