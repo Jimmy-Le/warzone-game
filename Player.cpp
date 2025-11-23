@@ -175,19 +175,6 @@ vector<Territory *> *Player::toAttack()
 
     strategy->toAttack();                           // The Strategy should modify the AttackCollection of the Player
     return attackCollection;
-    
-
-    // =========================== Migrate to Human Player Stategy  ===========================
-
-    attackCollection->clear();                                  //IMPORTANT: Clear previous entries to avoid duplicates
-    for (Territory *territory : *defendCollection)              // Loop through each territory the player owns and find adjacent enemy territories
-    {
-        getEnemyTerritories(territory);
-    }
-
-    return attackCollection;
-
-    // ========================================================================================
 
 }
 
@@ -217,29 +204,7 @@ void Player::issueOrder()
     // Delegating order issuance to the player's strategy
     strategy->issueOrder();
     return;
-
-
-    //========================= TODO Migrate this to HumanPlayerStrategy class ============================
-    bool finished = false;
-    tentativePool = reinforcementPool;                          // Initialize tentative pool at the start of issuing orders
-    while (!finished)
-    {
-        cout << BANNER << endl;
-        cout << *name << "'s Territories" << endl;
-        cout << BANNER << endl;
-
-        printTerritoryList(defendCollection);
-
-        cout << BANNER << endl;
-        cout << "Territories to attack" << endl;
-        cout << BANNER << endl;
-
-        toAttack(); // Update the attack collection
-        printTerritoryList(attackCollection);
-
-        finished = generateOrder();
-    }
-    //=====================================================================================================
+    
 }
 
 /***
@@ -301,6 +266,12 @@ int Player::getReinforcementPool() const
 {
     return this->reinforcementPool;
 }
+
+void Player::setTentativePool(int reinforcePool)
+{
+    this->tentativePool = reinforcePool;
+}
+
 
 /***
  * This function will generate an order based on user input
