@@ -12,8 +12,6 @@
 
 using namespace std;
 
-void testBenevolentIgnoresBombCard();
-void testAggressiveUsesHarmfulCards();
 
 // namespace
 // {
@@ -247,6 +245,102 @@ void testBenevolentIgnoresBombCard() {
     //     logObserver = nullptr;
     // }
 
+void testCheaterPlayerStrategy() {
+    cout << "\n========== TEST: Cheater Auto-Takeover ==========" << endl;
+
+    Player cheater("Cheater");
+    cheater.setStrategy(new CheaterPlayerStrategy(&cheater));
+
+    // Owned territory
+    auto* base = new Territory("CheaterLand");
+    base->setOwner(&cheater);
+    cheater.addToDefend(base);
+
+    // Enemy territories owned by different players
+    Player enemyA("EnemyA");
+    Player enemyB("EnemyB");
+    auto* enemyFront = new Territory("EnemyFront");
+    auto* enemyFlank = new Territory("EnemyFlank");
+    enemyFront->setOwner(&enemyA);
+    enemyA.addToDefend(enemyFront);
+    enemyFlank->setOwner(&enemyB);
+    enemyB.addToDefend(enemyFlank);
+
+    // Adjacency so cheater sees both enemies
+    base->addAdjacentTerritory(enemyFront);
+    base->addAdjacentTerritory(enemyFlank);
+    enemyFront->addAdjacentTerritory(base);
+    enemyFlank->addAdjacentTerritory(base);
+
+    // Snapshot targets before issuing the order
+    vector<Territory*> targetsBefore = *cheater.toAttack();
+
+    cout << "Before issueOrder():" << endl;
+    for (Territory* t : targetsBefore) {
+        cout << " - " << t->getName() << " owned by " << (t->getOwner() ? t->getOwner()->getName() : string("none")) << endl;
+    }
+    cout<<enemyA.getDefendCollection()->size()<<endl;
+    cout<<enemyB.getDefendCollection()->size()<<endl;
+    cheater.issueOrder();
+     cout<<enemyA.getDefendCollection()->size()<<endl;
+    cout<<enemyB.getDefendCollection()->size()<<endl;
+    cout<<cheater.getDefendCollection()->size()<<endl; //expected to have 3 territories now does it work?
+
+    cout << "After issueOrder():" << endl;
+    size_t converted = 0;
+    for (Territory* t : targetsBefore) {
+        cout << " - " << t->getName() << " owned by " << (t->getOwner() ? t->getOwner()->getName() : string("none")) << endl;
+        if (t->getOwner() == &cheater) {
+            converted++;
+        }
+    }
+    
+    cout << "Converted " << converted << " / " << targetsBefore.size() << " territories to Cheater ownership (expected all)." << endl;
+    cout << "========== END TEST ==========" << endl << endl;
+}
+
+void testHumanPlayerStrategy() {
+    cout << "\n========== TEST: Human Player Strategy (Interactive) ==========" << endl;
+    Player human("HumanTester");
+    human.setStrategy(new HumanPlayerStrategy(&human));
+    human.setReinforcementPool(5);
+
+    // Territories
+    auto* home = new Territory("HomeBase");
+    auto* enemy = new Territory("EnemyCamp");
+
+    Player foe("Foe");
+    home->setOwner(&human);
+    enemy->setOwner(&foe);
+    home->setArmies(3);
+    enemy->setArmies(4);
+
+    // Adjacency
+    home->addAdjacentTerritory(enemy);
+    enemy->addAdjacentTerritory(home);
+
+    human.addToDefend(home);
+    human.addToAttack(enemy);
+
+    // Give a card so card-based orders can be tried
+    human.getHand()->hand->push_back(new Card("bomb"));
+
+    cout << "Initial state:" << endl;
+    cout << " - HomeBase (owner: " << human.getName() << ", armies: " << home->getArmies() << ")" << endl;
+    cout << " - EnemyCamp (owner: " << foe.getName() << ", armies: " << enemy->getArmies() << ")" << endl;
+    cout << "Reinforcement pool: " << human.getReinforcementPool() << endl;
+    cout << "Bomb card added to hand." << endl << endl;
+
+    cout << "Proceeding to interactive issueOrder()... follow the prompts." << endl;
+    human.issueOrder();
+
+    cout << "\nOrders created: " << human.getOrderList()->orderList.size() << endl;
+    for (const auto& ord : human.getOrderList()->orderList) {
+        cout << " - " << *ord << endl;
+    }
+    cout << "========== END TEST ==========" << endl << endl;
+}
+
     void testAggressivePlayerStrategy()
     {
         cout << "\n========== TEST: Aggressive Uses Harmful Cards ==========" << endl;
@@ -328,9 +422,8 @@ void testPlayerStrategies()
     cout<<"3. Benevolent Player Strategy"<<endl;
     cout<<"4. Cheater Player Strategy"<<endl;
     cout<<"5. Human Player Strategy"<<endl;
-    cout<<"6. Aggressive Uses Harmful Cards"<<endl;
-    cout<<"7. Benevolent Card (Non-Harmful Airlift)"<<endl;
-    cout<<"8. Benevolent Ignores Bomb Card"<<endl;
+    cout<<"6. Benevolent Card (Non-Harmful Airlift)"<<endl;
+    cout<<"7. Benevolent Ignores Bomb Card"<<endl;
      cout<<"Choose a specific strategy to test: "<<endl;
      cin >> choice;
     switch (choice)
@@ -348,11 +441,19 @@ void testPlayerStrategies()
     cout<<"Testing Benevolent Player Strategy"<<endl;
         testBenevolentPlayerStrategy();
         break;
-    case 7:
+    case 4:
+        cout<<"Testing Cheater Player Strategy"<<endl;
+        testCheaterPlayerStrategy();
+        break;
+    case 5:
+        cout<<"Testing Human Player Strategy"<<endl;
+        testHumanPlayerStrategy();
+        break;
+    case 6:
         cout<<"Testing Benevolent Card (Non-Harmful Airlift)"<<endl;
         testBenevolentPlayerStrategy();
         break;
-    case 8:
+    case 7:
         cout<<"Testing Benevolent Ignores Bomb Card"<<endl;
         testBenevolentIgnoresBombCard();
         break;
