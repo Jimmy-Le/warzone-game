@@ -308,17 +308,34 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player * p):PlayerStrategy(p){
 
 }
 
+//i did not comment the demo version i talked about you can overwrite it this version works but if you want to work on your own implementation change it as you wish
 void CheaterPlayerStrategy::issueOrder() {
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
-    std::vector<Territory *> * toTakeOver = toAttack();
-    for (Territory * mine : * toTakeOver)
+    std::vector<Territory *> * toTakeOver = toAttack(); // attackCollection is owned by player; do not delete
+    for (Territory * target : *toTakeOver)
     {
-        mine->setOwner(this->player);
-        player->setLastAction("Captured " + mine->getName() + " which is apart of " + mine->getContinent()->getName());
+        Player* previousOwner = target->getOwner();
+        if (previousOwner != nullptr && previousOwner != player) {
+            previousOwner->removeFromDefend(target); // clean up previous owner's list
+        }
+
+        target->setOwner(this->player);
+
+        // Track new ownership in this player's defend collection (avoid duplicates) //safety precaution not mandatory 
+        if (std::find(player->getDefendCollection()->begin(), player->getDefendCollection()->end(), target) == player->getDefendCollection()->end()) {
+            player->addToDefend(target);
+
+            //NOTE:attackCollection would leave stale entries.
+            //Clearing it just resets the “targets to attack” list the next call to toAttack() will repopulate it based on current ownership. 
+            //It doesn’t remove anything from defendCollection, so owned territories stay tracked.
+        }
+
+        std::string continentName = (target->getContinent() != nullptr) ? target->getContinent()->getName() : "an unknown continent"; //now its solves the logging problem either remove continent or used this line 
+        player->setLastAction("Captured " + target->getName() + " which is apart of " + continentName);
         player->notify(player);
     }
-    delete toTakeOver;
-    toTakeOver = nullptr;
+
+    player->getAttackCollection()->clear(); // reset transient attack list
 }
 
 std::vector<Territory*>* CheaterPlayerStrategy::toAttack() {
