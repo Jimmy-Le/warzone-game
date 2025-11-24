@@ -72,7 +72,7 @@ void testTournament()
 
         // deletes the object (avoid memory leaks
         delete fileAdapter;
-
+        fileAdapter = nullptr;
         
       
         delete ol;

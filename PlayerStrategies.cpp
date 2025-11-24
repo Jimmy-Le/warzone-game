@@ -253,6 +253,8 @@ void BenevolentPlayerStrategy::issueOrder() {
         }
 
     }
+    delete defendList;
+    defendList = nullptr;
     
 }
 
