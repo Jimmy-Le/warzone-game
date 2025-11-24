@@ -33,7 +33,12 @@ void HumanPlayerStrategy::issueOrder() {
         cout << player->getName() << " is playing their turn." << endl;
         cout << player->BANNER << endl;
 
+        cout << "\n=========== Ally Territories ===========" << endl;
         player->printTerritoryList(player->toDefend()); // Update the defend collection
+        cout << "\n=========== Enemy Territories ==========" << endl;
+        player->printTerritoryList(player->toAttack()); // Update the attack collection
+
+        cout << "\n" << player->BANNER << endl;
 
         toAttack(); // Update the attack collection
 
