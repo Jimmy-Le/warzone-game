@@ -22,14 +22,33 @@ HumanPlayerStrategy::HumanPlayerStrategy(Player* p): PlayerStrategy(p) {
 
 void HumanPlayerStrategy::issueOrder() {
     cout << "Human Player Strategy: prompt user for commands." << endl;
+    bool finished = false;
+    player->setTentativePool(player->getReinforcementPool());                    // Initialize tentative pool at the start of issuing orders
+    while (!finished)
+    {
+        cout << player->BANNER << endl;
+        cout << player->getName() << " is playing their turn." << endl;
+        cout << player->BANNER << endl;
+
+        toAttack(); // Update the attack collection
+
+        finished = player->generateOrder();
+    }
 }
 
 std::vector<Territory*>* HumanPlayerStrategy::toAttack() {
     // Human player decides via UI, return new list that engine can fill in
+    player->getAttackCollection()->clear();                                  //IMPORTANT: Clear previous entries to avoid duplicates
+    for (Territory * territory : * player->getDefendCollection())              // Loop through each territory the player owns and find adjacent enemy territories
+    {
+        player->getEnemyTerritories(territory);
+    }
+
     return player->getAttackCollection();
 }
 
 std::vector<Territory*>* HumanPlayerStrategy::toDefend() {
+
     return player->getDefendCollection();
 }
 
@@ -293,9 +312,24 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player * p):PlayerStrategy(p){
 
 void CheaterPlayerStrategy::issueOrder() {
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
+    std::vector<Territory *> * toTakeOver = toAttack();
+    for (Territory * mine : * toTakeOver)
+    {
+        mine->setOwner(this->player);
+        player->setLastAction("Captured " + mine->getName() + " which is apart of " + mine->getContinent()->getName());
+        player->notify(player);
+    }
+    delete toTakeOver;
+    toTakeOver = nullptr;
 }
 
 std::vector<Territory*>* CheaterPlayerStrategy::toAttack() {
+    player->getAttackCollection()->clear();
+    for (Territory * territory : * player->getDefendCollection())
+    {
+        player->getEnemyTerritories(territory);
+    }
+
     return player->getAttackCollection();
 }
 
