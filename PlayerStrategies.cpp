@@ -1,5 +1,8 @@
 #include "PlayerStrategies.h"
 
+#include <algorithm>
+#include <cctype>
+
 //even if i did not explcitly called the default constructor no problem in this case
 //why exactly as the Parent class PlayerStrategy does not have any user defined constructors
 
@@ -102,7 +105,8 @@ void AggressivePlayerStrategy::issueOrder(){
         }
     }
 
-    int attackableTerritories = player->getAttackCollection()->size();
+    // Refresh attackable territories before issuing offensive orders
+    int attackableTerritories = player->toAttack()->size(); //with this now bomb orders can be issued properly
 
     // If there are no attackable territories adjacent to the strongest territory, attempt to advance to an adjacent territory
     // This will however, skip the player's turn
@@ -210,6 +214,7 @@ void BenevolentPlayerStrategy::issueOrder() {
 
     //Attempt to deploy an equal amount of reinforcements to each territory
     // This is mostly useful at the start of the game or when the player has a low amount of territories
+    //NOTE: Keep a look at it out 
     for (int i = 0; i < numTerritories; i++){   
 
         if(tentativeReinforcements <= 0 || armiesPerTerritory <= 0){   // If there are no more reinforcement left or the armies per territory is 0, break
@@ -274,9 +279,31 @@ void BenevolentPlayerStrategy::issueOrder() {
         }
 
     }
+
+    // Use a defensive Airlift card if available: move armies from strongest to weakest ally
+    auto hasAirlift = std::find_if(player->getHand()->hand->begin(), player->getHand()->hand->end(), [](Card* c){
+        std::string type = *c->cardType;
+        std::transform(type.begin(), type.end(), type.begin(), ::tolower);
+        return type == "airlift";
+    });
+
+    if (hasAirlift != player->getHand()->hand->end() && numTerritories > 1) {
+        Territory* strongestTerritory = (*defendList)[numTerritories - 1];
+        if (strongestTerritory != weakestTerritory && strongestTerritory->getArmies() > 0) {
+            int sendArmies = std::max(1, strongestTerritory->getArmies() / 2);
+            std::unique_ptr<Orders> airliftOrder = std::make_unique<Airlift>(sendArmies, strongestTerritory->getName(), weakestTerritory->getName());
+            player->setLastAction("Issued defensive Airlift: " + std::to_string(sendArmies) + " units from " + strongestTerritory->getName() + " to " + weakestTerritory->getName());
+            player->notify(player);
+            player->getOrderList()->orderList.push_back(std::move(airliftOrder));
+            cout << "Airlift card used defensively: moved " << sendArmies << " armies to " << weakestTerritory->getName() << endl;
+        }
+    }
+
+    // Benevolent players will not issue harmful card-based orders (e.g., Bomb); explicitly ignore bomb cards
+    // to reinforce the “never harms anyone” rule.
+    
     delete defendList;
     defendList = nullptr;
-    
 }
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
@@ -312,17 +339,34 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player * p):PlayerStrategy(p){
 
 }
 
+//i did not comment the demo version i talked about you can overwrite it this version works but if you want to work on your own implementation change it as you wish
 void CheaterPlayerStrategy::issueOrder() {
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
-    std::vector<Territory *> * toTakeOver = toAttack();
-    for (Territory * mine : * toTakeOver)
+    std::vector<Territory *> * toTakeOver = toAttack(); // attackCollection is owned by player; do not delete
+    for (Territory * target : *toTakeOver)
     {
-        mine->setOwner(this->player);
-        player->setLastAction("Captured " + mine->getName() + " which is apart of " + mine->getContinent()->getName());
+        Player* previousOwner = target->getOwner();
+        if (previousOwner != nullptr && previousOwner != player) {
+            previousOwner->removeFromDefend(target); // clean up previous owner's list
+        }
+
+        target->setOwner(this->player);
+
+        // Track new ownership in this player's defend collection (avoid duplicates) //safety precaution not mandatory 
+        if (std::find(player->getDefendCollection()->begin(), player->getDefendCollection()->end(), target) == player->getDefendCollection()->end()) {
+            player->addToDefend(target);
+
+            //NOTE:attackCollection would leave stale entries.
+            //Clearing it just resets the “targets to attack” list the next call to toAttack() will repopulate it based on current ownership. 
+            //It doesn’t remove anything from defendCollection, so owned territories stay tracked.
+        }
+
+        std::string continentName = (target->getContinent() != nullptr) ? target->getContinent()->getName() : "an unknown continent"; //now its solves the logging problem either remove continent or used this line 
+        player->setLastAction("Captured " + target->getName() + " which is apart of " + continentName);
         player->notify(player);
     }
-    delete toTakeOver;
-    toTakeOver = nullptr;
+
+    player->getAttackCollection()->clear(); // reset transient attack list
 }
 
 std::vector<Territory*>* CheaterPlayerStrategy::toAttack() {
