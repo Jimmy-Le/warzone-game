@@ -30,6 +30,8 @@ void HumanPlayerStrategy::issueOrder() {
         cout << player->getName() << " is playing their turn." << endl;
         cout << player->BANNER << endl;
 
+        player->printTerritoryList(player->toDefend()); // Update the defend collection
+
         toAttack(); // Update the attack collection
 
         finished = player->generateOrder();
