@@ -17,6 +17,7 @@ extern GameEngine *theGameEngine;
 void testTournament()
 {
 
+    // theCommandProcessor = new CommandProcessor();
     // Create log observer
     LogObserver *logObs = new LogObserver();
     // Create objects
@@ -39,10 +40,28 @@ void testTournament()
     // take commands from the console
     if (input == 1)
     {
+        theCommandProcessor = new CommandProcessor();
         // attach observer
         theCommandProcessor->attach(logObs);
         // calls Fayfay's stuff!
         testStartupPhase();
+
+        theCommandProcessor->detach(logObs); // detach observer
+        ol->detach(logObs);
+        p->detach(logObs);
+        theGameEngine->detach(logObs);
+
+
+        delete theCommandProcessor;
+        delete ol;
+        delete p;
+        delete logObs;
+
+        theCommandProcessor = nullptr;
+        ol = nullptr;
+        p = nullptr;
+        logObs = nullptr;
+        
     }
     // take commmands from a file
     else if (input == 2)
@@ -69,6 +88,12 @@ void testTournament()
         fileAdapter->getCommand();
 
         testGameStates();
+
+
+        theCommandProcessor->detach(logObs); // detach observer
+        ol->detach(logObs);
+        p->detach(logObs);
+        theGameEngine->detach(logObs);
 
         // deletes the object (avoid memory leaks
         delete fileAdapter;
