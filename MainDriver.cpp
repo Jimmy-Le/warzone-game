@@ -80,5 +80,8 @@ int main()
             break;
         }
     }
+
+    delete theCommandProcessor;
+    theCommandProcessor = nullptr;
     return 0;
 }

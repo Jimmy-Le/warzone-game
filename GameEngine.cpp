@@ -1039,11 +1039,11 @@ void GameEngine::mainGameLoop(int maxTurns)
             break;
         }
         cout << "\n================== ROUND " << rounds + 1 << " =================" << endl;
-        for (int i = 0; i < players->size(); i++)
-        {
-            cout << players->at(i)->getDefendCollection()->size() << " ";
-            cout << endl;
-        }
+        // for (int i = 0; i < players->size(); i++)
+        // {
+        //     cout << players->at(i)->getDefendCollection()->size() << " ";
+        //     cout << endl;
+        // }
         if (rounds != 0)
         { // Do not distribute reinforcements in the first round
           // game state will go back to assign reinforcements
@@ -1065,6 +1065,10 @@ void GameEngine::mainGameLoop(int maxTurns)
         rounds++;
     }
     theGameEngine->setState(new Win()); // Transition to Win state
+    changeState("win");
+
+    players->clear(); // Clear players for next game
+    changeState("replay");
 }
 
 /***

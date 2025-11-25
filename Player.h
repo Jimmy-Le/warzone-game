@@ -73,12 +73,12 @@ class Player : public Subject, public ILoggable{
 
         bool generateOrder();                                              // Helper to generate an order
 
+        void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
     private:
         void deployReinforcments(string source);                                           // Helper to deploy reinforcements
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
-        void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
         std::string* name;
         Hand* cardCollection;                                           // The Player's Hand of Cards

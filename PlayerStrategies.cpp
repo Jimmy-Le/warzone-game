@@ -33,6 +33,13 @@ void HumanPlayerStrategy::issueOrder() {
         cout << player->getName() << " is playing their turn." << endl;
         cout << player->BANNER << endl;
 
+        cout << "\n=========== Ally Territories ===========" << endl;
+        player->printTerritoryList(player->toDefend()); // Update the defend collection
+        cout << "\n=========== Enemy Territories ==========" << endl;
+        player->printTerritoryList(player->toAttack()); // Update the attack collection
+
+        cout << "\n" << player->BANNER << endl;
+
         toAttack(); // Update the attack collection
 
         finished = player->generateOrder();
@@ -238,9 +245,31 @@ void BenevolentPlayerStrategy::issueOrder() {
 
     // ============================================ Order Phase ===========================================
 
+    // Attempt to negotiate with enemies adjacent to weakest territory
+    for(Territory* terr: *(toAttack())){
+
+        std::unique_ptr<Orders> order = std::make_unique<Negotiate>(0, weakestTerritory->getName(), terr->getName(), terr->getOwner()->getName());
+        player->setLastAction("Issued Negotiate order with " + terr->getOwner()->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(order));
+        cout << "New Negotiate Order created." << endl;
+    }
+
+
     // Advances armies from adjacent ally territories to weakest territory
     // Currently sending 1/3 of armies from each adjacent territory
     if(numTerritories > 1){
+        // Attempt to airlift armies from the strongest territory to the weakest territory
+        Territory* strongestTerritory = (*defendList)[numTerritories - 1];
+        std::unique_ptr<Orders> airliftOrder = std::make_unique<Airlift>(floor(strongestTerritory->getArmies()/3), strongestTerritory->getName(), weakestTerritory->getName());
+        player->setLastAction("Issued Airlift order: " + std::to_string(floor(strongestTerritory->getArmies()/3)) + " units from " + strongestTerritory->getName()+ " to " + weakestTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(airliftOrder));
+        cout << "New Airlift Order created." << endl;
+
+
+
+        // Advance armies from allied adjacent territories to weakest territory
         for(Territory* terr: *(weakestTerritory->getAdjacentTerritories()) ){
             // Check if the adjacent territory is owned by an enemy player
             if(terr->getOwner() == player){
@@ -278,11 +307,18 @@ void BenevolentPlayerStrategy::issueOrder() {
     // Benevolent players will not issue harmful card-based orders (e.g., Bomb); explicitly ignore bomb cards
     // to reinforce the “never harms anyone” rule.
     
+    delete defendList;
+    defendList = nullptr;
 }
 
 std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
         
+    // Clear
     player->getAttackCollection()->clear();
+
+    // Get enemy territories adjacent to weakest territory
+    // This will be used to get players to negotiate with
+    player->getEnemyTerritories((*toDefend())[0]);
 
     return player->getAttackCollection();
 }
