@@ -100,15 +100,15 @@ void AggressivePlayerStrategy::issueOrder(){
     // =========================================== Order Phase ===========================================
     // Advance all armies from weaker territories to strongest territory
     // We assume that the bot will deploy all its reinforcments to 1 territory and conquer neighboring territories, allowing for them to easily advance back to the main colony
-    if(defendList->size() > 1){
-        for(int i = 1; i < defendList->size();i++){
-            std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), (*defendList)[i]->getName(), strongestTerritory->getName());
-            player->setLastAction("Issued Advance order: " + std::to_string((*defendList)[i]->getArmies()) + " units from " + (*defendList)[i]->getName()+ " to " + strongestTerritory->getName());
-            player->notify(player);
-            player->getOrderList()->orderList.push_back(std::move(order));
-            cout << "New Advance Order created." << endl;
-        }
-    }
+    // if(defendList->size() > 1){
+    //     for(int i = 1; i < defendList->size();i++){
+    //         std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), (*defendList)[i]->getName(), strongestTerritory->getName());
+    //         player->setLastAction("Issued Advance order: " + std::to_string((*defendList)[i]->getArmies()) + " units from " + (*defendList)[i]->getName()+ " to " + strongestTerritory->getName());
+    //         player->notify(player);
+    //         player->getOrderList()->orderList.push_back(std::move(order));
+    //         cout << "New Advance Order created." << endl;
+    //     }
+    // }
 
     // Refresh attackable territories before issuing offensive orders
     int attackableTerritories = player->toAttack()->size(); //with this now bomb orders can be issued properly
@@ -117,7 +117,10 @@ void AggressivePlayerStrategy::issueOrder(){
     // This will however, skip the player's turn
     if(attackableTerritories == 0){
         // Hopefully this does not result in an infinite loop
-        Territory* targetTerritory = strongestTerritory->getAdjacentTerritories()->at(0);
+        int numAdjacent = strongestTerritory->getAdjacentTerritories()->size();
+        int randomIndex = rand() % numAdjacent; // Select a random adjacent territory
+
+        Territory* targetTerritory = strongestTerritory->getAdjacentTerritories()->at(randomIndex);
 
         std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), strongestTerritory->getName(), targetTerritory->getName());
         player->setLastAction("Issued Advance order: " + std::to_string(strongestTerritory->getArmies()) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
@@ -127,24 +130,26 @@ void AggressivePlayerStrategy::issueOrder(){
 
 
     } else { // There are attackable territories adjacent to the strongest territory
-        for(int i = 0; i < attackableTerritories; i++){                                     // Loop through all attackable territories and attempt to bomb and advance on them by splitting the armies equally
-            Territory* targetTerritory = player->getAttackCollection()->at(i);
 
-            // Attempt to bomb every territory (the validate function will prevent invalid bombs)
-            std::unique_ptr<Orders> bombOrder = std::make_unique<Bomb>(0, strongestTerritory->getName(), targetTerritory->getName());
-            player->setLastAction("Issued Bomb order: " + player->getName() + " bombed " + targetTerritory->getName());
-            player->notify(player);
-            player->getOrderList()->orderList.push_back(std::move(bombOrder));
-            cout << "New Bomb Order created." << endl;
+        int randomIndex = rand() % attackableTerritories; // Select a random Enemy territory
 
-            // Split the army equally among all attackable territories of the player's Strongest Territory
-            // The Floor will ensure that all the deployed armies will be valid
-            std::unique_ptr<Orders> order = std::make_unique<Advance>(floor(strongestTerritory->getArmies()/attackableTerritories), strongestTerritory->getName(), targetTerritory->getName());
-            player->setLastAction("Issued Advance order: " + std::to_string(floor(strongestTerritory->getArmies()/attackableTerritories)) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
-            player->notify(player);
-            player->getOrderList()->orderList.push_back(std::move(order));
-            cout << "New Advance Order created." << endl;
-        }
+        Territory* targetTerritory = player->getAttackCollection()->at(randomIndex);
+
+        // Attempt to bomb every territory (the validate function will prevent invalid bombs)
+        std::unique_ptr<Orders> bombOrder = std::make_unique<Bomb>(0, strongestTerritory->getName(), targetTerritory->getName());
+        player->setLastAction("Issued Bomb order: " + player->getName() + " bombed " + targetTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(bombOrder));
+        cout << "New Bomb Order created." << endl;
+
+        // Split the army equally among all attackable territories of the player's Strongest Territory
+        // The Floor will ensure that all the deployed armies will be valid
+        std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), strongestTerritory->getName(), targetTerritory->getName());
+        player->setLastAction("Issued Advance order: " + std::to_string(strongestTerritory->getArmies()) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
+        player->notify(player);
+        player->getOrderList()->orderList.push_back(std::move(order));
+        cout << "New Advance Order created." << endl;
+        
     }
     delete defendList;
 }
