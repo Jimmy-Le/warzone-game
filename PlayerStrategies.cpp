@@ -115,21 +115,45 @@ void AggressivePlayerStrategy::issueOrder(){
 
     // If there are no attackable territories adjacent to the strongest territory, attempt to advance to an adjacent territory
     // This will however, skip the player's turn
-    if(attackableTerritories == 0){
-        // Hopefully this does not result in an infinite loop
-        int numAdjacent = strongestTerritory->getAdjacentTerritories()->size();
-        int randomIndex = rand() % numAdjacent; // Select a random adjacent territory
+    // if(attackableTerritories == 0){
+        Territory* lastTerritoryVisited = strongestTerritory;
+        Territory* currentTerritory = strongestTerritory;
+        while(attackableTerritories == 0){
 
-        Territory* targetTerritory = strongestTerritory->getAdjacentTerritories()->at(randomIndex);
+            // Hopefully this does not result in an infinite loop
+            int numAdjacent = currentTerritory->getAdjacentTerritories()->size();
+            int randomIndex = rand() % numAdjacent; // Select a random adjacent territory
 
-        std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), strongestTerritory->getName(), targetTerritory->getName());
-        player->setLastAction("Issued Advance order: " + std::to_string(strongestTerritory->getArmies()) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
-        player->notify(player);
-        player->getOrderList()->orderList.push_back(std::move(order));
-        cout << "New Advance Order created." << endl;
+            Territory* targetTerritory;
+
+            if(numAdjacent == 1){
+                targetTerritory = lastTerritoryVisited;
+            } else {
+                targetTerritory = currentTerritory->getAdjacentTerritories()->at(randomIndex);
+                while(targetTerritory->getName() == lastTerritoryVisited->getName()){
+                    randomIndex = rand() % numAdjacent;
+                    targetTerritory = currentTerritory->getAdjacentTerritories()->at(randomIndex);
+                }
+
+            }
+
+            std::unique_ptr<Orders> order = std::make_unique<Advance>(currentTerritory->getArmies(), currentTerritory->getName(), targetTerritory->getName());
+            player->setLastAction("Issued Advance order: " + std::to_string(currentTerritory->getArmies()) + " units from " + lastTerritoryVisited->getName()+ " to " + targetTerritory->getName());
+            player->notify(player);
+            player->getOrderList()->orderList.push_back(std::move(order));
+            cout << "New Advance Order created." << endl;
 
 
-    } else { // There are attackable territories adjacent to the strongest territory
+            lastTerritoryVisited = currentTerritory;
+            currentTerritory = targetTerritory;
+            player->getAttackCollection()->clear();  // Clear previous entries to avoid duplicates
+            player->getEnemyTerritories(currentTerritory); //get new attackable territories from the currently advanced territory
+            attackableTerritories =  player->getAttackCollection()->size();//update the number of attackable territories after the advance
+            
+                
+        }
+
+        strongestTerritory = currentTerritory;
 
         int randomIndex = rand() % attackableTerritories; // Select a random Enemy territory
 
@@ -150,7 +174,7 @@ void AggressivePlayerStrategy::issueOrder(){
         player->getOrderList()->orderList.push_back(std::move(order));
         cout << "New Advance Order created." << endl;
         
-    }
+
     delete defendList;
 }
 
