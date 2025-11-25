@@ -371,8 +371,7 @@ void CheaterPlayerStrategy::issueOrder() {
             //It doesn’t remove anything from defendCollection, so owned territories stay tracked.
         }
 
-        std::string continentName = (target->getContinent() != nullptr) ? target->getContinent()->getName() : "an unknown continent"; //now its solves the logging problem either remove continent or used this line 
-        player->setLastAction("Captured " + target->getName() + " which is apart of " + continentName);
+        player->setLastAction("Captured " + target->getName());
         player->notify(player);
     }
 
