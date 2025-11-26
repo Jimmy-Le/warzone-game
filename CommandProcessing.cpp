@@ -229,20 +229,70 @@ bool CommandProcessor::validate(string command)
             // for the tournament command (Assignment 3)
             else if (cutString == "tournament" && dynamic_cast<Start *>(currentState) != nullptr)
             {
-                // checks for the required flags in the command
-                if (command.find("-M") != string::npos &&
-                    command.find("-P") != string::npos &&
-                    command.find("-G") != string::npos &&
-                    command.find("-D") != string::npos)
+                // Check flags exist
+                if (command.find("-M") == string::npos ||
+                    command.find("-P") == string::npos ||
+                    command.find("-G") == string::npos ||
+                    command.find("-D") == string::npos)
                 {
-
-                    return true;
-                }
-                else
-                {
-                    cout << "Invalid tournament command format." << endl;
+                    cout << "Invalid tournament command: Missing required flags." << endl;
                     return false;
                 }
+
+                try
+                {
+                    size_t mPos = command.find("-M");
+                    size_t pPos = command.find("-P");
+                    size_t gPos = command.find("-G");
+                    size_t dPos = command.find("-D");
+
+                    // Extract substrings between flags
+                    string mList = command.substr(mPos + 3, pPos - (mPos + 3));
+                    string pList = command.substr(pPos + 3, gPos - (pPos + 3));
+                    string gNum  = command.substr(gPos + 3, dPos - (gPos + 3));
+                    string dNum  = command.substr(dPos + 3);
+
+                    // Count number of maps and strategies
+                    int mCount = 1 + std::count(mList.begin(), mList.end(), ',');
+                    int pCount = 1 + std::count(pList.begin(), pList.end(), ',');
+
+                    int games = stoi(gNum);
+                    int turns = stoi(dNum);
+
+                    // --- Validity Checks ---
+                    // M = 1 to 5 different maps
+                    if (mCount < 1 || mCount > 5)
+                    {
+                        cout << "Tournament error: number of maps (M) must be 1 to 5." << endl;
+                        return false;
+                    }
+                    // P = 2 to 4 different computer players strategies
+                    if (pCount < 2 || pCount > 4)
+                    {
+                        cout << "Tournament error: number of strategies (P) must be 2 to 4." << endl;
+                        return false;
+                    }
+                    // G = 1 to 5 games to be played on each map,
+                    if (games < 1 || games > 5)
+                    {
+                        cout << "Tournament error: number of games (G) must be 1 to 5." << endl;
+                        return false;
+                    }
+                    // D = 10 to 50 maximum number of turns for each game.
+                    if (turns < 10 || turns > 50)
+                    {
+                        cout << "Tournament error: number of turns (D) must be 10 to 50." << endl;
+                        return false;
+                    }
+                }
+                catch (...)
+                {
+                    cout << "Invalid tournament parameters." << endl;
+                    return false;
+                }
+
+                
+                return true;
             }
             else if (cutString == "Tournament")
             {
