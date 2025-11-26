@@ -10,6 +10,7 @@
 #include "LoggingObserverDriver.h"
 #include "PlayerStrategiesDriver.h"
 #include "TournamentDriver.h"
+#include <string>
 using namespace std;
 
 // global command processor object:
@@ -17,22 +18,14 @@ CommandProcessor *theCommandProcessor = new CommandProcessor();
 
 int main()
 {
-    while (true)
+    bool continueProgram = true;
+    while (continueProgram)
     {
         cout << "Choose which part to test: " << endl;
-        cout << "1. Map" << endl;
-        cout << "2. Player" << endl;
-        cout << "3. Orders List" << endl;
-        cout << "4. Cards deck/hand" << endl;
-        cout << "5. Game Engine (will end the program)" << endl;
-        cout << "============  Assignment 2 ============" << endl;
-        cout << "6. Part 1: Command processor and command adapter" << endl;
-        cout << "7. Part 2: Game startup phase " << endl;
-        cout << "8. Part 3: Main Game Loop " << endl;
-        cout << "9. Part 4: Orders Execution" << endl;
-        cout << "10. Part 5: Game Log" << endl;
-        cout << "11. Player Strategies" << endl;
-        cout << "12. Test tournament" << endl;
+        cout << "1. Tournament Mode" << endl;
+        cout << "2. PlayerStrategies" << endl;
+        cout << "3. Exit" << endl;
+
 
         int input;
         cin >> input;
@@ -40,45 +33,21 @@ int main()
         switch (input)
         {
         case 1:
-            testLoadMaps();
+            testTournament();
             break;
         case 2:
-            testPlayers();
-            break;
-        case 3:
-            // testOrderList();
-            break;
-        case 4:
-            testCards();
-            break;
-        case 5:
-            testGameStates();
-            break;
-        case 6:
-            testCommandProcessor();
-            break;
-        case 7:
-            testStartupPhase();
-            break;
-        case 8:
-            testMainGameLoop();
-            break;
-        case 9:
-            testOrderExecution();
-            break;
-        case 10:
-            testLoggingObserver();
-            break;
-        case 11:
             testPlayerStrategies();
             break;
-        case 12:
-            testTournament();
+        case 3:
+            cout << "Exiting program..." << endl;
+            continueProgram = false;
             break;
         default:
             cout << "Invalid option, try again" << endl;
             break;
         }
     }
+
+    
     return 0;
 }

@@ -149,6 +149,7 @@ public:
     void remove(Orders& order);
     void move(Orders& order , int index);
     std::string stringToLog() override;
+    
 
 
 };

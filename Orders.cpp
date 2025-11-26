@@ -416,9 +416,7 @@ int Bomb::execute(Player& player){
     }
 
 
-    //extra print statement 
-    cout<<targetTerr->getOwner()->getName() <<" was Neutral and got attacked --> switching to aggressive •`_´•" << endl;
-
+    
     // Step 2: Apply the bomb effect — halve target armies
     int currentArmies = targetTerr->getArmies();
     targetTerr->setArmies(currentArmies / 2);
@@ -428,17 +426,19 @@ int Bomb::execute(Player& player){
         << currentArmies << " -> " << targetTerr->getArmies() 
         << "." <<endl;
 
+    // Step 3: Remove Bomb card after use
+    for (auto it = player.getHand()->hand->begin(); it != player.getHand()->hand->end(); ++it) {
+        std::string type = *(*it)->cardType;
+        std::transform(type.begin(), type.end(), type.begin(), ::tolower);
+        if (type == "bomb") {
+            player.getHand()->hand->erase(it);
+            cout << "Bomb card removed from hand after execution.\n";
+            break;
+        }
+    }  // I DO NOT KNOW IF THIS SOMETHING THE BOMB ORDER EXECUTE HAS TO HANDLE MAYBE GAME ENGINE TAKE CARES OF THIS 
+
     notify(this);
     return 0; // success
-
-      // Step 3:Remove Bomb card after use
-    //   for (auto it = player.getHand()->hand->begin(); it != player.getHand()->hand->end(); ++it) {
-    //       if (*(it->cardType) == "Bomb") {
-    //           player.getHand()->hand->erase(it);
-    //           cout << "Bomb card removed from hand after execution.\n";
-    //           break;
-    //       }
-    //   }  // I DO NOT KNOW IF THIS SOMETHING THE BOMB ORDER EXECUTE HAS TO HANDLE MAYBE GAME ENGINE TAKE CARES OF THIS 
 }
 
   bool Bomb::validate(Player& player){

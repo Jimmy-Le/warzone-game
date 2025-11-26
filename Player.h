@@ -48,6 +48,7 @@ class Player : public Subject, public ILoggable{
         Orderlist* getOrderList();                                                      // Returns the player's order list
         Hand* getHand();
 
+        void setTentativePool(int reinforcePool);
         void setReinforcementPool(int armies);                                        // Sets the number of reinforcement armies the player has
         int getReinforcementPool() const;                                             // Returns the number of reinforcement armies
         void addToReinforcementPool(int armies);                                         // Adds armies to the reinforcement pool
@@ -70,13 +71,14 @@ class Player : public Subject, public ILoggable{
 
         void getEnemyTerritories(Territory * source);               // Returns a list of territories that can be attacked from the source territory
 
+        bool generateOrder();                                              // Helper to generate an order
+
+        void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
     private:
-        bool generateOrder();                                                                   // Helper to generate an order
         void deployReinforcments(string source);                                           // Helper to deploy reinforcements
         Territory* findTerritory(std::vector<Territory*> *territoryList, string source);        // Helper to find a territory by name from a list
 
-        void printTerritoryList(std::vector<Territory*>* territoryList);                        // Helper to print a list of territories
 
         std::string* name;
         Hand* cardCollection;                                           // The Player's Hand of Cards

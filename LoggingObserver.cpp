@@ -46,7 +46,15 @@ LogObserver::~LogObserver() = default;
 
 void LogObserver::update(ILoggable* loggable)
 {
-    std::ofstream logFile("gamelog.txt", ios::app);
+    static bool firstOpen = true;
+
+    std::ios_base::openmode mode = std::ios::app;
+
+    if (firstOpen) {
+        mode = std::ios::trunc;   // clear file the first time
+        firstOpen = false;
+    }
+    std::ofstream logFile("gamelog.txt", mode);
     if (logFile.is_open())
     {
         logFile << loggable -> stringToLog() << endl;
