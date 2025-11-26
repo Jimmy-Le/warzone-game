@@ -1064,8 +1064,8 @@ void GameEngine::mainGameLoop(int maxTurns)
         gameOver = isGameOver();
         rounds++;
     }
+    // If max turn reached, end execorders
     if(rounds == maxRounds){
-        cout << "State: " << theGameEngine->stringToLog() << endl;
         changeState("endexecorders");
     }
 
