@@ -369,8 +369,8 @@ void testDynamicStrategySwitching()
     cout << "Neutral toAttack size: " << (neutralAttacks ? neutralAttacks->size() : 0)
          << ", toDefend size: " << (neutralDefends ? neutralDefends->size() : 0)
          << " (expected empty)" << endl;
-    delete neutralAttacks;
-    delete neutralDefends;
+    // delete neutralAttacks;
+    // delete neutralDefends;
 
     cout << "========== END TEST ==========" << endl
          << endl;

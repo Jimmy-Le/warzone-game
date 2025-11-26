@@ -1064,16 +1064,21 @@ void GameEngine::mainGameLoop(int maxTurns)
         gameOver = isGameOver();
         rounds++;
     }
+    // If max turn reached, end execorders
+    if(rounds == maxRounds){
+        changeState("endexecorders");
+    }
+
     theGameEngine->setState(new Win()); // Transition to Win state
-    changeState("win");
 
     // if the max turns are 5, I will assume this is a default game and not a tournament
     if (maxTurns == 5)
     {
         // not a tournament
         players->clear(); // Clear players for next game
-        changeState("replay");
+        
     }
+    changeState("replay");
 }
 
 /***
@@ -1279,6 +1284,7 @@ void GameEngine::findAndPlayCard(std::unique_ptr<Orders> *order, Player *player)
             card->play(player->getHand(), deck, player);
             break;
         }
+        // The assignment does not specify how to use the Reinforcement card
         // else if (cn == "reinforcement" && dynamic_cast<Reinforcement*>(order->get()) != nullptr)
         // {
         //     card->play(player->getHand(), deck, player);
