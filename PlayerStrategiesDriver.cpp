@@ -338,6 +338,106 @@ void testHumanPlayerStrategy() {
     for (const auto& ord : human.getOrderList()->orderList) {
         cout << " - " << *ord << endl;
     }
+        cout << "========== END TEST ==========" << endl << endl;
+    }
+
+void testDynamicStrategySwitching() {
+    cout << "\n========== TEST: Dynamic Strategy Switching ==========" << endl;
+
+    Player flexible("StrategyShifter");
+    flexible.setStrategy(new BenevolentPlayerStrategy(&flexible));
+    flexible.setReinforcementPool(6);
+
+    // Friendly territories
+    auto* safe = new Territory("SafeHold");
+    auto* border = new Territory("BorderHold");
+    safe->setOwner(&flexible);
+    border->setOwner(&flexible);
+    safe->setArmies(2);
+    border->setArmies(7);
+
+    // Enemies next to the border
+    Player enemyA("EnemyA");
+    Player enemyB("EnemyB");
+    auto* frontA = new Territory("FrontierA");
+    auto* frontB = new Territory("FrontierB");
+    frontA->setOwner(&enemyA);
+    frontB->setOwner(&enemyB);
+    frontA->setArmies(4);
+    frontB->setArmies(3);
+
+    // Adjacency so strategies can evaluate moves
+    safe->addAdjacentTerritory(border);
+    border->addAdjacentTerritory(safe);
+    border->addAdjacentTerritory(frontA);
+    border->addAdjacentTerritory(frontB);
+    frontA->addAdjacentTerritory(border);
+    frontB->addAdjacentTerritory(border);
+
+    auto executeOrders = [&](const std::string& phase) {
+        auto& orders = flexible.getOrderList()->orderList;
+        cout << "Executing " << orders.size() << " orders for phase: " << phase << endl;
+        for (auto& ord : orders) {
+            ord->execute(flexible);
+        }
+        orders.clear(); // clear executed orders to isolate subsequent strategy behavior
+    };
+    auto printArmies = [&](const std::string& label) {
+        cout << label << " armies -> "
+             << safe->getName() << " (owner: " << (safe->getOwner() ? safe->getOwner()->getName() : "none")
+             << ", armies: " << safe->getArmies() << "), "
+             << border->getName() << " (owner: " << (border->getOwner() ? border->getOwner()->getName() : "none")
+             << ", armies: " << border->getArmies() << "), "
+             << frontA->getName() << " (owner: " << (frontA->getOwner() ? frontA->getOwner()->getName() : "none")
+             << ", armies: " << frontA->getArmies() << "), "
+             << frontB->getName() << " (owner: " << (frontB->getOwner() ? frontB->getOwner()->getName() : "none")
+             << ", armies: " << frontB->getArmies() << ")" << endl;
+    };
+
+    flexible.addToDefend(safe);
+    flexible.addToDefend(border);
+    flexible.addToAttack(frontA);
+    flexible.addToAttack(frontB);
+
+    cout << "Initial strategy: Benevolent" << endl;
+    printArmies("Starting");
+    flexible.issueOrder();
+    executeOrders("Benevolent");
+    cout << "Orders after benevolent issueOrder(): " << flexible.getOrderList()->orderList.size()
+         << " (expected defensive only, no enemy takeovers)" << endl;
+    printArmies("After benevolent");
+    cout << "Enemy ownership still: " << frontA->getName() << " -> " << frontA->getOwner()->getName()
+         << ", " << frontB->getName() << " -> " << frontB->getOwner()->getName() << endl;
+
+    cout << "\nSwitching to CheaterPlayerStrategy..." << endl;
+    flexible.setStrategy(new CheaterPlayerStrategy(&flexible));
+    flexible.issueOrder();
+    executeOrders("Cheater");
+    cout << "After cheater issueOrder(), enemy ownership is now: " << frontA->getName() << " -> "
+         << (frontA->getOwner() ? frontA->getOwner()->getName() : "none") << ", " << frontB->getName()
+         << " -> " << (frontB->getOwner() ? frontB->getOwner()->getName() : "none")
+         << " (expected to become StrategyShifter)" << endl;
+    printArmies("After cheater");
+
+    const size_t ordersBeforeNeutral = flexible.getOrderList()->orderList.size();
+    cout << "\nSwitching to NeutralPlayerStrategy..." << endl;
+    flexible.setStrategy(new NeutralPlayerStrategy(&flexible));
+    flexible.issueOrder();
+    executeOrders("Neutral");
+    const size_t ordersAfterNeutral = flexible.getOrderList()->orderList.size();
+
+    cout << "Order list size before/after neutral issueOrder(): " << ordersBeforeNeutral << " -> "
+         << ordersAfterNeutral << " (expected no change)" << endl;
+    printArmies("After neutral");
+
+    vector<Territory*>* neutralAttacks = flexible.toAttack();
+    vector<Territory*>* neutralDefends = flexible.toDefend();
+    cout << "Neutral toAttack size: " << (neutralAttacks ? neutralAttacks->size() : 0)
+         << ", toDefend size: " << (neutralDefends ? neutralDefends->size() : 0)
+         << " (expected empty)" << endl;
+    delete neutralAttacks;
+    delete neutralDefends;
+
     cout << "========== END TEST ==========" << endl << endl;
 }
 
@@ -424,6 +524,7 @@ void testPlayerStrategies()
     cout<<"5. Human Player Strategy"<<endl;
     cout<<"6. Benevolent Card (Non-Harmful Airlift)"<<endl;
     cout<<"7. Benevolent Ignores Bomb Card"<<endl;
+    cout<<"8. Dynamic Strategy Switching"<<endl;
      cout<<"Choose a specific strategy to test: "<<endl;
      cin >> choice;
     switch (choice)
@@ -456,6 +557,10 @@ void testPlayerStrategies()
     case 7:
         cout<<"Testing Benevolent Ignores Bomb Card"<<endl;
         testBenevolentIgnoresBombCard();
+        break;
+    case 8:
+        cout<<"Testing Dynamic Strategy Switching"<<endl;
+        testDynamicStrategySwitching();
         break;
     }
 
