@@ -1,1 +1,1 @@
-tournament -M Earth.map -P Benevolent, Neutral, Aggressive -G 5 -D 200
+tournament -M Earth.map,Alberta.map -P Benevolent, Neutral, Aggressive -G 5 -D 20
