@@ -496,13 +496,13 @@ void FileCommandProcessorAdapter::getCommand()
     // if the command is valid
     if (commandRead != nullptr)
     {
-        // it is saved
+        // if the command is valid
         saveCommand(commandRead);
-    }
-    // for the tournament command (Assignment 3)
-    if (commandRead->getCommandString().find("tournament") == 0)
-    {
-        theGameEngine->executeTournament(commandRead->getCommandString());
+        // for the tournament command (Assignment 3)
+        if (commandRead->getCommandString().find("tournament") == 0)
+        {
+            theGameEngine->executeTournament(commandRead->getCommandString());
+        }
     }
     // if command is invalid nothing will happen here, the validate method would have displayed the error message
 }
