@@ -82,6 +82,9 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(Player* p): PlayerStrategy(p)
 void AggressivePlayerStrategy::issueOrder(){
     cout<<"Aggressive Player Strategy: Issuing aggressive orders. " <<endl;
 
+    int cycles = 0;
+    int maxCycles = 3;
+
     // Check for cheater player effect
     if (player->getDefendCollection()->size() == 0 ){
         cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
@@ -117,8 +120,11 @@ void AggressivePlayerStrategy::issueOrder(){
     // If there are no attackable territories adjacent to the strongest territory, attempt to advance to an adjacent territory
     // This will however, skip the player's turn
     // if(attackableTerritories == 0){
-        Territory* lastTerritoryVisited = strongestTerritory;
-        Territory* currentTerritory = strongestTerritory;
+    Territory* lastTerritoryVisited = strongestTerritory;
+    Territory* currentTerritory = strongestTerritory;
+
+    // This Cycle repeats the process so hopefully it can conquer more
+    while(cycles < maxCycles){
         while(attackableTerritories == 0){
 
             // Hopefully this does not result in an infinite loop
@@ -168,13 +174,14 @@ void AggressivePlayerStrategy::issueOrder(){
         cout << "New Bomb Order created." << endl;
 
         // Split the army equally among all attackable territories of the player's Strongest Territory
-        // The Floor will ensure that all the deployed armies will be valid
         std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), strongestTerritory->getName(), targetTerritory->getName());
         player->setLastAction("Issued Advance order: " + std::to_string(strongestTerritory->getArmies()) + " units from " + strongestTerritory->getName()+ " to " + targetTerritory->getName());
         player->notify(player);
         player->getOrderList()->orderList.push_back(std::move(order));
         cout << "New Advance Order created." << endl;
-        
+
+        cycles++;
+    }
 
     delete defendList;
 }
