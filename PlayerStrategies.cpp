@@ -24,6 +24,14 @@ HumanPlayerStrategy::HumanPlayerStrategy(Player* p): PlayerStrategy(p) {
 };
 
 void HumanPlayerStrategy::issueOrder() {
+
+    // Check for cheater player effect
+    if (player->getDefendCollection()->size() == 0 ){
+        cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
+        return;
+    }
+
+
     cout << "Human Player Strategy: prompt user for commands." << endl;
     bool finished = false;
     player->setTentativePool(player->getReinforcementPool());                    // Initialize tentative pool at the start of issuing orders
@@ -384,7 +392,7 @@ void CheaterPlayerStrategy::issueOrder() {
         cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
         return;
     }
-    
+
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
     std::vector<Territory *> * toTakeOver = toAttack(); // attackCollection is owned by player; do not delete
     for (Territory * target : *toTakeOver)
