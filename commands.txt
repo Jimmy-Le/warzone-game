@@ -1,1 +1,1 @@
-tournament -M Alberta.map -P Benevolent, Benevolent, Aggressive -G 1 -D 200
+tournament -M Short.map -P Benevolent, Benevolent, Aggressive -G 1 -D 200
