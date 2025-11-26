@@ -98,18 +98,6 @@ void AggressivePlayerStrategy::issueOrder(){
 
 
     // =========================================== Order Phase ===========================================
-    // Advance all armies from weaker territories to strongest territory
-    // We assume that the bot will deploy all its reinforcments to 1 territory and conquer neighboring territories, allowing for them to easily advance back to the main colony
-    // if(defendList->size() > 1){
-    //     for(int i = 1; i < defendList->size();i++){
-    //         std::unique_ptr<Orders> order = std::make_unique<Advance>(strongestTerritory->getArmies(), (*defendList)[i]->getName(), strongestTerritory->getName());
-    //         player->setLastAction("Issued Advance order: " + std::to_string((*defendList)[i]->getArmies()) + " units from " + (*defendList)[i]->getName()+ " to " + strongestTerritory->getName());
-    //         player->notify(player);
-    //         player->getOrderList()->orderList.push_back(std::move(order));
-    //         cout << "New Advance Order created." << endl;
-    //     }
-    // }
-
     // Refresh attackable territories before issuing offensive orders
     int attackableTerritories = player->toAttack()->size(); //with this now bomb orders can be issued properly
 
