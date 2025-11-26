@@ -1067,8 +1067,13 @@ void GameEngine::mainGameLoop(int maxTurns)
     theGameEngine->setState(new Win()); // Transition to Win state
     changeState("win");
 
-    players->clear(); // Clear players for next game
-    changeState("replay");
+    // if the max turns are 5, I will assume this is a default game and not a tournament
+    if (maxTurns == 5)
+    {
+        // not a tournament
+        players->clear(); // Clear players for next game
+        changeState("replay");
+    }
 }
 
 /***
