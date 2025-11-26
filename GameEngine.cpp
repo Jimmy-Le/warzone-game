@@ -663,7 +663,7 @@ void GameEngine::executeTournament(const string &tournamentCommand)
             }
 
             // play again! reset gamestate to start
-            changeState("replay");
+            // changeState("replay");
         }
         cout << endl;
     }
