@@ -74,6 +74,11 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(Player* p): PlayerStrategy(p)
 void AggressivePlayerStrategy::issueOrder(){
     cout<<"Aggressive Player Strategy: Issuing aggressive orders. " <<endl;
 
+    // Check for cheater player effect
+    if (player->getDefendCollection()->size() == 0 ){
+        cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
+        return;
+    }
 
     std::vector<Territory*>* defendList = toDefend();
     if(defendList->empty()){
@@ -224,9 +229,16 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* p): PlayerStrategy(p)
 void BenevolentPlayerStrategy::issueOrder() {
     cout << "Benevolent Player Strategy: reinforcing weak territories." << endl;
 
+    // Check for cheater player effect
+    if (player->getDefendCollection()->size() == 0 ){
+        cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
+        return;
+    }
+
     // =========================================== Deployment Phase ===========================================
     // The player will spread out reinforcements equally among their weakest territories
     std::vector<Territory*>* defendList = toDefend();
+    
     Territory* weakestTerritory = (*defendList)[0];
     int numTerritories = defendList->size();
     int tentativeReinforcements = player->getReinforcementPool();
@@ -335,7 +347,10 @@ std::vector<Territory*>* BenevolentPlayerStrategy::toAttack() {
 
     // Get enemy territories adjacent to weakest territory
     // This will be used to get players to negotiate with
-    player->getEnemyTerritories((*toDefend())[0]);
+    // Check if the toDefend is empty or not
+    if(player->toDefend()->size() > 0){
+        player->getEnemyTerritories((*toDefend())[0]);
+    }
 
     return player->getAttackCollection();
 }
@@ -363,6 +378,13 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player * p):PlayerStrategy(p){
 
 //i did not comment the demo version i talked about you can overwrite it this version works but if you want to work on your own implementation change it as you wish
 void CheaterPlayerStrategy::issueOrder() {
+
+    // Other Cheaters may corrupt each other 
+    if (player->getDefendCollection()->size() == 0 ){
+        cout << "ERROR 404: " + player->getName() + "'s territories has been corrupted!!" << endl;
+        return;
+    }
+    
     cout << "Cheater Player Strategy: automatically conquering adjacent territories." << endl;
     std::vector<Territory *> * toTakeOver = toAttack(); // attackCollection is owned by player; do not delete
     for (Territory * target : *toTakeOver)
