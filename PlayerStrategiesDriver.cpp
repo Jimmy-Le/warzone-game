@@ -202,12 +202,7 @@ void testCheaterPlayerStrategy()
     {
         cout << " - " << t->getName() << " owned by " << (t->getOwner() ? t->getOwner()->getName() : string("none")) << endl;
     }
-    cout << enemyA.getDefendCollection()->size() << endl;
-    cout << enemyB.getDefendCollection()->size() << endl;
     cheater.issueOrder();
-    cout << enemyA.getDefendCollection()->size() << endl;
-    cout << enemyB.getDefendCollection()->size() << endl;
-    cout << cheater.getDefendCollection()->size() << endl; // expected to have 3 territories now does it work?
 
     cout << "After issueOrder():" << endl;
     size_t converted = 0;
@@ -379,7 +374,6 @@ void testDynamicStrategySwitching()
 void testAggressivePlayerStrategy()
 {
     cout << "\n========== TEST: Aggressive Uses Harmful Cards ==========" << endl;
-    cout << "HUHUHU" << endl;
 
     Player aggressive("Aggro");
     aggressive.setStrategy(new AggressivePlayerStrategy(&aggressive));
@@ -417,7 +411,7 @@ void testAggressivePlayerStrategy()
 
     // Provide harmful cards so validation passes; duplicate bombs show repeated harmful card usage
     aggressive.getHand()->hand->push_back(new Card("bomb"));
-    aggressive.getHand()->hand->push_back(new Card("bomb"));
+    // aggressive.getHand()->hand->push_back(new Card("bomb"));
 
     cout << "Initial hand size: " << aggressive.getHand()->hand->size() << endl;
     cout << "Before issueOrder(): orders = " << aggressive.getOrderList()->orderList.size() << endl;
