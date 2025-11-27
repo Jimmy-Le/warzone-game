@@ -86,9 +86,9 @@ void testTournament()
         // cout << "Before reading" << endl;
         //  reads all commands
         fileAdapter->getCommand();
-
+        
         testGameStates();
-
+        
 
         theCommandProcessor->detach(logObs); // detach observer
         ol->detach(logObs);
