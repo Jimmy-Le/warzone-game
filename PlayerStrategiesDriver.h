@@ -8,5 +8,7 @@ void testAggressiveUsesHarmfulCards();
 void testCheaterPlayerStrategy();
 void testHumanPlayerStrategy();
 void testNeutralPlayerStrategy();
+void testDynamicStrategySwitching();
+
 
 #endif // PLAYER_STRATEGIES_DRIVER_H
