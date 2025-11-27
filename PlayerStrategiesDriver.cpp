@@ -382,7 +382,7 @@ void testDynamicStrategySwitching() {
         }
         orders.clear(); // clear executed orders to isolate subsequent strategy behavior
     };
-    auto printArmies = [&](const std::string& label) {
+    auto printArmies = [&](const std::string& label) { //[&} In C++, the capture [&] in a lambda expression means that all variables used inside the lambda from the surrounding scope are captured by reference. This allows the lambda to access and modify the original variables rather than working on copies. (A new shortcut easier then writing function declaration and definiton)
         cout << label << " armies -> "
              << safe->getName() << " (owner: " << (safe->getOwner() ? safe->getOwner()->getName() : "none")
              << ", armies: " << safe->getArmies() << "), "
